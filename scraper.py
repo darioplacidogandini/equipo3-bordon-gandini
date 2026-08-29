@@ -9,13 +9,8 @@ import cloudscraper
 COEFICIENTE_HOGAR_TIPO = 3.09
 
 # ------------------------------------------------------------------------------
-# DEFINICIÓN DETALLADA DE LA CANASTA BÁSICA ALIMENTARIA (INDEC - 1 ADULTO EQUIV)
-# Cantidades mensuales estimadas por rubro/corte específico
-# ------------------------------------------------------------------------------
-# ------------------------------------------------------------------------------
 # CANASTA BÁSICA ALIMENTARIA CON VALORES NUTRICIONALES (por 100g / 100mL)
 # ------------------------------------------------------------------------------
-
 CBA_INDEC = [
     # --- PAN Y CEREALES ---
     {"rubro": "Pan francés", "cantidad_ae": 6.30, "keyword": "pan frances", "kcal_100g": 265, "prot_100g": 9.0, "carb_100g": 55.0, "grasas_100g": 1.2},
@@ -120,16 +115,14 @@ def main():
     ahora = datetime.now()
     fecha_hoy = ahora.strftime("%Y-%m-%d")
     timestamp = ahora.strftime("%Y-%m-%d %H:%M:%S")
-print(f"=== INICIANDO SCRAPING ({timestamp}) ===")
+
+    print(f"=== INICIANDO SCRAPING ({timestamp}) ===")
     resultados = []
     for item in CBA_INDEC:
         print(f"-> Buscando rubro: '{item['rubro']}'...")
         precio_prom, cant = buscar_precio_promedio(scraper, item['keyword'])
         
-        # Copia todo el diccionario 'item' (incluyendo kcal_100g, prot_100g, etc.)
         registro = item.copy()
-        
-        # Agrega la información dinámica recolectada en la ejecución
         registro.update({
             'fecha': fecha_hoy,
             'timestamp': timestamp,
@@ -144,28 +137,23 @@ print(f"=== INICIANDO SCRAPING ({timestamp}) ===")
     mediana = df['precio_unitario_estimado'].median()
     df['precio_unitario_estimado'] = df['precio_unitario_estimado'].fillna(mediana)
 
-    # Cálculos
     # --------------------------------------------------------------------------
-    # CÁLCULOS NUTRICIONALES Y CONSUMO INDIVIDUAL (DIARIO Y MENSUAL)
+    # CÁLCULOS NUTRICIONALES Y CONSUMO INDIVIDUAL
     # --------------------------------------------------------------------------
-    # Consumo diario en gramos/mililitros por persona (1 Adulto Equivalente)
     df['consumo_mensual_kg_l'] = df['cantidad_ae']
     df['consumo_diario_g_ml'] = (df['cantidad_ae'] * 1000) / 30
 
-    # Aporte nutricional diario por alimento
     df['kcal_diarias'] = (df['consumo_diario_g_ml'] * df['kcal_100g']) / 100
     df['proteinas_g_dia'] = (df['consumo_diario_g_ml'] * df['prot_100g']) / 100
     df['carbohidratos_g_dia'] = (df['consumo_diario_g_ml'] * df['carb_100g']) / 100
     df['grasas_g_dia'] = (df['consumo_diario_g_ml'] * df['grasas_100g']) / 100
 
-    # Exportar archivo independiente de la Tabla Nutricional
     cols_nutricionales = [
         'rubro', 'consumo_mensual_kg_l', 'consumo_diario_g_ml',
         'kcal_diarias', 'proteinas_g_dia', 'carbohidratos_g_dia', 'grasas_g_dia'
     ]
     df_nutricion = df[cols_nutricionales].copy()
 
-    # Fila resumen con el total de la dieta
     fila_total_nutr = pd.DataFrame([{
         'rubro': 'TOTAL DIARIO (1 ADULTO EQUIVALENTE)',
         'consumo_mensual_kg_l': df['consumo_mensual_kg_l'].sum(),
@@ -181,6 +169,9 @@ print(f"=== INICIANDO SCRAPING ({timestamp}) ===")
 
     print(f"📊 Aporte energético total: {df['kcal_diarias'].sum():,.0f} kcal/día por persona.")
     
+    # --------------------------------------------------------------------------
+    # CÁLCULOS DE COSTOS E HISTÓRICOS
+    # --------------------------------------------------------------------------
     df['costo_mensual_ae'] = df['cantidad_ae'] * df['precio_unitario_estimado']
     df['costo_hogar_tipo'] = df['costo_mensual_ae'] * COEFICIENTE_HOGAR_TIPO
 
