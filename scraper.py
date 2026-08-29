@@ -120,21 +120,24 @@ def main():
     ahora = datetime.now()
     fecha_hoy = ahora.strftime("%Y-%m-%d")
     timestamp = ahora.strftime("%Y-%m-%d %H:%M:%S")
-
-    print(f"=== INICIANDO SCRAPING ({timestamp}) ===")
+print(f"=== INICIANDO SCRAPING ({timestamp}) ===")
     resultados = []
     for item in CBA_INDEC:
         print(f"-> Buscando rubro: '{item['rubro']}'...")
         precio_prom, cant = buscar_precio_promedio(scraper, item['keyword'])
-        resultados.append({
+        
+        # Copia todo el diccionario 'item' (incluyendo kcal_100g, prot_100g, etc.)
+        registro = item.copy()
+        
+        # Agrega la información dinámica recolectada en la ejecución
+        registro.update({
             'fecha': fecha_hoy,
             'timestamp': timestamp,
-            'rubro': item['rubro'],
-            'keyword': item['keyword'],
-            'cantidad_ae': item['cantidad_ae'],
             'precio_unitario_estimado': precio_prom,
             'coincidencias': cant
         })
+        
+        resultados.append(registro)
         time.sleep(1.2)
 
     df = pd.DataFrame(resultados)
