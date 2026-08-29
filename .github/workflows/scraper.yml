@@ -34,6 +34,6 @@ jobs:
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action Bot"
-          git add cba_historico_detalle.csv cba_historico_totales.csv
-          git commit -m "bot: Actualización diaria de precios CBA [$(date +'%Y-%m-%d')]" || echo "Sin cambios para commitear"
+          git add cba_historico_detalle.csv cba_historico_totales.csv cba_tabla_nutricional.csv
+          git commit -m "bot: Actualización diaria de precios y tabla nutricional [$(date +'%Y-%m-%d')]" || echo "Sin cambios para commitear"
           git push
