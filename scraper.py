@@ -9,7 +9,7 @@ import cloudscraper
 COEFICIENTE_HOGAR_TIPO = 3.09
 
 # ------------------------------------------------------------------------------
-# CANASTA BÁSICA ALIMENTARIA CON VALORES NUTRICIONALES (por 100g / 100mL)
+# CANASTA BÁSICA ALIMENTARIA COMPLETA (INDEC) CON PROXIES DE RESPALDO
 # ------------------------------------------------------------------------------
 CBA_INDEC = [
     # --- PAN Y CEREALES ---
@@ -21,12 +21,13 @@ CBA_INDEC = [
     {"rubro": "Fideos secos", "cantidad_ae": 1.29, "keyword": "fideos secos", "kcal_100g": 355, "prot_100g": 12.0, "carb_100g": 73.0, "grasas_100g": 1.5},
     {"rubro": "Harina de maíz (Polenta)", "cantidad_ae": 0.30, "keyword": "polenta", "kcal_100g": 350, "prot_100g": 8.0, "carb_100g": 76.0, "grasas_100g": 1.0},
 
-    # --- CARNES Y DERIVADOS ---
+    # --- CARNES Y DERIVADOS (INCLUYE HÍGADO / ACHURAS) ---
     {"rubro": "Asado con hueso", "cantidad_ae": 0.70, "keyword": "asado", "kcal_100g": 250, "prot_100g": 18.0, "carb_100g": 0.0, "grasas_100g": 20.0},
     {"rubro": "Carnaza común / Picada", "cantidad_ae": 1.50, "keyword": "carne picada", "kcal_100g": 210, "prot_100g": 19.5, "carb_100g": 0.0, "grasas_100g": 14.0},
     {"rubro": "Nalga", "cantidad_ae": 1.20, "keyword": "nalga", "kcal_100g": 135, "prot_100g": 21.0, "carb_100g": 0.0, "grasas_100g": 5.0},
     {"rubro": "Paleta", "cantidad_ae": 1.20, "keyword": "paleta", "kcal_100g": 145, "prot_100g": 20.0, "carb_100g": 0.0, "grasas_100g": 7.0},
     {"rubro": "Cuadril", "cantidad_ae": 0.80, "keyword": "cuadril", "kcal_100g": 140, "prot_100g": 21.5, "carb_100g": 0.0, "grasas_100g": 5.5},
+    {"rubro": "Hígado", "cantidad_ae": 0.45, "keyword": "higado", "kcal_100g": 133, "prot_100g": 20.4, "carb_100g": 3.8, "grasas_100g": 3.6, "proxy_rubro": "Carnaza común / Picada", "proxy_factor": 0.65},
     {"rubro": "Pollo entero", "cantidad_ae": 2.13, "keyword": "pollo entero", "kcal_100g": 170, "prot_100g": 18.0, "carb_100g": 0.0, "grasas_100g": 11.0},
     {"rubro": "Pescado (Merluza)", "cantidad_ae": 0.40, "keyword": "merluza", "kcal_100g": 90, "prot_100g": 19.0, "carb_100g": 0.0, "grasas_100g": 1.2},
     {"rubro": "Paleta cocida / Jamón", "cantidad_ae": 0.20, "keyword": "paleta cocida", "kcal_100g": 130, "prot_100g": 16.0, "carb_100g": 2.0, "grasas_100g": 6.5},
@@ -51,7 +52,7 @@ CBA_INDEC = [
     {"rubro": "Banana", "cantidad_ae": 1.20, "keyword": "banana", "kcal_100g": 89, "prot_100g": 1.1, "carb_100g": 23.0, "grasas_100g": 0.3},
     {"rubro": "Naranja", "cantidad_ae": 1.20, "keyword": "naranja", "kcal_100g": 47, "prot_100g": 0.9, "carb_100g": 12.0, "grasas_100g": 0.1},
 
-    # --- ACEITES, AZÚCAR Y ALMACÉN ---
+    # --- ALMACÉN Y VARIOS ---
     {"rubro": "Aceite de girasol", "cantidad_ae": 1.20, "keyword": "aceite girasol", "kcal_100g": 884, "prot_100g": 0.0, "carb_100g": 0.0, "grasas_100g": 100.0},
     {"rubro": "Azúcar", "cantidad_ae": 1.20, "keyword": "azucar", "kcal_100g": 387, "prot_100g": 0.0, "carb_100g": 100.0, "grasas_100g": 0.0},
     {"rubro": "Dulce de leche", "cantidad_ae": 0.30, "keyword": "dulce de leche", "kcal_100g": 315, "prot_100g": 6.0, "carb_100g": 55.0, "grasas_100g": 7.5},
@@ -63,17 +64,18 @@ CBA_INDEC = [
     {"rubro": "Sal fina", "cantidad_ae": 0.15, "keyword": "sal fina", "kcal_100g": 0, "prot_100g": 0.0, "carb_100g": 0.0, "grasas_100g": 0.0}
 ]
 
-def buscar_precio_promedio(scraper, keyword):
+def extraer_observaciones_raw(scraper, keyword, rubro, fecha, timestamp):
     search_url = f"https://depotexpress.com.ar/?s={keyword}&post_type=product"
+    observaciones = []
+
     try:
         res = scraper.get(search_url, timeout=25)
         if res.status_code != 200:
-            return None, 0
+            return observaciones
 
         soup = BeautifulSoup(res.text, 'html.parser')
-        precios = []
-
         items = soup.select('.product, .type-product, div.item-producto, article')
+        
         if not items:
             menciones = soup.find_all(string=lambda t: t and '$' in t)
             for m in menciones:
@@ -96,16 +98,22 @@ def buscar_precio_promedio(scraper, keyword):
                 try:
                     valor = float(limpio)
                     if 100 < valor < 150000:
-                        precios.append(valor)
+                        observaciones.append({
+                            'fecha': fecha,
+                            'timestamp': timestamp,
+                            'rubro': rubro,
+                            'keyword': keyword,
+                            'descripcion_producto': texto[:80],  # Primeros 80 caracteres como muestra
+                            'precio': valor
+                        })
                 except ValueError:
                     continue
 
-        if precios:
-            return sum(precios) / len(precios), len(precios)
-        return None, 0
+        return observaciones
+
     except Exception as e:
         print(f"Error scraping '{keyword}': {e}")
-        return None, 0
+        return observaciones
 
 def main():
     scraper = cloudscraper.create_scraper(
@@ -116,97 +124,86 @@ def main():
     fecha_hoy = ahora.strftime("%Y-%m-%d")
     timestamp = ahora.strftime("%Y-%m-%d %H:%M:%S")
 
-    print(f"=== INICIANDO SCRAPING ({timestamp}) ===")
-    resultados = []
+    print(f"=== INICIANDO SCRAPING AMPLIADO ({timestamp}) ===")
+    
+    todas_observaciones_raw = []
+    resumen_rubros = []
+
+    # 1. Scraping y recolección de puntos de precio crudos
     for item in CBA_INDEC:
-        print(f"-> Buscando rubro: '{item['rubro']}'...")
-        precio_prom, cant = buscar_precio_promedio(scraper, item['keyword'])
+        print(f"-> Buscando: '{item['rubro']}'...")
+        obs = extraer_observaciones_raw(scraper, item['keyword'], item['rubro'], fecha_hoy, timestamp)
+        todas_observaciones_raw.extend(obs)
         
+        precios = [o['precio'] for o in obs]
+        cant_obs = len(precios)
+
         registro = item.copy()
+        
+        if cant_obs > 0:
+            # Usamos MEDIANA para eliminar desviaciones por presentaciones gigantes o marcas premium
+            precio_final = float(pd.Series(precios).median())
+            metodo_calculo = "Mediana directa"
+        else:
+            precio_final = None
+            metodo_calculo = "Faltante (Pendiente Imputación)"
+
         registro.update({
             'fecha': fecha_hoy,
             'timestamp': timestamp,
-            'precio_unitario_estimado': precio_prom,
-            'coincidencias': cant
+            'precio_unitario_estimado': precio_final,
+            'coincidencias': cant_obs,
+            'metodo_calculo': metodo_calculo
         })
-        
-        resultados.append(registro)
+        resumen_rubros.append(registro)
         time.sleep(1.2)
 
-    df = pd.DataFrame(resultados)
-    mediana = df['precio_unitario_estimado'].median()
-    df['precio_unitario_estimado'] = df['precio_unitario_estimado'].fillna(mediana)
+    df_resumen = pd.DataFrame(resumen_rubros)
+    df_raw = pd.DataFrame(todas_observaciones_raw)
 
-    # --------------------------------------------------------------------------
-    # CÁLCULOS NUTRICIONALES Y CONSUMO INDIVIDUAL
-    # --------------------------------------------------------------------------
-    df['consumo_mensual_kg_l'] = df['cantidad_ae']
-    df['consumo_diario_g_ml'] = (df['cantidad_ae'] * 1000) / 30
+    # 2. Persistir archivo histórico de observaciones RAW
+    file_raw = "cba_observaciones_raw.csv"
+    if not df_raw.empty:
+        if os.path.exists(file_raw):
+            df_raw.to_csv(file_raw, mode='a', header=False, index=False, encoding='utf-8-sig')
+        else:
+            df_raw.to_csv(file_raw, index=False, encoding='utf-8-sig')
+        print(f"📦 Se guardaron {len(df_raw)} observaciones de precios crudas.")
 
-    df['kcal_diarias'] = (df['consumo_diario_g_ml'] * df['kcal_100g']) / 100
-    df['proteinas_g_dia'] = (df['consumo_diario_g_ml'] * df['prot_100g']) / 100
-    df['carbohidratos_g_dia'] = (df['consumo_diario_g_ml'] * df['carb_100g']) / 100
-    df['grasas_g_dia'] = (df['consumo_diario_g_ml'] * df['grasas_100g']) / 100
+    # 3. Lógica de Imputación de Proxies para Faltantes (ej: Hígado -> Carnaza x 0.65)
+    for idx, row in df_resumen.iterrows():
+        if pd.isna(row['precio_unitario_estimado']) or row['coincidencias'] == 0:
+            proxy = row.get('proxy_rubro')
+            factor = row.get('proxy_factor', 1.0)
+            
+            if proxy and proxy in df_resumen['rubro'].values:
+                precio_proxy = df_resumen.loc[df_resumen['rubro'] == proxy, 'precio_unitario_estimado'].values[0]
+                if pd.notna(precio_proxy):
+                    df_resumen.at[idx, 'precio_unitario_estimado'] = precio_proxy * factor
+                    df_resumen.at[idx, 'metodo_calculo'] = f"Proxy ({proxy} x {factor})"
+            else:
+                # Fallback secundario: Mediana general del día
+                mediana_dia = df_resumen['precio_unitario_estimado'].median()
+                df_resumen.at[idx, 'precio_unitario_estimado'] = mediana_dia
+                df_resumen.at[idx, 'metodo_calculo'] = "Mediana General"
 
-    cols_nutricionales = [
-        'rubro', 'consumo_mensual_kg_l', 'consumo_diario_g_ml',
-        'kcal_diarias', 'proteinas_g_dia', 'carbohidratos_g_dia', 'grasas_g_dia'
-    ]
-    df_nutricion = df[cols_nutricionales].copy()
+    # 4. Cálculo de Totales y Exportación
+    df_resumen['costo_mensual_ae'] = df_resumen['cantidad_ae'] * df_resumen['precio_unitario_estimado']
+    df_resumen['costo_hogar_tipo'] = df_resumen['costo_mensual_ae'] * COEFICIENTE_HOGAR_TIPO
 
-    fila_total_nutr = pd.DataFrame([{
-        'rubro': 'TOTAL DIARIO (1 ADULTO EQUIVALENTE)',
-        'consumo_mensual_kg_l': df['consumo_mensual_kg_l'].sum(),
-        'consumo_diario_g_ml': df['consumo_diario_g_ml'].sum(),
-        'kcal_diarias': df['kcal_diarias'].sum(),
-        'proteinas_g_dia': df['proteinas_g_dia'].sum(),
-        'carbohidratos_g_dia': df['carbohidratos_g_dia'].sum(),
-        'grasas_g_dia': df['grasas_g_dia'].sum()
-    }])
-
-    df_nutricion_final = pd.concat([df_nutricion, fila_total_nutr], ignore_index=True)
-    df_nutricion_final.to_csv("cba_tabla_nutricional.csv", index=False, encoding='utf-8-sig')
-
-    print(f"📊 Aporte energético total: {df['kcal_diarias'].sum():,.0f} kcal/día por persona.")
-    
-    # --------------------------------------------------------------------------
-    # CÁLCULOS DE COSTOS E HISTÓRICOS
-    # --------------------------------------------------------------------------
-    df['costo_mensual_ae'] = df['cantidad_ae'] * df['precio_unitario_estimado']
-    df['costo_hogar_tipo'] = df['costo_mensual_ae'] * COEFICIENTE_HOGAR_TIPO
-
-    costo_total_ae = df['costo_mensual_ae'].sum()
+    costo_total_ae = df_resumen['costo_mensual_ae'].sum()
     costo_total_hogar = costo_total_ae * COEFICIENTE_HOGAR_TIPO
-    df['participacion_pct'] = (df['costo_mensual_ae'] / costo_total_ae) * 100
 
-    # 1. Actualizar histórico detallado por rubro
     file_detalle = "cba_historico_detalle.csv"
     if os.path.exists(file_detalle):
         df_hist_det = pd.read_csv(file_detalle)
-        df_det_final = pd.concat([df_hist_det, df], ignore_index=True)
+        df_det_final = pd.concat([df_hist_det, df_resumen], ignore_index=True)
     else:
-        df_det_final = df
+        df_det_final = df_resumen
 
     df_det_final.to_csv(file_detalle, index=False, encoding='utf-8-sig')
 
-    # 2. Actualizar histórico global diario
-    file_totales = "cba_historico_totales.csv"
-    df_totales_hoy = pd.DataFrame([{
-        'fecha': fecha_hoy,
-        'timestamp': timestamp,
-        'costo_total_ae': costo_total_ae,
-        'costo_total_hogar_tipo': costo_total_hogar
-    }])
-
-    if os.path.exists(file_totales):
-        df_hist_tot = pd.read_csv(file_totales)
-        df_tot_final = pd.concat([df_hist_tot, df_totales_hoy], ignore_index=True)
-    else:
-        df_tot_final = df_totales_hoy
-
-    df_tot_final.to_csv(file_totales, index=False, encoding='utf-8-sig')
-
-    print(f"✅ Scraping completado. Costo Total Hogar Tipo: ${costo_total_hogar:,.2f}")
+    print(f"✅ Proceso finalizado. Costo Total Hogar Tipo: ${costo_total_hogar:,.2f}")
 
 if __name__ == "__main__":
     main()
