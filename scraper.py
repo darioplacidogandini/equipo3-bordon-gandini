@@ -8,19 +8,60 @@ import cloudscraper
 
 COEFICIENTE_HOGAR_TIPO = 3.09
 
+# ------------------------------------------------------------------------------
+# DEFINICIÓN DETALLADA DE LA CANASTA BÁSICA ALIMENTARIA (INDEC - 1 ADULTO EQUIV)
+# Cantidades mensuales estimadas por rubro/corte específico
+# ------------------------------------------------------------------------------
 CBA_INDEC = [
-    {"rubro": "Pan", "cantidad_ae": 6.75, "keyword": "pan"},
-    {"rubro": "Galletitas de agua", "cantidad_ae": 1.29, "keyword": "galletita"},
-    {"rubro": "Harina de trigo", "cantidad_ae": 1.02, "keyword": "harina"},
-    {"rubro": "Arroz", "cantidad_ae": 0.63, "keyword": "arroz"},
-    {"rubro": "Fideos", "cantidad_ae": 1.29, "keyword": "fideo"},
-    {"rubro": "Papas", "cantidad_ae": 7.05, "keyword": "papa"},
+    # --- PAN Y CEREALES ---
+    {"rubro": "Pan francés", "cantidad_ae": 6.30, "keyword": "pan frances"},
+    {"rubro": "Galletitas de agua", "cantidad_ae": 1.29, "keyword": "galletitas agua"},
+    {"rubro": "Galletitas dulces", "cantidad_ae": 0.60, "keyword": "galletitas dulces"},
+    {"rubro": "Harina de trigo 000", "cantidad_ae": 1.02, "keyword": "harina trigo 000"},
+    {"rubro": "Arroz blanco", "cantidad_ae": 0.63, "keyword": "arroz blanco"},
+    {"rubro": "Fideos secos / guiseros", "cantidad_ae": 1.29, "keyword": "fideos secos"},
+    {"rubro": "Harina de maíz (Polenta)", "cantidad_ae": 0.30, "keyword": "polenta"},
+
+    # --- CARNES Y DERIVADOS ---
+    {"rubro": "Asado con hueso", "cantidad_ae": 0.70, "keyword": "asado"},
+    {"rubro": "Carnaza común / Picada", "cantidad_ae": 1.50, "keyword": "carne picada"},
+    {"rubro": "Nalga", "cantidad_ae": 1.20, "keyword": "nalga"},
+    {"rubro": "Paleta", "cantidad_ae": 1.20, "keyword": "paleta"},
+    {"rubro": "Cuadril", "cantidad_ae": 0.80, "keyword": "cuadril"},
+    {"rubro": "Pollo entero", "cantidad_ae": 2.13, "keyword": "pollo entero"},
+    {"rubro": "Pescado (Merluza)", "cantidad_ae": 0.40, "keyword": "merluza"},
+    {"rubro": "Paleta cocida / Jamón", "cantidad_ae": 0.20, "keyword": "paleta cocida"},
+
+    # --- LÁCTEOS Y HUEVOS ---
+    {"rubro": "Leche entera fresca", "cantidad_ae": 7.95, "keyword": "leche entera sachet"},
+    {"rubro": "Queso cremoso", "cantidad_ae": 0.30, "keyword": "queso cremoso"},
+    {"rubro": "Queso rallar / Sardo", "cantidad_ae": 0.10, "keyword": "queso sardo"},
+    {"rubro": "Yogur entero", "cantidad_ae": 0.60, "keyword": "yogur entero"},
+    {"rubro": "Manteca", "cantidad_ae": 0.15, "keyword": "manteca"},
+    {"rubro": "Huevos (docena)", "cantidad_ae": 0.60, "keyword": "huevos"},
+
+    # --- FRUTAS Y VERDURAS ---
+    {"rubro": "Papa blanca", "cantidad_ae": 7.05, "keyword": "papa blanca"},
+    {"rubro": "Batata", "cantidad_ae": 0.50, "keyword": "batata"},
+    {"rubro": "Cebolla", "cantidad_ae": 1.20, "keyword": "cebolla"},
+    {"rubro": "Lechuga", "cantidad_ae": 0.60, "keyword": "lechuga"},
+    {"rubro": "Tomate redondo", "cantidad_ae": 1.20, "keyword": "tomate redondo"},
+    {"rubro": "Zanahoria", "cantidad_ae": 0.70, "keyword": "zanahoria"},
+    {"rubro": "Zapallo Anco", "cantidad_ae": 0.80, "keyword": "zapallo anco"},
+    {"rubro": "Manzana deliciosa", "cantidad_ae": 1.20, "keyword": "manzana"},
+    {"rubro": "Banana", "cantidad_ae": 1.20, "keyword": "banana"},
+    {"rubro": "Naranja", "cantidad_ae": 1.20, "keyword": "naranja"},
+
+    # --- ACEITES, AZÚCAR Y ALMACÉN ---
+    {"rubro": "Aceite de girasol", "cantidad_ae": 1.20, "keyword": "aceite girasol"},
     {"rubro": "Azúcar", "cantidad_ae": 1.20, "keyword": "azucar"},
-    {"rubro": "Leche entera", "cantidad_ae": 7.95, "keyword": "leche"},
-    {"rubro": "Aceite de girasol", "cantidad_ae": 1.20, "keyword": "aceite"},
-    {"rubro": "Carne vacuna / Pollo", "cantidad_ae": 6.27, "keyword": "carne"},
-    {"rubro": "Pollo", "cantidad_ae": 2.13, "keyword": "pollo"},
-    {"rubro": "Yerba mate", "cantidad_ae": 0.60, "keyword": "yerba"}
+    {"rubro": "Dulce de leche", "cantidad_ae": 0.30, "keyword": "dulce de leche"},
+    {"rubro": "Mermelada", "cantidad_ae": 0.20, "keyword": "mermelada"},
+    {"rubro": "Lentejas secas", "cantidad_ae": 0.20, "keyword": "lentejas"},
+    {"rubro": "Yerba mate", "cantidad_ae": 0.60, "keyword": "yerba mate"},
+    {"rubro": "Té en saquitos", "cantidad_ae": 0.05, "keyword": "te saquitos"},
+    {"rubro": "Café", "cantidad_ae": 0.05, "keyword": "cafe molido"},
+    {"rubro": "Sal fina", "cantidad_ae": 0.15, "keyword": "sal fina"}
 ]
 
 def buscar_precio_promedio(scraper, keyword):
