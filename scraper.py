@@ -21,7 +21,7 @@ CBA_INDEC = [
     {"rubro": "Fideos secos", "cantidad_ae": 1.29, "keyword": "fideos secos", "kcal_100g": 355, "prot_100g": 12.0, "carb_100g": 73.0, "grasas_100g": 1.5},
     {"rubro": "Harina de maíz (Polenta)", "cantidad_ae": 0.30, "keyword": "polenta", "kcal_100g": 350, "prot_100g": 8.0, "carb_100g": 76.0, "grasas_100g": 1.0},
 
-    # --- CARNES Y DERIVADOS (INCLUYE HÍGADO / ACHURAS) ---
+    # --- CARNES Y DERIVADOS ---
     {"rubro": "Asado con hueso", "cantidad_ae": 0.70, "keyword": "asado", "kcal_100g": 250, "prot_100g": 18.0, "carb_100g": 0.0, "grasas_100g": 20.0},
     {"rubro": "Carnaza común / Picada", "cantidad_ae": 1.50, "keyword": "carne picada", "kcal_100g": 210, "prot_100g": 19.5, "carb_100g": 0.0, "grasas_100g": 14.0},
     {"rubro": "Nalga", "cantidad_ae": 1.20, "keyword": "nalga", "kcal_100g": 135, "prot_100g": 21.0, "carb_100g": 0.0, "grasas_100g": 5.0},
@@ -64,58 +64,83 @@ CBA_INDEC = [
     {"rubro": "Sal fina", "cantidad_ae": 0.15, "keyword": "sal fina", "kcal_100g": 0, "prot_100g": 0.0, "carb_100g": 0.0, "grasas_100g": 0.0}
 ]
 
-def extraer_observaciones_raw(scraper, keyword, rubro, fecha, timestamp):
-    search_url = f"https://depotexpress.com.ar/?s={keyword}&post_type=product"
+def extraer_observaciones_raw(scraper, keyword, rubro, fecha, timestamp, max_paginas=10):
     observaciones = []
+    textos_vistos = set()
 
-    try:
-        res = scraper.get(search_url, timeout=25)
-        if res.status_code != 200:
-            return observaciones
+    for pagina in range(1, max_paginas + 1):
+        # Paginación estándar de WooCommerce/WordPress
+        search_url = f"https://depotexpress.com.ar/?s={keyword}&post_type=product&paged={pagina}"
 
-        soup = BeautifulSoup(res.text, 'html.parser')
-        items = soup.select('.product, .type-product, div.item-producto, article')
-        
-        if not items:
-            menciones = soup.find_all(string=lambda t: t and '$' in t)
-            for m in menciones:
-                padre = m.find_parent(['div', 'li', 'article'])
-                if padre and padre not in items:
-                    items.append(padre)
+        try:
+            res = scraper.get(search_url, timeout=25)
+            if res.status_code != 200:
+                break
 
-        for item in items:
-            texto = item.get_text(separator=' ', strip=True)
-            coincidencia = re.search(r'\$\s*([\d\.\,]+)', texto)
+            soup = BeautifulSoup(res.text, 'html.parser')
+            items = soup.select('.product, .type-product, div.item-producto, article')
+            
+            if not items:
+                menciones = soup.find_all(string=lambda t: t and '$' in t)
+                for m in menciones:
+                    padre = m.find_parent(['div', 'li', 'article'])
+                    if padre and padre not in items:
+                        items.append(padre)
 
-            if coincidencia:
-                precio_raw = coincidencia.group(1)
-                limpio = re.sub(r'[^\d,\.]', '', precio_raw)
-                if ',' in limpio and '.' in limpio:
-                    limpio = limpio.replace('.', '').replace(',', '.')
-                elif ',' in limpio:
-                    limpio = limpio.replace(',', '.')
+            if not items:
+                break
 
-                try:
-                    valor = float(limpio)
-                    if 100 < valor < 150000:
-                        observaciones.append({
-                            'fecha': fecha,
-                            'timestamp': timestamp,
-                            'rubro': rubro,
-                            'keyword': keyword,
-                            'descripcion_producto': texto[:80],  # Primeros 80 caracteres como muestra
-                            'precio': valor
-                        })
-                except ValueError:
+            nuevas_obs_pagina = 0
+
+            for item in items:
+                texto = item.get_text(separator=' ', strip=True)
+                
+                # Evita duplicar exactamente el mismo elemento extraído
+                if texto in textos_vistos:
                     continue
+                textos_vistos.add(texto)
 
-        return observaciones
+                coincidencia = re.search(r'\$\s*([\d\.\,]+)', texto)
 
-    except Exception as e:
-        print(f"Error scraping '{keyword}': {e}")
-        return observaciones
+                if coincidencia:
+                    precio_raw = coincidencia.group(1)
+                    limpio = re.sub(r'[^\d,\.]', '', precio_raw)
+                    if ',' in limpio and '.' in limpio:
+                        limpio = limpio.replace('.', '').replace(',', '.')
+                    elif ',' in limpio:
+                        limpio = limpio.replace(',', '.')
+
+                    try:
+                        valor = float(limpio)
+                        if 100 < valor < 150000:
+                            observaciones.append({
+                                'fecha': fecha,
+                                'timestamp': timestamp,
+                                'rubro': rubro,
+                                'keyword': keyword,
+                                'descripcion_producto': texto[:80],
+                                'precio': valor
+                            })
+                            nuevas_obs_pagina += 1
+                    except ValueError:
+                        continue
+
+            # Si en esta página no se añadieron productos nuevos, se detiene la paginación
+            if nuevas_obs_pagina == 0:
+                break
+
+            time.sleep(0.8)
+
+        except Exception as e:
+            print(f"Error scraping '{keyword}' (Pág {pagina}): {e}")
+            break
+
+    return observaciones
 
 def main():
+    pd.set_option('display.max_columns', None)
+    pd.set_option('display.width', 1000)
+
     scraper = cloudscraper.create_scraper(
         browser={'browser': 'chrome', 'platform': 'windows', 'desktop': True}
     )
@@ -129,9 +154,8 @@ def main():
     todas_observaciones_raw = []
     resumen_rubros = []
 
-    # 1. Scraping y recolección de puntos de precio crudos
+    # 1. Scraping exhaustivo con paginación
     for item in CBA_INDEC:
-        print(f"-> Buscando: '{item['rubro']}'...")
         obs = extraer_observaciones_raw(scraper, item['keyword'], item['rubro'], fecha_hoy, timestamp)
         todas_observaciones_raw.extend(obs)
         
@@ -141,7 +165,6 @@ def main():
         registro = item.copy()
         
         if cant_obs > 0:
-            # Usamos MEDIANA para eliminar desviaciones por presentaciones gigantes o marcas premium
             precio_final = float(pd.Series(precios).median())
             metodo_calculo = "Mediana directa"
         else:
@@ -156,21 +179,21 @@ def main():
             'metodo_calculo': metodo_calculo
         })
         resumen_rubros.append(registro)
-        time.sleep(1.2)
+        print(f"-> Rubro: '{item['rubro']}' | Observaciones encontradas: {cant_obs}")
 
     df_resumen = pd.DataFrame(resumen_rubros)
     df_raw = pd.DataFrame(todas_observaciones_raw)
 
-    # 2. Persistir archivo histórico de observaciones RAW
+    # 2. Persistir archivo histórico RAW
     file_raw = "cba_observaciones_raw.csv"
     if not df_raw.empty:
         if os.path.exists(file_raw):
             df_raw.to_csv(file_raw, mode='a', header=False, index=False, encoding='utf-8-sig')
         else:
             df_raw.to_csv(file_raw, index=False, encoding='utf-8-sig')
-        print(f"📦 Se guardaron {len(df_raw)} observaciones de precios crudas.")
+        print(f"\n📦 Se guardaron {len(df_raw)} observaciones de precios crudas.")
 
-    # 3. Lógica de Imputación de Proxies para Faltantes (ej: Hígado -> Carnaza x 0.65)
+    # 3. Imputación de Proxies para Faltantes
     for idx, row in df_resumen.iterrows():
         if pd.isna(row['precio_unitario_estimado']) or row['coincidencias'] == 0:
             proxy = row.get('proxy_rubro')
@@ -182,7 +205,6 @@ def main():
                     df_resumen.at[idx, 'precio_unitario_estimado'] = precio_proxy * factor
                     df_resumen.at[idx, 'metodo_calculo'] = f"Proxy ({proxy} x {factor})"
             else:
-                # Fallback secundario: Mediana general del día
                 mediana_dia = df_resumen['precio_unitario_estimado'].median()
                 df_resumen.at[idx, 'precio_unitario_estimado'] = mediana_dia
                 df_resumen.at[idx, 'metodo_calculo'] = "Mediana General"
@@ -203,7 +225,23 @@ def main():
 
     df_det_final.to_csv(file_detalle, index=False, encoding='utf-8-sig')
 
-    print(f"✅ Proceso finalizado. Costo Total Hogar Tipo: ${costo_total_hogar:,.2f}")
+    # 5. Mostrar la tabla resultante con el conteo de observaciones por consola
+    cols_pantalla = ['rubro', 'coincidencias', 'precio_unitario_estimado', 'costo_mensual_ae', 'metodo_calculo']
+    
+    print("\n" + "="*85)
+    print("RESUMEN DE RESULTADOS (CBA - INDEC)")
+    print("="*85)
+    print(df_resumen[cols_pantalla].rename(columns={
+        'rubro': 'Rubro',
+        'coincidencias': 'Obs. Encontradas',
+        'precio_unitario_estimado': 'Precio Mediana ($)',
+        'costo_mensual_ae': 'Costo Mensual AE ($)',
+        'metodo_calculo': 'Método Calculo'
+    }).to_string(index=False))
+    print("="*85)
+    print(f"✅ Costo Total Adulto Equivalente (AE): ${costo_total_ae:,.2f}")
+    print(f"✅ Costo Total Hogar Tipo (3.09 AE):     ${costo_total_hogar:,.2f}")
+    print("="*85)
 
 if __name__ == "__main__":
     main()
