@@ -103,11 +103,9 @@ def extraer_observaciones_raw(scraper, item_config, fecha, timestamp, max_pagina
                     texto = item.get_text(separator=' ', strip=True)
                     texto_lower = texto.lower()
 
-                    # 1. Evitar duplicar exactamente el mismo texto
                     if texto in textos_vistos:
                         continue
 
-                    # 2. Aplicar filtro de exclusión
                     if any(ex.lower() in texto_lower for ex in exclusiones):
                         continue
 
@@ -237,7 +235,7 @@ def main():
 
     df_det_final.to_csv(file_detalle, index=False, encoding='utf-8-sig')
 
-    # 5. Exportación de Totales Históricos (Genera cba_historico_totales.csv si no existe)
+    # 5. Exportación de Totales Históricos
     file_totales = "cba_historico_totales.csv"
     df_totales = pd.DataFrame([{
         'fecha': fecha_hoy,
@@ -251,7 +249,27 @@ def main():
     else:
         df_totales.to_csv(file_totales, index=False, encoding='utf-8-sig')
 
-    # 6. Mostrar la tabla resultante con el conteo de observaciones por consola
+    # 6. Exportación de Tabla Nutricional (Genera cba_tabla_nutricional.csv)
+    df_nutri = df_resumen[[
+        'rubro', 'cantidad_ae', 'kcal_100g', 'prot_100g', 'carb_100g', 'grasas_100g'
+    ]].copy()
+
+    # Cálculo del aporte diario estimado por Adulto Equivalente
+    df_nutri['kcal_diarias_ae'] = (df_nutri['cantidad_ae'] * 10 * df_nutri['kcal_100g']) / 30.0
+    df_nutri['prot_diarias_g'] = (df_nutri['cantidad_ae'] * 10 * df_nutri['prot_100g']) / 30.0
+    df_nutri['carb_diarios_g'] = (df_nutri['cantidad_ae'] * 10 * df_nutri['carb_100g']) / 30.0
+    df_nutri['grasas_diarias_g'] = (df_nutri['cantidad_ae'] * 10 * df_nutri['grasas_100g']) / 30.0
+
+    df_nutri['fecha'] = fecha_hoy
+    df_nutri['timestamp'] = timestamp
+
+    file_nutricional = "cba_tabla_nutricional.csv"
+    if os.path.exists(file_nutricional):
+        df_nutri.to_csv(file_nutricional, mode='a', header=False, index=False, encoding='utf-8-sig')
+    else:
+        df_nutri.to_csv(file_nutricional, index=False, encoding='utf-8-sig')
+
+    # 7. Mostrar la tabla resultante por consola
     cols_pantalla = ['rubro', 'coincidencias', 'precio_unitario_estimado', 'costo_mensual_ae', 'metodo_calculo']
     
     print("\n" + "="*85)
