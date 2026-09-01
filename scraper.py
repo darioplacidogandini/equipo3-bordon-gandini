@@ -107,7 +107,7 @@ def extraer_observaciones_raw(scraper, item_config, fecha, timestamp, max_pagina
                     if texto in textos_vistos:
                         continue
 
-                    # 2. Aplicar filtro de exclusión (descarta condimentos, caldos, etc.)
+                    # 2. Aplicar filtro de exclusión
                     if any(ex.lower() in texto_lower for ex in exclusiones):
                         continue
 
@@ -221,7 +221,7 @@ def main():
                 df_resumen.at[idx, 'precio_unitario_estimado'] = mediana_dia
                 df_resumen.at[idx, 'metodo_calculo'] = "Mediana General"
 
-    # 4. Cálculo de Totales y Exportación
+    # 4. Cálculo de Totales y Exportación de Detalle
     df_resumen['costo_mensual_ae'] = df_resumen['cantidad_ae'] * df_resumen['precio_unitario_estimado']
     df_resumen['costo_hogar_tipo'] = df_resumen['costo_mensual_ae'] * COEFICIENTE_HOGAR_TIPO
 
@@ -237,7 +237,21 @@ def main():
 
     df_det_final.to_csv(file_detalle, index=False, encoding='utf-8-sig')
 
-    # 5. Mostrar la tabla resultante con el conteo de observaciones por consola
+    # 5. Exportación de Totales Históricos (Genera cba_historico_totales.csv si no existe)
+    file_totales = "cba_historico_totales.csv"
+    df_totales = pd.DataFrame([{
+        'fecha': fecha_hoy,
+        'timestamp': timestamp,
+        'costo_total_ae': costo_total_ae,
+        'costo_total_hogar': costo_total_hogar
+    }])
+
+    if os.path.exists(file_totales):
+        df_totales.to_csv(file_totales, mode='a', header=False, index=False, encoding='utf-8-sig')
+    else:
+        df_totales.to_csv(file_totales, index=False, encoding='utf-8-sig')
+
+    # 6. Mostrar la tabla resultante con el conteo de observaciones por consola
     cols_pantalla = ['rubro', 'coincidencias', 'precio_unitario_estimado', 'costo_mensual_ae', 'metodo_calculo']
     
     print("\n" + "="*85)
