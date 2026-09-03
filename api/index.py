@@ -1,10 +1,11 @@
-from fastapi import FastAPI
-from fastapi.responses import HTMLResponse
-from fastapi.middleware.cors import CORSMiddleware
-import pandas as pd
-import os
 import io
+import os
+import ssl
 import urllib.request
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import HTMLResponse
+import pandas as pd
 
 app = FastAPI(title="CBA Scraper API")
 
@@ -19,46 +20,47 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-def leer_csv(nombre_archivo):
-    # Asegurar el nombre correcto del repositorio
-    repo_env = os.environ.get("VERCEL_GIT_REPO_SLUG")
-    repo = repo_env if repo_env else REPO_GITHUB
 
+def leer_csv(nombre_archivo):
+    # 1. Intento de descarga remota desde GitHub Raw
+    repo = os.environ.get("VERCEL_GIT_REPO_SLUG", REPO_GITHUB)
     url_remota = f"https://raw.githubusercontent.com/{USUARIO_GITHUB}/{repo}/main/{nombre_archivo}"
-    
-    # 1. Intentar descargar desde GitHub Raw
+
     try:
         req = urllib.request.Request(
-            url_remota, 
-            headers={'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)'}
+            url_remota, headers={"User-Agent": "Mozilla/5.0"}
         )
-        with urllib.request.urlopen(req, timeout=10) as response:
-            contenido = response.read().decode('utf-8-sig')
-            df = pd.read_csv(io.StringIO(contenido))
-            if not df.empty:
-                # Reemplazar NaN por cadenas vacías para evitar errores 500 en JSON
-                return df.fillna("")
-    except Exception as e:
-        print(f"Error cargando desde GitHub ({url_remota}): {e}")
+        # Contexto SSL sin verificación estricta para evitar certificados fallidos en serverless
+        ssl_context = ssl._create_unverified_context()
 
-    # 2. Fallback local (por si se ejecuta localmente o durante el build)
+        with urllib.request.urlopen(
+            req, timeout=10, context=ssl_context
+        ) as response:
+            df = pd.read_csv(response, encoding="utf-8-sig")
+            if not df.empty:
+                # Reemplazar NaN por None/string vacío para evitar error 500 en JSON
+                return df.where(pd.notnull(df), None)
+    except Exception as e:
+        print(f"Error al obtener {url_remota} desde GitHub: {e}")
+
+    # 2. Fallback a archivos locales
     rutas_locales = [
         nombre_archivo,
         os.path.join("..", nombre_archivo),
-        os.path.join(os.path.dirname(__file__), "..", nombre_archivo)
+        os.path.join(os.path.dirname(__file__), "..", nombre_archivo),
     ]
     for ruta in rutas_locales:
         if os.path.exists(ruta):
             try:
-                df = pd.read_csv(ruta, encoding='utf-8-sig')
+                df = pd.read_csv(ruta, encoding="utf-8-sig")
                 if not df.empty:
-                    return df.fillna("")
-            except Exception as e:
-                print(f"Error cargando archivo local ({ruta}): {e}")
+                    return df.where(pd.notnull(df), None)
+            except Exception:
+                pass
 
     return None
 
-# Mapeo de rutas para asegurar compatibilidad total con Vercel
+
 @app.get("/", response_class=HTMLResponse)
 @app.get("/api", response_class=HTMLResponse)
 @app.get("/api/index", response_class=HTMLResponse)
@@ -135,11 +137,8 @@ def dashboard():
                 const totales = await fetchJSON('/api/totales');
                 if (Array.isArray(totales) && totales.length > 0) {
                     const ultimo = totales[totales.length - 1];
-                    const costoAE = Number(ultimo.costo_total_ae) || 0;
-                    const costoHogar = Number(ultimo.costo_total_hogar) || 0;
-                    
-                    document.getElementById('costo-ae').innerText = `$ ${costoAE.toLocaleString('es-AR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
-                    document.getElementById('costo-hogar').innerText = `$ ${costoHogar.toLocaleString('es-AR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+                    document.getElementById('costo-ae').innerText = `$ ${Number(ultimo.costo_total_ae || 0).toLocaleString('es-AR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+                    document.getElementById('costo-hogar').innerText = `$ ${Number(ultimo.costo_total_hogar || 0).toLocaleString('es-AR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
                 } else {
                     document.getElementById('costo-ae').innerText = 'Sin datos';
                     document.getElementById('costo-hogar').innerText = 'Sin datos';
@@ -155,14 +154,11 @@ def dashboard():
 
                     filtrados.forEach(item => {
                         const tr = document.createElement('tr');
-                        const precio = Number(item.precio_unitario_estimado) || 0;
-                        const costoAE = Number(item.costo_mensual_ae) || 0;
-
                         tr.innerHTML = `
-                            <td class="p-3 font-medium text-gray-900">${item.rubro || '-'}</td>
+                            <td class="p-3 font-medium text-gray-900">${item.rubro}</td>
                             <td class="p-3 text-gray-500">${item.coincidencias || 0}</td>
-                            <td class="p-3">$ ${precio.toLocaleString('es-AR', {minimumFractionDigits: 2})}</td>
-                            <td class="p-3 font-semibold text-gray-800">$ ${costoAE.toLocaleString('es-AR', {minimumFractionDigits: 2})}</td>
+                            <td class="p-3">$ ${Number(item.precio_unitario_estimado || 0).toLocaleString('es-AR', {minimumFractionDigits: 2})}</td>
+                            <td class="p-3 font-semibold text-gray-800">$ ${Number(item.costo_mensual_ae || 0).toLocaleString('es-AR', {minimumFractionDigits: 2})}</td>
                         `;
                         tbody.appendChild(tr);
                     });
@@ -176,17 +172,20 @@ def dashboard():
     </html>
     """
 
+
 @app.get("/totales")
 @app.get("/api/totales")
 def get_totales():
     df = leer_csv("cba_historico_totales.csv")
     return df.to_dict(orient="records") if df is not None else []
 
+
 @app.get("/detalle")
 @app.get("/api/detalle")
 def get_detalle():
     df = leer_csv("cba_historico_detalle.csv")
     return df.to_dict(orient="records") if df is not None else []
+
 
 @app.get("/nutricional")
 @app.get("/api/nutricional")
