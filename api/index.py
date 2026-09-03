@@ -6,13 +6,6 @@ import os
 
 app = FastAPI(title="CBA Scraper API")
 
-# ⚠️ REEMPLAZA ESTO CON EL NOMBRE EXACTO DE TU REPOSITORIO EN GITHUB
-USUARIO_GITHUB = "darioplacidogandini"
-REPO_GITHUB = "equipo3-bordon-gandini"  # <--- Pon aquí el nombre de tu repo
-RAMA = "main"
-
-URL_RAW_BASE = f"https://raw.githubusercontent.com/{USUARIO_GITHUB}/{REPO_GITHUB}/{RAMA}"
-
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -22,7 +15,7 @@ app.add_middleware(
 )
 
 def leer_csv(nombre_archivo):
-    # 1. Intentar buscar localmente
+    # 1. Intentar buscar en rutas locales
     rutas_locales = [
         nombre_archivo,
         os.path.join("..", nombre_archivo),
@@ -35,12 +28,21 @@ def leer_csv(nombre_archivo):
             except Exception:
                 pass
 
-    # 2. Si Vercel no tiene el archivo local, leer directamente de GitHub Raw
+    # 2. Detectar automáticamente el repositorio desde Vercel
+    usuario = os.environ.get("VERCEL_GIT_REPO_OWNER", "darioplacidogandini")
+    repo = os.environ.get("VERCEL_GIT_REPO_SLUG")
+
+    if not repo:
+        # Fallback si no está desplegado en Vercel aún
+        repo = "canasta-basica"  # Cambiar solo si probás localmente sin Vercel
+
+    url_remota = f"https://raw.githubusercontent.com/{usuario}/{repo}/main/{nombre_archivo}"
+
+    # 3. Intentar leer desde GitHub Raw capturando cualquier error HTTP/404
     try:
-        url_remota = f"{URL_RAW_BASE}/{nombre_archivo}"
         return pd.read_csv(url_remota)
     except Exception as e:
-        print(f"Error cargando {nombre_archivo} desde GitHub: {e}")
+        print(f"No se pudo cargar {nombre_archivo} desde {url_remota}: {e}")
         return None
 
 @app.get("/", response_class=HTMLResponse)
@@ -98,43 +100,48 @@ def dashboard():
         </div>
 
         <script>
-            async function cargarDatos() {
+            async function fetchJSON(url) {
                 try {
-                    const resTotales = await fetch('/api/totales');
-                    const totales = await resTotales.json();
-                    if (Array.isArray(totales) && totales.length > 0) {
-                        const ultimo = totales[totales.length - 1];
-                        document.getElementById('costo-ae').innerText = `$ ${Number(ultimo.costo_total_ae).toLocaleString('es-AR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
-                        document.getElementById('costo-hogar').innerText = `$ ${Number(ultimo.costo_total_hogar).toLocaleString('es-AR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
-                    } else {
-                        document.getElementById('costo-ae').innerText = 'Sin datos';
-                        document.getElementById('costo-hogar').innerText = 'Sin datos';
-                    }
-
-                    const resDetalle = await fetch('/api/detalle');
-                    const detalle = await resDetalle.json();
-                    const tbody = document.getElementById('tabla-detalle');
-                    tbody.innerHTML = '';
-                    
-                    if (Array.isArray(detalle) && detalle.length > 0) {
-                        const fechaReciente = detalle[detalle.length - 1]?.fecha;
-                        const filtrados = detalle.filter(d => d.fecha === fechaReciente);
-
-                        filtrados.forEach(item => {
-                            const tr = document.createElement('tr');
-                            tr.innerHTML = `
-                                <td class="p-3 font-medium text-gray-900">${item.rubro}</td>
-                                <td class="p-3 text-gray-500">${item.coincidencias || 0}</td>
-                                <td class="p-3">$ ${Number(item.precio_unitario_estimado || 0).toLocaleString('es-AR', {minimumFractionDigits: 2})}</td>
-                                <td class="p-3 font-semibold text-gray-800">$ ${Number(item.costo_mensual_ae || 0).toLocaleString('es-AR', {minimumFractionDigits: 2})}</td>
-                            `;
-                            tbody.appendChild(tr);
-                        });
-                    } else {
-                        tbody.innerHTML = '<tr><td colspan="4" class="p-4 text-center text-gray-500">No se pudieron obtener los datos. Verifique el nombre del repositorio en api/index.py</td></tr>';
-                    }
+                    const res = await fetch(url);
+                    if (!res.ok) return [];
+                    return await res.json();
                 } catch (e) {
-                    console.error('Error:', e);
+                    console.error("Error cargando JSON:", e);
+                    return [];
+                }
+            }
+
+            async function cargarDatos() {
+                const totales = await fetchJSON('/api/totales');
+                if (Array.isArray(totales) && totales.length > 0) {
+                    const ultimo = totales[totales.length - 1];
+                    document.getElementById('costo-ae').innerText = `$ ${Number(ultimo.costo_total_ae).toLocaleString('es-AR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+                    document.getElementById('costo-hogar').innerText = `$ ${Number(ultimo.costo_total_hogar).toLocaleString('es-AR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+                } else {
+                    document.getElementById('costo-ae').innerText = 'Sin datos';
+                    document.getElementById('costo-hogar').innerText = 'Sin datos';
+                }
+
+                const detalle = await fetchJSON('/api/detalle');
+                const tbody = document.getElementById('tabla-detalle');
+                tbody.innerHTML = '';
+                
+                if (Array.isArray(detalle) && detalle.length > 0) {
+                    const fechaReciente = detalle[detalle.length - 1]?.fecha;
+                    const filtrados = detalle.filter(d => d.fecha === fechaReciente);
+
+                    filtrados.forEach(item => {
+                        const tr = document.createElement('tr');
+                        tr.innerHTML = `
+                            <td class="p-3 font-medium text-gray-900">${item.rubro}</td>
+                            <td class="p-3 text-gray-500">${item.coincidencias || 0}</td>
+                            <td class="p-3">$ ${Number(item.precio_unitario_estimado || 0).toLocaleString('es-AR', {minimumFractionDigits: 2})}</td>
+                            <td class="p-3 font-semibold text-gray-800">$ ${Number(item.costo_mensual_ae || 0).toLocaleString('es-AR', {minimumFractionDigits: 2})}</td>
+                        `;
+                        tbody.appendChild(tr);
+                    });
+                } else {
+                    tbody.innerHTML = '<tr><td colspan="4" class="p-4 text-center text-gray-500">No se pudieron cargar los datos desde GitHub.</td></tr>';
                 }
             }
             cargarDatos();
