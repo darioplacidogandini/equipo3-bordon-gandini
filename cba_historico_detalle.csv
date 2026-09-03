@@ -122,3 +122,44 @@ Yerba mate,"['yerba mate', 'yerba']","['compuesta', 'hierbas', 'mate cocido']",0
 Té en saquitos,"['te saquitos', 'te ']","['verde', 'manzanilla', 'boldo', 'frio']",0.05,1,0.0,0.2,0.0,2026-09-02,2026-09-02 14:47:58,,0,Mediana General,,,,
 Café molido,"['cafe molido', 'cafe ']","['instantaneo', 'capsula', 'torrado']",0.05,2,0.1,0.3,0.0,2026-09-02,2026-09-02 14:47:58,,0,Mediana General,,,,
 Sal fina,['sal fina'],"['gruesa', 'parrillera', 'marina']",0.15,0,0.0,0.0,0.0,2026-09-02,2026-09-02 14:47:58,,0,Mediana General,,,,
+Pan francés,"['pan frances', 'pan franc']","['rallado', 'lactal', 'hamburguesa', 'pancho']",6.3,265,9.0,55.0,1.2,2026-09-03,2026-09-03 14:47:17,2429.46,0,Mediana General,,,15305.598,47294.29782
+Galletitas de agua,"['galletitas agua', 'gall agua', 'galleta agua']","['dulce', 'rellena']",1.29,420,9.5,68.0,12.0,2026-09-03,2026-09-03 14:47:17,2429.46,0,Mediana General,,,3134.0034,9684.070506
+Galletitas dulces,"['galletitas dulces', 'gall dulce', 'galleta dulce']","['agua', 'salada']",0.6,450,6.5,72.0,15.0,2026-09-03,2026-09-03 14:47:17,2429.46,0,Mediana General,,,1457.676,4504.21884
+Harina de trigo 000,"['harina trigo 000', 'harina 000']","['0000', 'leudante', 'maiz', 'premezcla']",1.02,340,10.0,72.0,1.2,2026-09-03,2026-09-03 14:47:17,2429.46,0,Mediana General,,,2478.0492,7657.172027999999
+Arroz blanco,"['arroz', 'arr ']","['alicond', 'esp ', 'saborizador', 'caldo', 'galleta', 'inflado', 'integral']",0.63,354,7.0,78.0,0.6,2026-09-03,2026-09-03 14:47:17,2429.46,0,Mediana General,,,1530.5598,4729.429782
+Fideos secos,"['fideos', 'fid ']","['sopero', 'sopa', 'salsa', 'caldo']",1.29,355,12.0,73.0,1.5,2026-09-03,2026-09-03 14:47:17,1424.795,2,Mediana directa,,,1837.98555,5679.3753495
+Harina de maíz (Polenta),"['polenta', 'harina maiz']",['almidon'],0.3,350,8.0,76.0,1.0,2026-09-03,2026-09-03 14:47:17,2429.46,0,Mediana General,,,728.838,2252.10942
+Asado con hueso,['asado'],"['carbon', 'salsa', 'churrasquera']",0.7,250,18.0,0.0,20.0,2026-09-03,2026-09-03 14:47:17,2429.46,0,Mediana General,,,1700.6219999999998,5254.921979999999
+Carnaza común / Picada,"['carne picada', 'picada']","['empana', 'medallon', 'hamburguesa']",1.5,210,19.5,0.0,14.0,2026-09-03,2026-09-03 14:47:17,2429.46,0,Mediana General,,,3644.19,11260.5471
+Nalga,['nalga'],"['cerdo', 'pollo']",1.2,135,21.0,0.0,5.0,2026-09-03,2026-09-03 14:47:17,2429.46,0,Mediana General,,,2915.352,9008.43768
+Paleta,"['paleta vacuno', 'paleta']","['cerdo', 'fiambre', 'fresca', 'cocida']",1.2,145,20.0,0.0,7.0,2026-09-03,2026-09-03 14:47:17,2429.46,0,Mediana General,,,2915.352,9008.43768
+Cuadril,['cuadril'],['cerdo'],0.8,140,21.5,0.0,5.5,2026-09-03,2026-09-03 14:47:17,2429.46,0,Mediana General,,,1943.5680000000002,6005.625120000001
+Hígado,['higado'],"['paté', 'pate']",0.45,133,20.4,3.8,3.6,2026-09-03,2026-09-03 14:47:17,1579.1490000000001,0,Proxy (Carnaza común / Picada x 0.65),Carnaza común / Picada,0.65,710.6170500000001,2195.8066845000003
+Pollo entero,"['pollo entero', 'pollo fresco', 'pollo ']","['patitas', 'medallon', 'alitas', 'pata muslo', 'suprema', 'caldo']",2.13,170,18.0,0.0,11.0,2026-09-03,2026-09-03 14:47:17,2429.46,0,Mediana General,,,5174.7498,15989.976881999997
+Pescado (Merluza),"['merluza', 'filet merluza']","['rebozado', 'formitas', 'empanado']",0.4,90,19.0,0.0,1.2,2026-09-03,2026-09-03 14:47:17,2429.46,0,Mediana General,,,971.7840000000001,3002.8125600000003
+Paleta cocida / Jamón,"['paleta cocida', 'paleta fiambre', 'jamon cocido']","['vacuno', 'fresca']",0.2,130,16.0,2.0,6.5,2026-09-03,2026-09-03 14:47:17,2429.46,0,Mediana General,,,485.89200000000005,1501.4062800000002
+Leche entera fresca,"['leche entera', 'leche sachet', 'leche uat']","['polvo', 'condensada', 'descremada', 'chocolatada']",7.95,60,3.1,4.7,3.0,2026-09-03,2026-09-03 14:47:17,2429.46,0,Mediana General,,,19314.207000000002,59680.89963000001
+Queso cremoso,"['queso cremoso', 'queso cremon', 'queso cuartirolo']","['rallado', 'untable', 'sardo']",0.3,310,18.0,1.5,26.0,2026-09-03,2026-09-03 14:47:17,2429.46,0,Mediana General,,,728.838,2252.10942
+Queso sardo,['queso sardo'],"['cremoso', 'untable']",0.1,370,28.0,1.8,28.0,2026-09-03,2026-09-03 14:47:17,2429.46,0,Mediana General,,,242.94600000000003,750.7031400000001
+Yogur entero,"['yogur entero', 'yogur firme', 'yogur sachet']","['descremado', 'griego']",0.6,63,3.3,5.0,3.2,2026-09-03,2026-09-03 14:47:17,2429.46,0,Mediana General,,,1457.676,4504.21884
+Manteca,['manteca'],"['cacao', 'margarina']",0.15,740,0.8,0.1,82.0,2026-09-03,2026-09-03 14:47:17,2429.46,1,Mediana directa,,,364.419,1126.05471
+Huevos (unidades aprox),"['huevos', 'huevo']","['pascua', 'chocolate']",0.6,150,12.5,0.7,10.0,2026-09-03,2026-09-03 14:47:17,1607.03,1,Mediana directa,,,964.218,2979.43362
+Papa blanca,"['papa blanca', 'papa ']","['frita', 'congelada', 'puré', 'pure', 'bastón', 'baston']",7.05,80,2.0,18.0,0.1,2026-09-03,2026-09-03 14:47:17,2429.46,0,Mediana General,,,17127.693,52924.57137
+Batata,['batata'],"['dulce', 'mermelada']",0.5,86,1.6,20.0,0.1,2026-09-03,2026-09-03 14:47:17,2429.46,0,Mediana General,,,1214.73,3753.5157
+Cebolla,['cebolla'],"['polvo', 'deshidratada', 'verdeo']",1.2,40,1.1,9.0,0.1,2026-09-03,2026-09-03 14:47:17,2429.46,0,Mediana General,,,2915.352,9008.43768
+Lechuga,['lechuga'],[],0.6,15,1.3,2.8,0.2,2026-09-03,2026-09-03 14:47:17,2429.46,0,Mediana General,,,1457.676,4504.21884
+Tomate redondo,"['tomate redondo', 'tomate ']","['triturado', 'puré', 'pure', 'salsa', 'extracto', 'seco', 'perita']",1.2,18,0.9,3.9,0.2,2026-09-03,2026-09-03 14:47:17,2429.46,0,Mediana General,,,2915.352,9008.43768
+Zanahoria,['zanahoria'],['rallada'],0.7,41,0.9,9.5,0.2,2026-09-03,2026-09-03 14:47:17,2429.46,0,Mediana General,,,1700.6219999999998,5254.921979999999
+Zapallo Anco,"['zapallo anco', 'zapallo', 'anco']","['puré', 'pure']",0.8,45,1.0,11.0,0.1,2026-09-03,2026-09-03 14:47:17,4081.13,1,Mediana directa,,,3264.9040000000005,10088.553360000002
+Manzana,['manzana'],"['jugo', 'puré', 'pure', 'sidra']",1.2,52,0.3,14.0,0.2,2026-09-03,2026-09-03 14:47:17,2429.46,0,Mediana General,,,2915.352,9008.43768
+Banana,['banana'],"['split', 'licor', 'caramelo']",1.2,89,1.1,23.0,0.3,2026-09-03,2026-09-03 14:47:17,2429.46,0,Mediana General,,,2915.352,9008.43768
+Naranja,['naranja'],"['jugo', 'gaseosa', 'mermelada']",1.2,47,0.9,12.0,0.1,2026-09-03,2026-09-03 14:47:17,1730.49,1,Mediana directa,,,2076.5879999999997,6416.6569199999985
+Aceite de girasol,['aceite girasol'],"['oliva', 'mezcla', 'aerosol']",1.2,884,0.0,0.0,100.0,2026-09-03,2026-09-03 14:47:17,2429.46,0,Mediana General,,,2915.352,9008.43768
+Azúcar,['azucar'],"['impalpable', 'negra', 'rubia']",1.2,387,0.0,100.0,0.0,2026-09-03,2026-09-03 14:47:17,2429.46,0,Mediana General,,,2915.352,9008.43768
+Dulce de leche,"['dulce de leche', 'dulce leche']","['repostero', 'alfajor', 'helado']",0.3,315,6.0,55.0,7.5,2026-09-03,2026-09-03 14:47:17,2864.82,1,Mediana directa,,,859.446,2655.6881399999997
+Mermelada,['mermelada'],"['diet', 'sin azucar']",0.2,260,0.4,65.0,0.1,2026-09-03,2026-09-03 14:47:17,2429.46,0,Mediana General,,,485.89200000000005,1501.4062800000002
+Lentejas secas,"['lentejas', 'legu ']","['poroto', 'garbanzo', 'sopa', 'lata']",0.2,350,25.0,60.0,1.0,2026-09-03,2026-09-03 14:47:17,1681.9,1,Mediana directa,,,336.38000000000005,1039.4142000000002
+Yerba mate,"['yerba mate', 'yerba']","['compuesta', 'hierbas', 'mate cocido']",0.6,30,1.0,6.0,0.0,2026-09-03,2026-09-03 14:47:17,2429.46,0,Mediana General,,,1457.676,4504.21884
+Té en saquitos,"['te saquitos', 'te ']","['verde', 'manzanilla', 'boldo', 'frio']",0.05,1,0.0,0.2,0.0,2026-09-03,2026-09-03 14:47:17,2429.46,0,Mediana General,,,121.47300000000001,375.35157000000004
+Café molido,"['cafe molido', 'cafe ']","['instantaneo', 'capsula', 'torrado']",0.05,2,0.1,0.3,0.0,2026-09-03,2026-09-03 14:47:17,17450.0,1,Mediana directa,,,872.5,2696.025
+Sal fina,['sal fina'],"['gruesa', 'parrillera', 'marina']",0.15,0,0.0,0.0,0.0,2026-09-03,2026-09-03 14:47:17,4062.26,1,Mediana directa,,,609.339,1882.85751
