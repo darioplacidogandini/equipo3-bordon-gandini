@@ -47,9 +47,11 @@ def leer_csv(nombre_archivo):
         print(f"Error cargando {url_remota}: {e}")
         return None
 
-# Soporta tanto '/' como '/api' para el Dashboard
+# Agregamos todas las variantes de ruta para que Vercel siempre muestre el Dashboard al entrar
 @app.get("/", response_class=HTMLResponse)
 @app.get("/api", response_class=HTMLResponse)
+@app.get("/api/index", response_class=HTMLResponse)
+@app.get("/api/index.py", response_class=HTMLResponse)
 def dashboard():
     return """
     <!DOCTYPE html>
@@ -106,7 +108,10 @@ def dashboard():
         <script>
             async function fetchJSON(url) {
                 try {
-                    const res = await fetch(url);
+                    let res = await fetch(url);
+                    if (!res.ok && url.startsWith('/api/')) {
+                        res = await fetch(url.replace('/api/', '/'));
+                    }
                     if (!res.ok) return [];
                     return await res.json();
                 } catch (e) {
