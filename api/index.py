@@ -20,6 +20,23 @@ app.add_middleware(
 )
 
 def leer_csv(nombre_archivo):
+    # 1. Priorizar la descarga remota desde GitHub Raw (datos actualizados por el bot)
+    repo = os.environ.get("VERCEL_GIT_REPO_SLUG", REPO_GITHUB)
+    url_remota = f"https://raw.githubusercontent.com/{USUARIO_GITHUB}/{repo}/main/{nombre_archivo}"
+    
+    try:
+        req = urllib.request.Request(
+            url_remota, 
+            headers={'User-Agent': 'Mozilla/5.0'}
+        )
+        with urllib.request.urlopen(req, timeout=10) as response:
+            df = pd.read_csv(response, encoding='utf-8-sig')
+            if not df.empty:
+                return df
+    except Exception as e:
+        print(f"Error al obtener {url_remota} desde GitHub: {e}")
+
+    # 2. Fallback a archivos locales (útil para pruebas en entorno local)
     rutas_locales = [
         nombre_archivo,
         os.path.join("..", nombre_archivo),
@@ -28,26 +45,15 @@ def leer_csv(nombre_archivo):
     for ruta in rutas_locales:
         if os.path.exists(ruta):
             try:
-                return pd.read_csv(ruta)
+                df = pd.read_csv(ruta, encoding='utf-8-sig')
+                if not df.empty:
+                    return df
             except Exception:
                 pass
 
-    repo = os.environ.get("VERCEL_GIT_REPO_SLUG", REPO_GITHUB)
-    url_remota = f"https://raw.githubusercontent.com/{USUARIO_GITHUB}/{repo}/main/{nombre_archivo}"
+    return None
 
-    try:
-        req = urllib.request.Request(
-            url_remota, 
-            headers={'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)'}
-        )
-        with urllib.request.urlopen(req) as response:
-            contenido = response.read().decode('utf-8')
-            return pd.read_csv(io.StringIO(contenido))
-    except Exception as e:
-        print(f"Error cargando {url_remota}: {e}")
-        return None
-
-# Agregamos todas las variantes de ruta para que Vercel siempre muestre el Dashboard al entrar
+# Mapeo de rutas para asegurar compatibilidad con Vercel
 @app.get("/", response_class=HTMLResponse)
 @app.get("/api", response_class=HTMLResponse)
 @app.get("/api/index", response_class=HTMLResponse)
