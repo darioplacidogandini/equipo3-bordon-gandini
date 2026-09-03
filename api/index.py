@@ -14,7 +14,19 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# 1. Página principal: Dashboard Visual HTML
+# Ruta base hacia la raíz del proyecto (un nivel arriba de /api)
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+def leer_csv(nombre_archivo):
+    # Buscar en la raíz del proyecto
+    path_raiz = os.path.join(BASE_DIR, nombre_archivo)
+    if os.path.exists(path_raiz):
+        return pd.read_csv(path_raiz)
+    # Buscar en el directorio actual como alternativa
+    if os.path.exists(nombre_archivo):
+        return pd.read_csv(nombre_archivo)
+    return None
+
 @app.get("/", response_class=HTMLResponse)
 def dashboard():
     return """
@@ -74,34 +86,39 @@ def dashboard():
         <script>
             async function cargarDatos() {
                 try {
-                    // Cargar Totales
                     const resTotales = await fetch('/api/totales');
                     const totales = await resTotales.json();
-                    if (totales.length > 0) {
+                    if (Array.isArray(totales) && totales.length > 0) {
                         const ultimo = totales[totales.length - 1];
-                        document.getElementById('costo-ae').innerText = `$ ${Number(ultimo.costo_total_ae).toLocaleString('es-AR', {minimumFractionDigits: 2})}`;
-                        document.getElementById('costo-hogar').innerText = `$ ${Number(ultimo.costo_total_hogar).toLocaleString('es-AR', {minimumFractionDigits: 2})}`;
+                        document.getElementById('costo-ae').innerText = `$ ${Number(ultimo.costo_total_ae).toLocaleString('es-AR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+                        document.getElementById('costo-hogar').innerText = `$ ${Number(ultimo.costo_total_hogar).toLocaleString('es-AR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+                    } else {
+                        document.getElementById('costo-ae').innerText = 'Sin datos';
+                        document.getElementById('costo-hogar').innerText = 'Sin datos';
                     }
 
-                    // Cargar Detalle
                     const resDetalle = await fetch('/api/detalle');
                     const detalle = await resDetalle.json();
                     const tbody = document.getElementById('tabla-detalle');
                     tbody.innerHTML = '';
                     
-                    const fechaReciente = detalle[detalle.length - 1]?.fecha;
-                    const filtrados = detalle.filter(d => d.fecha === fechaReciente);
+                    if (Array.isArray(detalle) && detalle.length > 0) {
+                        const fechaReciente = detalle[detalle.length - 1]?.fecha;
+                        const filtrados = detalle.filter(d => d.fecha === fechaReciente);
 
-                    filtrados.forEach(item => {
-                        const tr = document.createElement('tr');
-                        tr.innerHTML = `
-                            <td class="p-3 font-medium text-gray-900">${item.rubro}</td>
-                            <td class="p-3 text-gray-500">${item.coincidencias || 0}</td>
-                            <td class="p-3">$ ${Number(item.precio_unitario_estimado || 0).toLocaleString('es-AR', {minimumFractionDigits: 2})}</td>
-                            <td class="p-3 font-semibold text-gray-800">$ ${Number(item.costo_mensual_ae || 0).toLocaleString('es-AR', {minimumFractionDigits: 2})}</td>
-                        `;
-                        tbody.appendChild(tr);
-                    });
+                        filtrados.forEach(item => {
+                            const tr = document.createElement('tr');
+                            tr.innerHTML = `
+                                <td class="p-3 font-medium text-gray-900">${item.rubro}</td>
+                                <td class="p-3 text-gray-500">${item.coincidencias || 0}</td>
+                                <td class="p-3">$ ${Number(item.precio_unitario_estimado || 0).toLocaleString('es-AR', {minimumFractionDigits: 2})}</td>
+                                <td class="p-3 font-semibold text-gray-800">$ ${Number(item.costo_mensual_ae || 0).toLocaleString('es-AR', {minimumFractionDigits: 2})}</td>
+                            `;
+                            tbody.appendChild(tr);
+                        });
+                    } else {
+                        tbody.innerHTML = '<tr><td colspan="4" class="p-4 text-center text-gray-500">No se encontraron datos en los archivos CSV.</td></tr>';
+                    }
                 } catch (e) {
                     console.error('Error:', e);
                 }
@@ -112,24 +129,17 @@ def dashboard():
     </html>
     """
 
-# 2. Endpoints de datos JSON en segundo plano
 @app.get("/api/totales")
 def get_totales():
-    file_path = "cba_historico_totales.csv"
-    if os.path.exists(file_path):
-        return pd.read_csv(file_path).to_dict(orient="records")
-    return []
+    df = leer_csv("cba_historico_totales.csv")
+    return df.to_dict(orient="records") if df is not None else []
 
 @app.get("/api/detalle")
 def get_detalle():
-    file_path = "cba_historico_detalle.csv"
-    if os.path.exists(file_path):
-        return pd.read_csv(file_path).to_dict(orient="records")
-    return []
+    df = leer_csv("cba_historico_detalle.csv")
+    return df.to_dict(orient="records") if df is not None else []
 
 @app.get("/api/nutricional")
 def get_nutricional():
-    file_path = "cba_tabla_nutricional.csv"
-    if os.path.exists(file_path):
-        return pd.read_csv(file_path).to_dict(orient="records")
-    return []
+    df = leer_csv("cba_tabla_nutricional.csv")
+    return df.to_dict(orient="records") if df is not None else []
