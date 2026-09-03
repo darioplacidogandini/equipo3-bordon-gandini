@@ -20,23 +20,28 @@ app.add_middleware(
 )
 
 def leer_csv(nombre_archivo):
-    # 1. Priorizar la descarga remota desde GitHub Raw (datos actualizados por el bot)
-    repo = os.environ.get("VERCEL_GIT_REPO_SLUG", REPO_GITHUB)
+    # Asegurar el nombre correcto del repositorio
+    repo_env = os.environ.get("VERCEL_GIT_REPO_SLUG")
+    repo = repo_env if repo_env else REPO_GITHUB
+
     url_remota = f"https://raw.githubusercontent.com/{USUARIO_GITHUB}/{repo}/main/{nombre_archivo}"
     
+    # 1. Intentar descargar desde GitHub Raw
     try:
         req = urllib.request.Request(
             url_remota, 
-            headers={'User-Agent': 'Mozilla/5.0'}
+            headers={'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)'}
         )
         with urllib.request.urlopen(req, timeout=10) as response:
-            df = pd.read_csv(response, encoding='utf-8-sig')
+            contenido = response.read().decode('utf-8-sig')
+            df = pd.read_csv(io.StringIO(contenido))
             if not df.empty:
-                return df
+                # Reemplazar NaN por cadenas vacías para evitar errores 500 en JSON
+                return df.fillna("")
     except Exception as e:
-        print(f"Error al obtener {url_remota} desde GitHub: {e}")
+        print(f"Error cargando desde GitHub ({url_remota}): {e}")
 
-    # 2. Fallback a archivos locales (útil para pruebas en entorno local)
+    # 2. Fallback local (por si se ejecuta localmente o durante el build)
     rutas_locales = [
         nombre_archivo,
         os.path.join("..", nombre_archivo),
@@ -47,13 +52,13 @@ def leer_csv(nombre_archivo):
             try:
                 df = pd.read_csv(ruta, encoding='utf-8-sig')
                 if not df.empty:
-                    return df
-            except Exception:
-                pass
+                    return df.fillna("")
+            except Exception as e:
+                print(f"Error cargando archivo local ({ruta}): {e}")
 
     return None
 
-# Mapeo de rutas para asegurar compatibilidad con Vercel
+# Mapeo de rutas para asegurar compatibilidad total con Vercel
 @app.get("/", response_class=HTMLResponse)
 @app.get("/api", response_class=HTMLResponse)
 @app.get("/api/index", response_class=HTMLResponse)
@@ -130,8 +135,11 @@ def dashboard():
                 const totales = await fetchJSON('/api/totales');
                 if (Array.isArray(totales) && totales.length > 0) {
                     const ultimo = totales[totales.length - 1];
-                    document.getElementById('costo-ae').innerText = `$ ${Number(ultimo.costo_total_ae).toLocaleString('es-AR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
-                    document.getElementById('costo-hogar').innerText = `$ ${Number(ultimo.costo_total_hogar).toLocaleString('es-AR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+                    const costoAE = Number(ultimo.costo_total_ae) || 0;
+                    const costoHogar = Number(ultimo.costo_total_hogar) || 0;
+                    
+                    document.getElementById('costo-ae').innerText = `$ ${costoAE.toLocaleString('es-AR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+                    document.getElementById('costo-hogar').innerText = `$ ${costoHogar.toLocaleString('es-AR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
                 } else {
                     document.getElementById('costo-ae').innerText = 'Sin datos';
                     document.getElementById('costo-hogar').innerText = 'Sin datos';
@@ -147,11 +155,14 @@ def dashboard():
 
                     filtrados.forEach(item => {
                         const tr = document.createElement('tr');
+                        const precio = Number(item.precio_unitario_estimado) || 0;
+                        const costoAE = Number(item.costo_mensual_ae) || 0;
+
                         tr.innerHTML = `
-                            <td class="p-3 font-medium text-gray-900">${item.rubro}</td>
+                            <td class="p-3 font-medium text-gray-900">${item.rubro || '-'}</td>
                             <td class="p-3 text-gray-500">${item.coincidencias || 0}</td>
-                            <td class="p-3">$ ${Number(item.precio_unitario_estimado || 0).toLocaleString('es-AR', {minimumFractionDigits: 2})}</td>
-                            <td class="p-3 font-semibold text-gray-800">$ ${Number(item.costo_mensual_ae || 0).toLocaleString('es-AR', {minimumFractionDigits: 2})}</td>
+                            <td class="p-3">$ ${precio.toLocaleString('es-AR', {minimumFractionDigits: 2})}</td>
+                            <td class="p-3 font-semibold text-gray-800">$ ${costoAE.toLocaleString('es-AR', {minimumFractionDigits: 2})}</td>
                         `;
                         tbody.appendChild(tr);
                     });
