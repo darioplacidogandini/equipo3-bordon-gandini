@@ -6,6 +6,13 @@ import os
 
 app = FastAPI(title="CBA Scraper API")
 
+# ⚠️ REEMPLAZA ESTO CON EL NOMBRE EXACTO DE TU REPOSITORIO EN GITHUB
+USUARIO_GITHUB = "darioplacidogandini"
+REPO_GITHUB = "equipo3-bordon-gandini"  # <--- Pon aquí el nombre de tu repo
+RAMA = "main"
+
+URL_RAW_BASE = f"https://raw.githubusercontent.com/{USUARIO_GITHUB}/{REPO_GITHUB}/{RAMA}"
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -14,18 +21,27 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Ruta base hacia la raíz del proyecto (un nivel arriba de /api)
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
 def leer_csv(nombre_archivo):
-    # Buscar en la raíz del proyecto
-    path_raiz = os.path.join(BASE_DIR, nombre_archivo)
-    if os.path.exists(path_raiz):
-        return pd.read_csv(path_raiz)
-    # Buscar en el directorio actual como alternativa
-    if os.path.exists(nombre_archivo):
-        return pd.read_csv(nombre_archivo)
-    return None
+    # 1. Intentar buscar localmente
+    rutas_locales = [
+        nombre_archivo,
+        os.path.join("..", nombre_archivo),
+        os.path.join(os.path.dirname(__file__), "..", nombre_archivo)
+    ]
+    for ruta in rutas_locales:
+        if os.path.exists(ruta):
+            try:
+                return pd.read_csv(ruta)
+            except Exception:
+                pass
+
+    # 2. Si Vercel no tiene el archivo local, leer directamente de GitHub Raw
+    try:
+        url_remota = f"{URL_RAW_BASE}/{nombre_archivo}"
+        return pd.read_csv(url_remota)
+    except Exception as e:
+        print(f"Error cargando {nombre_archivo} desde GitHub: {e}")
+        return None
 
 @app.get("/", response_class=HTMLResponse)
 def dashboard():
@@ -48,7 +64,6 @@ def dashboard():
                 <a href="/docs" target="_blank" class="text-sm bg-gray-200 hover:bg-gray-300 px-3 py-2 rounded font-medium text-gray-700">Documentación API</a>
             </header>
 
-            <!-- Tarjetas de Resumen -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
                     <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Costo Adulto Equivalente (AE)</p>
@@ -60,7 +75,6 @@ def dashboard():
                 </div>
             </div>
 
-            <!-- Tabla de Detalle -->
             <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
                 <div class="p-4 border-b bg-gray-50">
                     <h2 class="font-bold text-gray-700">Detalle por Rubro</h2>
@@ -117,7 +131,7 @@ def dashboard():
                             tbody.appendChild(tr);
                         });
                     } else {
-                        tbody.innerHTML = '<tr><td colspan="4" class="p-4 text-center text-gray-500">No se encontraron datos en los archivos CSV.</td></tr>';
+                        tbody.innerHTML = '<tr><td colspan="4" class="p-4 text-center text-gray-500">No se pudieron obtener los datos. Verifique el nombre del repositorio en api/index.py</td></tr>';
                     }
                 } catch (e) {
                     console.error('Error:', e);
