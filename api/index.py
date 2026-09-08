@@ -72,7 +72,7 @@ def dashboard():
         <script src="https://cdn.tailwindcss.com"></script>
     </head>
     <body class="bg-gray-100 text-gray-800 p-6">
-        <div class="max-w-5xl mx-auto space-y-6">
+        <div class="max-w-6xl mx-auto space-y-6">
             <header class="flex justify-between items-center border-b pb-4">
                 <div>
                     <h1 class="text-2xl font-bold text-gray-900">Canasta Básica Alimentaria</h1>
@@ -81,6 +81,7 @@ def dashboard():
                 <a href="/docs" target="_blank" class="text-sm bg-gray-200 hover:bg-gray-300 px-3 py-2 rounded font-medium text-gray-700">Documentación API</a>
             </header>
 
+            <!-- Cards KPI de Totales Actuales -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
                     <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Costo Adulto Equivalente (AE)</p>
@@ -92,15 +93,26 @@ def dashboard():
                 </div>
             </div>
 
+            <!-- Navegación por Pestañas (Tabs) -->
             <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-                <div class="p-4 border-b bg-gray-50">
-                    <h2 class="font-bold text-gray-700">Detalle por Categoría y Producto</h2>
+                <div class="border-b bg-gray-50 flex space-x-2 px-4 pt-2 overflow-x-auto">
+                    <button id="btn-tab-detalle" onclick="seleccionarTab('detalle')" class="py-3 px-4 text-sm font-semibold border-b-2 border-blue-600 text-blue-600 focus:outline-none whitespace-nowrap">
+                        Detalle por Producto
+                    </button>
+                    <button id="btn-tab-nutricional" onclick="seleccionarTab('nutricional')" class="py-3 px-4 text-sm font-semibold border-b-2 border-transparent text-gray-500 hover:text-gray-700 focus:outline-none whitespace-nowrap">
+                        Tabla Nutricional
+                    </button>
+                    <button id="btn-tab-totales" onclick="seleccionarTab('totales')" class="py-3 px-4 text-sm font-semibold border-b-2 border-transparent text-gray-500 hover:text-gray-700 focus:outline-none whitespace-nowrap">
+                        Histórico de Totales
+                    </button>
                 </div>
-                <div class="overflow-x-auto">
+
+                <!-- Tab 1: Detalle de Productos -->
+                <div id="tab-detalle" class="tab-contenido overflow-x-auto">
                     <table class="w-full text-left text-sm">
                         <thead class="bg-gray-100 text-gray-600 border-b">
                             <tr>
-                                <th class="p-3">Categoría</th>
+                                <th class="p-3">Categoría / Rubro</th>
                                 <th class="p-3">Producto</th>
                                 <th class="p-3">Muestras</th>
                                 <th class="p-3">Precio Estimado</th>
@@ -109,6 +121,42 @@ def dashboard():
                         </thead>
                         <tbody id="tabla-detalle" class="divide-y divide-gray-200">
                             <tr><td colspan="5" class="p-4 text-center text-gray-400">Cargando datos...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Tab 2: Tabla Nutricional -->
+                <div id="tab-nutricional" class="tab-contenido hidden overflow-x-auto">
+                    <table class="w-full text-left text-sm">
+                        <thead class="bg-gray-100 text-gray-600 border-b">
+                            <tr>
+                                <th class="p-3">Categoría / Rubro</th>
+                                <th class="p-3">Producto</th>
+                                <th class="p-3">Cant. AE (Mensual)</th>
+                                <th class="p-3">Kcal / Día</th>
+                                <th class="p-3">Proteínas / Día</th>
+                                <th class="p-3">Carbohidratos / Día</th>
+                                <th class="p-3">Grasas / Día</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabla-nutricional" class="divide-y divide-gray-200">
+                            <tr><td colspan="7" class="p-4 text-center text-gray-400">Cargando datos nutricionales...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Tab 3: Totales Históricos -->
+                <div id="tab-totales" class="tab-contenido hidden overflow-x-auto">
+                    <table class="w-full text-left text-sm">
+                        <thead class="bg-gray-100 text-gray-600 border-b">
+                            <tr>
+                                <th class="p-3">Fecha / Registro</th>
+                                <th class="p-3">Costo Total AE</th>
+                                <th class="p-3">Costo Total Hogar Tipo (3.09 AE)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabla-totales" class="divide-y divide-gray-200">
+                            <tr><td colspan="3" class="p-4 text-center text-gray-400">Cargando histórico de totales...</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -130,8 +178,23 @@ def dashboard():
                 }
             }
 
+            function seleccionarTab(nombreTab) {
+                const tabs = ['detalle', 'nutricional', 'totales'];
+                tabs.forEach(t => {
+                    const btn = document.getElementById(`btn-tab-${t}`);
+                    const content = document.getElementById(`tab-${t}`);
+                    if (t === nombreTab) {
+                        btn.className = "py-3 px-4 text-sm font-semibold border-b-2 border-blue-600 text-blue-600 focus:outline-none whitespace-nowrap";
+                        content.classList.remove('hidden');
+                    } else {
+                        btn.className = "py-3 px-4 text-sm font-semibold border-b-2 border-transparent text-gray-500 hover:text-gray-700 focus:outline-none whitespace-nowrap";
+                        content.classList.add('hidden');
+                    }
+                });
+            }
+
             async function cargarDatos() {
-                // Cargar Totales
+                // 1. Cargar Totales (KPIs y Tabla Histórica)
                 const totales = await fetchJSON('/api/totales');
                 if (Array.isArray(totales) && totales.length > 0) {
                     const ultimo = totales[totales.length - 1];
@@ -140,15 +203,33 @@ def dashboard():
                     
                     document.getElementById('costo-ae').innerText = `$ ${costoAE.toLocaleString('es-AR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
                     document.getElementById('costo-hogar').innerText = `$ ${costoHogar.toLocaleString('es-AR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+
+                    // Poblar Tabla Histórica
+                    const tbodyTotales = document.getElementById('tabla-totales');
+                    tbodyTotales.innerHTML = '';
+                    totales.slice().reverse().forEach(item => {
+                        const tr = document.createElement('tr');
+                        const fecha = item.timestamp || item.fecha || '-';
+                        const cAE = Number(item.costo_total_ae) || 0;
+                        const cHogar = Number(item.costo_total_hogar) || 0;
+
+                        tr.innerHTML = `
+                            <td class="p-3 text-gray-700 font-medium">${fecha}</td>
+                            <td class="p-3 font-semibold text-emerald-600">$ ${cAE.toLocaleString('es-AR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+                            <td class="p-3 font-semibold text-blue-600">$ ${cHogar.toLocaleString('es-AR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+                        `;
+                        tbodyTotales.appendChild(tr);
+                    });
                 } else {
                     document.getElementById('costo-ae').innerText = 'Sin datos';
                     document.getElementById('costo-hogar').innerText = 'Sin datos';
+                    document.getElementById('tabla-totales').innerHTML = '<tr><td colspan="3" class="p-4 text-center text-gray-500">Sin datos registrados.</td></tr>';
                 }
 
-                // Cargar Detalle
+                // 2. Cargar Detalle de Productos
                 const detalle = await fetchJSON('/api/detalle');
-                const tbody = document.getElementById('tabla-detalle');
-                tbody.innerHTML = '';
+                const tbodyDetalle = document.getElementById('tabla-detalle');
+                tbodyDetalle.innerHTML = '';
                 
                 if (Array.isArray(detalle) && detalle.length > 0) {
                     const fechaReciente = detalle[detalle.length - 1]?.fecha;
@@ -170,12 +251,48 @@ def dashboard():
                             <td class="p-3">$ ${precio.toLocaleString('es-AR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
                             <td class="p-3 font-semibold text-gray-800">$ ${costoAE.toLocaleString('es-AR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
                         `;
-                        tbody.appendChild(tr);
+                        tbodyDetalle.appendChild(tr);
                     });
                 } else {
-                    tbody.innerHTML = '<tr><td colspan="5" class="p-4 text-center text-gray-500">No se pudieron cargar los datos desde GitHub.</td></tr>';
+                    tbodyDetalle.innerHTML = '<tr><td colspan="5" class="p-4 text-center text-gray-500">No se pudieron cargar los datos de detalle.</td></tr>';
+                }
+
+                // 3. Cargar Tabla Nutricional
+                const nutricional = await fetchJSON('/api/nutricional');
+                const tbodyNutri = document.getElementById('tabla-nutricional');
+                tbodyNutri.innerHTML = '';
+
+                if (Array.isArray(nutricional) && nutricional.length > 0) {
+                    const fechaReciente = nutricional[nutricional.length - 1]?.fecha;
+                    let filtradosNutri = fechaReciente ? nutricional.filter(n => n.fecha === fechaReciente) : nutricional;
+                    if (filtradosNutri.length === 0) filtradosNutri = nutricional;
+
+                    filtradosNutri.forEach(item => {
+                        const tr = document.createElement('tr');
+                        const categoria = item.categoria || item.rubro || item.Rubro || '-';
+                        const producto = item.producto || item.Producto || '-';
+                        const cantAE = Number(item.cantidad_ae) || 0;
+                        const kcal = Number(item.kcal_diarias_ae) || 0;
+                        const prot = Number(item.prot_diarias_g) || 0;
+                        const carb = Number(item.carb_diarios_g) || 0;
+                        const grasas = Number(item.grasas_diarias_g) || 0;
+
+                        tr.innerHTML = `
+                            <td class="p-3 text-gray-600 font-medium">${categoria}</td>
+                            <td class="p-3 font-semibold text-gray-900">${producto}</td>
+                            <td class="p-3 text-gray-500">${cantAE.toFixed(2)}</td>
+                            <td class="p-3 text-emerald-700 font-medium">${kcal.toFixed(1)} kcal</td>
+                            <td class="p-3">${prot.toFixed(1)} g</td>
+                            <td class="p-3">${carb.toFixed(1)} g</td>
+                            <td class="p-3">${grasas.toFixed(1)} g</td>
+                        `;
+                        tbodyNutri.appendChild(tr);
+                    });
+                } else {
+                    tbodyNutri.innerHTML = '<tr><td colspan="7" class="p-4 text-center text-gray-500">No se pudieron cargar los datos nutricionales.</td></tr>';
                 }
             }
+
             cargarDatos();
         </script>
     </body>
