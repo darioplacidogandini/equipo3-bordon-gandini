@@ -94,20 +94,21 @@ def dashboard():
 
             <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
                 <div class="p-4 border-b bg-gray-50">
-                    <h2 class="font-bold text-gray-700">Detalle por Rubro</h2>
+                    <h2 class="font-bold text-gray-700">Detalle por Categoría y Producto</h2>
                 </div>
                 <div class="overflow-x-auto">
                     <table class="w-full text-left text-sm">
                         <thead class="bg-gray-100 text-gray-600 border-b">
                             <tr>
-                                <th class="p-3">Rubro</th>
+                                <th class="p-3">Categoría</th>
+                                <th class="p-3">Producto</th>
                                 <th class="p-3">Muestras</th>
                                 <th class="p-3">Precio Estimado</th>
                                 <th class="p-3">Costo Mensual AE</th>
                             </tr>
                         </thead>
                         <tbody id="tabla-detalle" class="divide-y divide-gray-200">
-                            <tr><td colspan="4" class="p-4 text-center text-gray-400">Cargando datos...</td></tr>
+                            <tr><td colspan="5" class="p-4 text-center text-gray-400">Cargando datos...</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -156,13 +157,15 @@ def dashboard():
 
                     filtrados.forEach(item => {
                         const tr = document.createElement('tr');
-                        const rubro = item.rubro || item.Rubro || '-';
+                        const categoria = item.categoria || item.rubro || item.Rubro || '-';
+                        const producto = item.producto || item.Producto || '-';
                         const muestras = item.coincidencias || item.muestras || 0;
                         const precio = Number(item.precio_unitario_estimado) || 0;
                         const costoAE = Number(item.costo_mensual_ae) || 0;
 
                         tr.innerHTML = `
-                            <td class="p-3 font-medium text-gray-900">${rubro}</td>
+                            <td class="p-3 text-gray-600 font-medium">${categoria}</td>
+                            <td class="p-3 font-semibold text-gray-900">${producto}</td>
                             <td class="p-3 text-gray-500">${muestras}</td>
                             <td class="p-3">$ ${precio.toLocaleString('es-AR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
                             <td class="p-3 font-semibold text-gray-800">$ ${costoAE.toLocaleString('es-AR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
@@ -170,7 +173,7 @@ def dashboard():
                         tbody.appendChild(tr);
                     });
                 } else {
-                    tbody.innerHTML = '<tr><td colspan="4" class="p-4 text-center text-gray-500">No se pudieron cargar los datos desde GitHub.</td></tr>';
+                    tbody.innerHTML = '<tr><td colspan="5" class="p-4 text-center text-gray-500">No se pudieron cargar los datos desde GitHub.</td></tr>';
                 }
             }
             cargarDatos();
