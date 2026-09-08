@@ -69,7 +69,10 @@ def dashboard():
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Canasta Básica Alimentaria</title>
+        <!-- Tailwind CSS -->
         <script src="https://cdn.tailwindcss.com"></script>
+        <!-- Chart.js para gráficos interactivos -->
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     </head>
     <body class="bg-gray-100 text-gray-800 p-6">
         <div class="max-w-6xl mx-auto space-y-6">
@@ -107,22 +110,52 @@ def dashboard():
                     </button>
                 </div>
 
-                <!-- Tab 1: Detalle de Productos -->
-                <div id="tab-detalle" class="tab-contenido overflow-x-auto">
-                    <table class="w-full text-left text-sm">
-                        <thead class="bg-gray-100 text-gray-600 border-b">
-                            <tr>
-                                <th class="p-3">Categoría / Rubro</th>
-                                <th class="p-3">Producto</th>
-                                <th class="p-3">Muestras</th>
-                                <th class="p-3">Precio Estimado</th>
-                                <th class="p-3">Costo Mensual AE</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tabla-detalle" class="divide-y divide-gray-200">
-                            <tr><td colspan="5" class="p-4 text-center text-gray-400">Cargando datos...</td></tr>
-                        </tbody>
-                    </table>
+                <!-- Tab 1: Detalle de Productos + Gráfico interactivo -->
+                <div id="tab-detalle" class="tab-contenido p-6 space-y-6">
+                    
+                    <!-- Sección Gráfico de Torta Interactivo -->
+                    <div class="bg-gray-50 p-5 rounded-xl border border-gray-200 flex flex-col md:flex-row items-center justify-around gap-6">
+                        <div class="w-full md:w-1/2 max-w-sm">
+                            <h3 class="text-center font-bold text-gray-700 mb-3 text-sm uppercase tracking-wider">Costo Mensual por Categoría</h3>
+                            <canvas id="chart-categorias" class="max-h-64"></canvas>
+                        </div>
+                        <div class="w-full md:w-1/2 text-sm text-gray-600 space-y-3">
+                            <div class="bg-white p-4 rounded-lg border border-gray-200 space-y-2">
+                                <p class="font-bold text-gray-800 flex items-center gap-2">
+                                    <span>💡</span> Filtro Interactivo
+                                </p>
+                                <p class="text-xs text-gray-500 leading-relaxed">
+                                    Haz clic sobre cualquier porción del gráfico de torta para filtrar la lista inferior y visualizar únicamente los productos de esa categoría.
+                                </p>
+                            </div>
+
+                            <!-- Indicator de Filtro Activo -->
+                            <div id="badge-filtro" class="hidden items-center justify-between bg-blue-50 border border-blue-200 text-blue-800 px-4 py-2.5 rounded-lg font-medium">
+                                <span class="text-xs">Filtro activo: <strong id="cat-filtrada-nombre" class="text-sm font-bold text-blue-900"></strong></span>
+                                <button onclick="limpiarFiltroCategoria()" class="text-xs bg-blue-600 hover:bg-blue-700 text-white font-semibold px-2.5 py-1 rounded transition-colors">
+                                    Mostrar Todas ✖
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tabla de Productos -->
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-sm border-collapse">
+                            <thead class="bg-gray-100 text-gray-600 border-b">
+                                <tr>
+                                    <th class="p-3">Categoría / Rubro</th>
+                                    <th class="p-3">Producto</th>
+                                    <th class="p-3">Muestras</th>
+                                    <th class="p-3">Precio Estimado</th>
+                                    <th class="p-3">Costo Mensual AE</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tabla-detalle" class="divide-y divide-gray-200">
+                                <tr><td colspan="5" class="p-4 text-center text-gray-400">Cargando datos...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
 
                 <!-- Tab 2: Tabla Nutricional -->
@@ -164,6 +197,10 @@ def dashboard():
         </div>
 
         <script>
+            let globalDetalle = [];
+            let miChartCategorias = null;
+            let categoriaFiltroActual = null;
+
             async function fetchJSON(url) {
                 try {
                     let res = await fetch(url);
@@ -193,8 +230,136 @@ def dashboard():
                 });
             }
 
+            function renderizarGraficoCategorias(datos) {
+                const acumulado = {};
+                datos.forEach(item => {
+                    const cat = item.categoria || item.rubro || item.Rubro || 'Sin Categoría';
+                    const costo = Number(item.costo_mensual_ae) || 0;
+                    acumulado[cat] = (acumulado[cat] || 0) + costo;
+                });
+
+                const labels = Object.keys(acumulado);
+                const values = Object.values(acumulado);
+
+                const colores = [
+                    '#10B981', '#3B82F6', '#F59E0B', '#EF4444', '#8B5CF6', 
+                    '#EC4899', '#14B8A6', '#6366F1', '#84CC16', '#F97316'
+                ];
+
+                const ctx = document.getElementById('chart-categorias').getContext('2d');
+                
+                if (miChartCategorias) {
+                    miChartCategorias.destroy();
+                }
+
+                miChartCategorias = new Chart(ctx, {
+                    type: 'pie',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            data: values,
+                            backgroundColor: colores.slice(0, labels.length)
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: true,
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: { boxWidth: 12, font: { size: 11 } }
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        const val = context.raw || 0;
+                                        return ` ${context.label}: $ ${val.toLocaleString('es-AR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+                                    }
+                                }
+                            }
+                        },
+                        onClick: (e, elements) => {
+                            if (elements.length > 0) {
+                                const index = elements[0].index;
+                                const catSeleccionada = labels[index];
+                                filtrarPorCategoria(catSeleccionada);
+                            }
+                        }
+                    }
+                });
+            }
+
+            function filtrarPorCategoria(cat) {
+                if (categoriaFiltroActual === cat) {
+                    limpiarFiltroCategoria();
+                    return;
+                }
+                categoriaFiltroActual = cat;
+                
+                const badge = document.getElementById('badge-filtro');
+                badge.classList.remove('hidden');
+                badge.classList.add('flex');
+                document.getElementById('cat-filtrada-nombre').innerText = cat;
+                
+                poblarTablaDetalle();
+            }
+
+            function limpiarFiltroCategoria() {
+                categoriaFiltroActual = null;
+                
+                const badge = document.getElementById('badge-filtro');
+                badge.classList.add('hidden');
+                badge.classList.remove('flex');
+                
+                poblarTablaDetalle();
+            }
+
+            function poblarTablaDetalle() {
+                const tbodyDetalle = document.getElementById('tabla-detalle');
+                tbodyDetalle.innerHTML = '';
+
+                if (!globalDetalle || globalDetalle.length === 0) {
+                    tbodyDetalle.innerHTML = '<tr><td colspan="5" class="p-4 text-center text-gray-500">No se pudieron cargar los datos de detalle.</td></tr>';
+                    return;
+                }
+
+                const fechaReciente = globalDetalle[globalDetalle.length - 1]?.fecha;
+                let filtrados = fechaReciente ? globalDetalle.filter(d => d.fecha === fechaReciente) : globalDetalle;
+                if (filtrados.length === 0) filtrados = globalDetalle;
+
+                if (categoriaFiltroActual) {
+                    filtrados = filtrados.filter(item => {
+                        const cat = item.categoria || item.rubro || item.Rubro || '-';
+                        return cat === categoriaFiltroActual;
+                    });
+                }
+
+                if (filtrados.length === 0) {
+                    tbodyDetalle.innerHTML = '<tr><td colspan="5" class="p-4 text-center text-gray-500">No hay productos disponibles para esta categoría.</td></tr>';
+                    return;
+                }
+
+                filtrados.forEach(item => {
+                    const tr = document.createElement('tr');
+                    const categoria = item.categoria || item.rubro || item.Rubro || '-';
+                    const producto = item.producto || item.Producto || '-';
+                    const muestras = item.coincidencias || item.muestras || 0;
+                    const precio = Number(item.precio_unitario_estimado) || 0;
+                    const costoAE = Number(item.costo_mensual_ae) || 0;
+
+                    tr.innerHTML = `
+                        <td class="p-3 text-gray-600 font-medium">${categoria}</td>
+                        <td class="p-3 font-semibold text-gray-900">${producto}</td>
+                        <td class="p-3 text-gray-500">${muestras}</td>
+                        <td class="p-3">$ ${precio.toLocaleString('es-AR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+                        <td class="p-3 font-semibold text-gray-800">$ ${costoAE.toLocaleString('es-AR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+                    `;
+                    tbodyDetalle.appendChild(tr);
+                });
+            }
+
             async function cargarDatos() {
-                // 1. Cargar Totales (KPIs y Tabla Histórica)
+                // 1. Cargar Totales
                 const totales = await fetchJSON('/api/totales');
                 if (Array.isArray(totales) && totales.length > 0) {
                     const ultimo = totales[totales.length - 1];
@@ -227,34 +392,16 @@ def dashboard():
                 }
 
                 // 2. Cargar Detalle de Productos
-                const detalle = await fetchJSON('/api/detalle');
-                const tbodyDetalle = document.getElementById('tabla-detalle');
-                tbodyDetalle.innerHTML = '';
-                
-                if (Array.isArray(detalle) && detalle.length > 0) {
-                    const fechaReciente = detalle[detalle.length - 1]?.fecha;
-                    let filtrados = fechaReciente ? detalle.filter(d => d.fecha === fechaReciente) : detalle;
-                    if (filtrados.length === 0) filtrados = detalle;
+                globalDetalle = await fetchJSON('/api/detalle');
+                if (Array.isArray(globalDetalle) && globalDetalle.length > 0) {
+                    const fechaReciente = globalDetalle[globalDetalle.length - 1]?.fecha;
+                    let ultimosDatos = fechaReciente ? globalDetalle.filter(d => d.fecha === fechaReciente) : globalDetalle;
+                    if (ultimosDatos.length === 0) ultimosDatos = globalDetalle;
 
-                    filtrados.forEach(item => {
-                        const tr = document.createElement('tr');
-                        const categoria = item.categoria || item.rubro || item.Rubro || '-';
-                        const producto = item.producto || item.Producto || '-';
-                        const muestras = item.coincidencias || item.muestras || 0;
-                        const precio = Number(item.precio_unitario_estimado) || 0;
-                        const costoAE = Number(item.costo_mensual_ae) || 0;
-
-                        tr.innerHTML = `
-                            <td class="p-3 text-gray-600 font-medium">${categoria}</td>
-                            <td class="p-3 font-semibold text-gray-900">${producto}</td>
-                            <td class="p-3 text-gray-500">${muestras}</td>
-                            <td class="p-3">$ ${precio.toLocaleString('es-AR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
-                            <td class="p-3 font-semibold text-gray-800">$ ${costoAE.toLocaleString('es-AR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
-                        `;
-                        tbodyDetalle.appendChild(tr);
-                    });
+                    renderizarGraficoCategorias(ultimosDatos);
+                    poblarTablaDetalle();
                 } else {
-                    tbodyDetalle.innerHTML = '<tr><td colspan="5" class="p-4 text-center text-gray-500">No se pudieron cargar los datos de detalle.</td></tr>';
+                    document.getElementById('tabla-detalle').innerHTML = '<tr><td colspan="5" class="p-4 text-center text-gray-500">No se pudieron cargar los datos de detalle.</td></tr>';
                 }
 
                 // 3. Cargar Tabla Nutricional
