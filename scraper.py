@@ -13,12 +13,12 @@ COEFICIENTE_HOGAR_TIPO = 3.09
 # ------------------------------------------------------------------------------
 CBA_INDEC = [
     # --- PANADERÍA Y CEREALES ---
-    {"rubro": "Panadería", "producto": "Pan francés", "keywords": ["pani"], "excluir": ["rallado", "lactal", "hamburguesa", "pancho"], "cantidad_ae": 6.30, "kcal_100g": 265, "prot_100g": 9.0, "carb_100g": 55.0, "grasas_100g": 1.2},
-    {"rubro": "Panadería", "producto": "Galletitas de agua", "keywords": ["galletitas agua", "gall agua", "galleta agua"], "excluir": ["dulce", "rellena"], "cantidad_ae": 1.29, "kcal_100g": 420, "prot_100g": 9.5, "carb_100g": 68.0, "grasas_100g": 12.0},
-    {"rubro": "Panadería", "producto": "Galletitas dulces", "keywords": ["galletitas dulces", "gall dulce", "galleta dulce"], "excluir": ["agua", "salada"], "cantidad_ae": 0.60, "kcal_100g": 450, "prot_100g": 6.5, "carb_100g": 72.0, "grasas_100g": 15.0},
-    {"rubro": "Almacén", "producto": "Harina de trigo 000", "keywords": ["harina trigo 000", "harina 000"], "excluir": ["0000", "leudante", "maiz", "premezcla"], "cantidad_ae": 1.02, "kcal_100g": 340, "prot_100g": 10.0, "carb_100g": 72.0, "grasas_100g": 1.2},
+    {"rubro": "Panadería", "producto": "Pan francés", "keywords": ["pan"], "excluir": ["rallado", "lactal", "hamburguesa", "pancho"], "cantidad_ae": 6.30, "kcal_100g": 265, "prot_100g": 9.0, "carb_100g": 55.0, "grasas_100g": 1.2},
+    {"rubro": "Panadería", "producto": "Galletitas de agua", "keywords": ["galletitas agua", "gals", "galleta agua"], "excluir": ["dulce", "rellena"], "cantidad_ae": 1.29, "kcal_100g": 420, "prot_100g": 9.5, "carb_100g": 68.0, "grasas_100g": 12.0},
+    {"rubro": "Panadería", "producto": "Galletitas dulces", "keywords": ["galletitas dulces", "gald", "galleta dulce"], "excluir": ["agua", "salada"], "cantidad_ae": 0.60, "kcal_100g": 450, "prot_100g": 6.5, "carb_100g": 72.0, "grasas_100g": 15.0},
+    {"rubro": "Almacén", "producto": "Harina de trigo 000", "keywords": ["hart", "harina 000"], "excluir": ["0000", "leudante", "maiz", "premezcla"], "cantidad_ae": 1.02, "kcal_100g": 340, "prot_100g": 10.0, "carb_100g": 72.0, "grasas_100g": 1.2},
     {"rubro": "Almacén", "producto": "Arroz blanco", "keywords": ["arroz", "arr "], "excluir": ["alicond", "esp ", "saborizador", "caldo", "galleta", "inflado", "integral"], "cantidad_ae": 0.63, "kcal_100g": 354, "prot_100g": 7.0, "carb_100g": 78.0, "grasas_100g": 0.6},
-    {"rubro": "Almacén", "producto": "Fideos secos", "keywords": ["fideos", "fid "], "excluir": ["sopero", "sopa", "salsa", "caldo"], "cantidad_ae": 1.29, "kcal_100g": 355, "prot_100g": 12.0, "carb_100g": 73.0, "grasas_100g": 1.5},
+    {"rubro": "Almacén", "producto": "Fideos secos", "keywords": ["fido"], "excluir": ["sopero", "sopa", "salsa", "caldo"], "cantidad_ae": 1.29, "kcal_100g": 355, "prot_100g": 12.0, "carb_100g": 73.0, "grasas_100g": 1.5},
     {"rubro": "Almacén", "producto": "Harina de maíz (Polenta)", "keywords": ["polenta", "harina maiz"], "excluir": ["almidon"], "cantidad_ae": 0.30, "kcal_100g": 350, "prot_100g": 8.0, "carb_100g": 76.0, "grasas_100g": 1.0},
 
     # --- CARNES Y DERIVADOS ---
