@@ -58,9 +58,9 @@ CBA_INDEC = [
     {"rubro": "Almacén", "producto": "Dulce de leche", "keywords": ["dulce de leche", "dulce leche"], "excluir": ["repostero", "alfajor", "helado"], "cantidad_ae": 0.30, "kcal_100g": 315, "prot_100g": 6.0, "carb_100g": 55.0, "grasas_100g": 7.5},
     {"rubro": "Almacén", "producto": "Mermelada", "keywords": ["mermelada"], "excluir": ["diet", "sin azucar"], "cantidad_ae": 0.20, "kcal_100g": 260, "prot_100g": 0.4, "carb_100g": 65.0, "grasas_100g": 0.1},
     {"rubro": "Almacén", "producto": "Lentejas secas", "keywords": ["lentejas", "legu "], "excluir": ["poroto", "garbanzo", "sopa", "lata"], "cantidad_ae": 0.20, "kcal_100g": 350, "prot_100g": 25.0, "carb_100g": 60.0, "grasas_100g": 1.0},
-    {"rubro": "Almacén", "producto": "Yerba mate", "keywords": ["yerba mate", "yerba"], "excluir": ["compuesta", "hierbas", "mate cocido"], "cantidad_ae": 0.60, "kcal_100g": 30, "prot_100g": 1.0, "carb_100g": 6.0, "grasas_100g": 0.0},
+    {"rubro": "Almacén", "producto": "Yerba mate", "keywords": ["yerb"], "excluir": ["compuesta", "hierbas", "mate cocido"], "cantidad_ae": 0.60, "kcal_100g": 30, "prot_100g": 1.0, "carb_100g": 6.0, "grasas_100g": 0.0},
     {"rubro": "Almacén", "producto": "Té en saquitos", "keywords": ["te saquitos", "te "], "excluir": ["verde", "manzanilla", "boldo", "frio"], "cantidad_ae": 0.05, "kcal_100g": 1, "prot_100g": 0.0, "carb_100g": 0.2, "grasas_100g": 0.0},
-    {"rubro": "Almacén", "producto": "Café molido", "keywords": ["cafe molido", "cafe "], "excluir": ["instantaneo", "capsula", "torrado"], "cantidad_ae": 0.05, "kcal_100g": 2, "prot_100g": 0.1, "carb_100g": 0.3, "grasas_100g": 0.0},
+    {"rubro": "Almacén", "producto": "Café molido", "keywords": ["cafm"], "excluir": ["instantaneo", "capsula", "torrado"], "cantidad_ae": 0.05, "kcal_100g": 2, "prot_100g": 0.1, "carb_100g": 0.3, "grasas_100g": 0.0},
     {"rubro": "Almacén", "producto": "Sal fina", "keywords": ["sal fina"], "excluir": ["gruesa", "parrillera", "marina"], "cantidad_ae": 0.15, "kcal_100g": 0, "prot_100g": 0.0, "carb_100g": 0.0, "grasas_100g": 0.0}
 ]
 
