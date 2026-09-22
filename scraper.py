@@ -13,7 +13,7 @@ COEFICIENTE_HOGAR_TIPO = 3.09
 # ------------------------------------------------------------------------------
 CBA_INDEC = [
     # --- PANADERÍA Y CEREALES ---
-    {"rubro": "Panadería", "producto": "Pan francés", "keywords": ["pan frances", "pan franc"], "excluir": ["rallado", "lactal", "hamburguesa", "pancho"], "cantidad_ae": 6.30, "kcal_100g": 265, "prot_100g": 9.0, "carb_100g": 55.0, "grasas_100g": 1.2},
+    {"rubro": "Panadería", "producto": "Pan francés", "keywords": ["pani"], "excluir": ["rallado", "lactal", "hamburguesa", "pancho"], "cantidad_ae": 6.30, "kcal_100g": 265, "prot_100g": 9.0, "carb_100g": 55.0, "grasas_100g": 1.2},
     {"rubro": "Panadería", "producto": "Galletitas de agua", "keywords": ["galletitas agua", "gall agua", "galleta agua"], "excluir": ["dulce", "rellena"], "cantidad_ae": 1.29, "kcal_100g": 420, "prot_100g": 9.5, "carb_100g": 68.0, "grasas_100g": 12.0},
     {"rubro": "Panadería", "producto": "Galletitas dulces", "keywords": ["galletitas dulces", "gall dulce", "galleta dulce"], "excluir": ["agua", "salada"], "cantidad_ae": 0.60, "kcal_100g": 450, "prot_100g": 6.5, "carb_100g": 72.0, "grasas_100g": 15.0},
     {"rubro": "Almacén", "producto": "Harina de trigo 000", "keywords": ["harina trigo 000", "harina 000"], "excluir": ["0000", "leudante", "maiz", "premezcla"], "cantidad_ae": 1.02, "kcal_100g": 340, "prot_100g": 10.0, "carb_100g": 72.0, "grasas_100g": 1.2},
