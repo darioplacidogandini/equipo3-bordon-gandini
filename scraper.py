@@ -13,13 +13,13 @@ COEFICIENTE_HOGAR_TIPO = 3.09
 # ------------------------------------------------------------------------------
 CBA_INDEC = [
     # --- PANADERÍA Y CEREALES ---
-    {"rubro": "Panadería", "producto": "Pan francés", "keywords": ["pan"], "excluir": ["rallado", "lactal", "hamburguesa", "pancho"], "cantidad_ae": 6.30, "kcal_100g": 265, "prot_100g": 9.0, "carb_100g": 55.0, "grasas_100g": 1.2},
-    {"rubro": "Panadería", "producto": "Galletitas de agua", "keywords": ["galletitas agua", "gals", "galleta agua"], "excluir": ["dulce", "rellena"], "cantidad_ae": 1.29, "kcal_100g": 420, "prot_100g": 9.5, "carb_100g": 68.0, "grasas_100g": 12.0},
-    {"rubro": "Panadería", "producto": "Galletitas dulces", "keywords": ["galletitas dulces", "gald", "galleta dulce"], "excluir": ["agua", "salada"], "cantidad_ae": 0.60, "kcal_100g": 450, "prot_100g": 6.5, "carb_100g": 72.0, "grasas_100g": 15.0},
-    {"rubro": "Almacén", "producto": "Harina de trigo 000", "keywords": ["hart", "harina 000"], "excluir": ["0000", "leudante", "maiz", "premezcla"], "cantidad_ae": 1.02, "kcal_100g": 340, "prot_100g": 10.0, "carb_100g": 72.0, "grasas_100g": 1.2},
-    {"rubro": "Almacén", "producto": "Arroz blanco", "keywords": ["arroz", "arr "], "excluir": ["alicond", "esp ", "saborizador", "caldo", "galleta", "inflado", "integral"], "cantidad_ae": 0.63, "kcal_100g": 354, "prot_100g": 7.0, "carb_100g": 78.0, "grasas_100g": 0.6},
+    {"rubro": "Panadería", "producto": "Pan francés", "keywords": ["pani"], "excluir": ["rallado", "lactal", "hamburguesa", "pancho"], "cantidad_ae": 6.30, "kcal_100g": 265, "prot_100g": 9.0, "carb_100g": 55.0, "grasas_100g": 1.2},
+    {"rubro": "Panadería", "producto": "Galletitas de agua", "keywords": ["gals", "galleta agua"], "excluir": ["dulce", "rellena"], "cantidad_ae": 1.29, "kcal_100g": 420, "prot_100g": 9.5, "carb_100g": 68.0, "grasas_100g": 12.0},
+    {"rubro": "Panadería", "producto": "Galletitas dulces", "keywords": ["gald", "galleta dulce"], "excluir": ["agua", "salada"], "cantidad_ae": 0.60, "kcal_100g": 450, "prot_100g": 6.5, "carb_100g": 72.0, "grasas_100g": 15.0},
+    {"rubro": "Almacén", "producto": "Harina de trigo 000", "keywords": ["hart"], "excluir": ["0000", "leudante", "maiz", "premezcla"], "cantidad_ae": 1.02, "kcal_100g": 340, "prot_100g": 10.0, "carb_100g": 72.0, "grasas_100g": 1.2},
+    {"rubro": "Almacén", "producto": "Arroz blanco", "keywords": ["arr"], "excluir": ["alicond", "esp ", "saborizador", "caldo", "galleta", "inflado", "integral"], "cantidad_ae": 0.63, "kcal_100g": 354, "prot_100g": 7.0, "carb_100g": 78.0, "grasas_100g": 0.6},
     {"rubro": "Almacén", "producto": "Fideos secos", "keywords": ["fido"], "excluir": ["sopero", "sopa", "salsa", "caldo"], "cantidad_ae": 1.29, "kcal_100g": 355, "prot_100g": 12.0, "carb_100g": 73.0, "grasas_100g": 1.5},
-    {"rubro": "Almacén", "producto": "Harina de maíz (Polenta)", "keywords": ["polenta", "harina maiz"], "excluir": ["almidon"], "cantidad_ae": 0.30, "kcal_100g": 350, "prot_100g": 8.0, "carb_100g": 76.0, "grasas_100g": 1.0},
+    {"rubro": "Almacén", "producto": "Harina de maíz (Polenta)", "keywords": ["harm"], "excluir": ["almidon"], "cantidad_ae": 0.30, "kcal_100g": 350, "prot_100g": 8.0, "carb_100g": 76.0, "grasas_100g": 1.0},
 
     # --- CARNES Y DERIVADOS ---
     {"rubro": "Carnes", "producto": "Asado con hueso", "keywords": ["asado"], "excluir": ["carbon", "salsa", "churrasquera"], "cantidad_ae": 0.70, "kcal_100g": 250, "prot_100g": 18.0, "carb_100g": 0.0, "grasas_100g": 20.0},
@@ -33,7 +33,7 @@ CBA_INDEC = [
     {"rubro": "Fiambrería", "producto": "Paleta cocida / Jamón", "keywords": ["paleta cocida", "paleta fiambre", "jamon cocido"], "excluir": ["vacuno", "fresca"], "cantidad_ae": 0.20, "kcal_100g": 130, "prot_100g": 16.0, "carb_100g": 2.0, "grasas_100g": 6.5},
 
     # --- LÁCTEOS Y HUEVOS ---
-    {"rubro": "Lácteos y Huevos", "producto": "Leche entera fresca", "keywords": ["leche entera", "leche sachet", "leche uat"], "excluir": ["polvo", "condensada", "descremada", "chocolatada"], "cantidad_ae": 7.95, "kcal_100g": 60, "prot_100g": 3.1, "carb_100g": 4.7, "grasas_100g": 3.0},
+    {"rubro": "Lácteos y Huevos", "producto": "Leche entera fresca", "keywords": ["lech"], "excluir": ["polvo", "condensada", "descremada", "chocolatada"], "cantidad_ae": 7.95, "kcal_100g": 60, "prot_100g": 3.1, "carb_100g": 4.7, "grasas_100g": 3.0},
     {"rubro": "Lácteos y Huevos", "producto": "Queso cremoso", "keywords": ["queso cremoso", "queso cremon", "queso cuartirolo"], "excluir": ["rallado", "untable", "sardo"], "cantidad_ae": 0.30, "kcal_100g": 310, "prot_100g": 18.0, "carb_100g": 1.5, "grasas_100g": 26.0},
     {"rubro": "Lácteos y Huevos", "producto": "Queso sardo", "keywords": ["queso sardo"], "excluir": ["cremoso", "untable"], "cantidad_ae": 0.10, "kcal_100g": 370, "prot_100g": 28.0, "carb_100g": 1.8, "grasas_100g": 28.0},
     {"rubro": "Lácteos y Huevos", "producto": "Yogur entero", "keywords": ["yogur entero", "yogur firme", "yogur sachet"], "excluir": ["descremado", "griego"], "cantidad_ae": 0.60, "kcal_100g": 63, "prot_100g": 3.3, "carb_100g": 5.0, "grasas_100g": 3.2},
@@ -53,13 +53,13 @@ CBA_INDEC = [
     {"rubro": "Frutas y Verduras", "producto": "Naranja", "keywords": ["naranja"], "excluir": ["jugo", "gaseosa", "mermelada"], "cantidad_ae": 1.20, "kcal_100g": 47, "prot_100g": 0.9, "carb_100g": 12.0, "grasas_100g": 0.1},
 
     # --- ALMACÉN Y VARIOS ---
-    {"rubro": "Almacén", "producto": "Aceite de girasol", "keywords": ["aceite girasol"], "excluir": ["oliva", "mezcla", "aerosol"], "cantidad_ae": 1.20, "kcal_100g": 884, "prot_100g": 0.0, "carb_100g": 0.0, "grasas_100g": 100.0},
-    {"rubro": "Almacén", "producto": "Azúcar", "keywords": ["azucar"], "excluir": ["impalpable", "negra", "rubia"], "cantidad_ae": 1.20, "kcal_100g": 387, "prot_100g": 0.0, "carb_100g": 100.0, "grasas_100g": 0.0},
-    {"rubro": "Almacén", "producto": "Dulce de leche", "keywords": ["dulce de leche", "dulce leche"], "excluir": ["repostero", "alfajor", "helado"], "cantidad_ae": 0.30, "kcal_100g": 315, "prot_100g": 6.0, "carb_100g": 55.0, "grasas_100g": 7.5},
-    {"rubro": "Almacén", "producto": "Mermelada", "keywords": ["mermelada"], "excluir": ["diet", "sin azucar"], "cantidad_ae": 0.20, "kcal_100g": 260, "prot_100g": 0.4, "carb_100g": 65.0, "grasas_100g": 0.1},
-    {"rubro": "Almacén", "producto": "Lentejas secas", "keywords": ["lentejas", "legu "], "excluir": ["poroto", "garbanzo", "sopa", "lata"], "cantidad_ae": 0.20, "kcal_100g": 350, "prot_100g": 25.0, "carb_100g": 60.0, "grasas_100g": 1.0},
+    {"rubro": "Almacén", "producto": "Aceite de girasol", "keywords": ["acei"], "excluir": ["oliva", "mezcla", "aerosol"], "cantidad_ae": 1.20, "kcal_100g": 884, "prot_100g": 0.0, "carb_100g": 0.0, "grasas_100g": 100.0},
+    {"rubro": "Almacén", "producto": "Azúcar", "keywords": ["azuc"], "excluir": ["impalpable", "negra", "rubia"], "cantidad_ae": 1.20, "kcal_100g": 387, "prot_100g": 0.0, "carb_100g": 100.0, "grasas_100g": 0.0},
+    {"rubro": "Almacén", "producto": "Dulce de leche", "keywords": ["dulce leche"], "excluir": ["repostero", "alfajor", "helado"], "cantidad_ae": 0.30, "kcal_100g": 315, "prot_100g": 6.0, "carb_100g": 55.0, "grasas_100g": 7.5},
+    {"rubro": "Almacén", "producto": "Mermelada", "keywords": ["mer"], "excluir": ["diet", "sin azucar"], "cantidad_ae": 0.20, "kcal_100g": 260, "prot_100g": 0.4, "carb_100g": 65.0, "grasas_100g": 0.1},
+    {"rubro": "Almacén", "producto": "Lentejas secas", "keywords": ["legu"], "excluir": ["poroto", "garbanzo", "sopa", "lata"], "cantidad_ae": 0.20, "kcal_100g": 350, "prot_100g": 25.0, "carb_100g": 60.0, "grasas_100g": 1.0},
     {"rubro": "Almacén", "producto": "Yerba mate", "keywords": ["yerb"], "excluir": ["compuesta", "hierbas", "mate cocido"], "cantidad_ae": 0.60, "kcal_100g": 30, "prot_100g": 1.0, "carb_100g": 6.0, "grasas_100g": 0.0},
-    {"rubro": "Almacén", "producto": "Té en saquitos", "keywords": ["te saquitos", "te "], "excluir": ["verde", "manzanilla", "boldo", "frio"], "cantidad_ae": 0.05, "kcal_100g": 1, "prot_100g": 0.0, "carb_100g": 0.2, "grasas_100g": 0.0},
+    {"rubro": "Almacén", "producto": "Té en saquitos", "keywords": ["te"], "excluir": ["verde", "manzanilla", "boldo", "frio"], "cantidad_ae": 0.05, "kcal_100g": 1, "prot_100g": 0.0, "carb_100g": 0.2, "grasas_100g": 0.0},
     {"rubro": "Almacén", "producto": "Café molido", "keywords": ["cafm"], "excluir": ["instantaneo", "capsula", "torrado"], "cantidad_ae": 0.05, "kcal_100g": 2, "prot_100g": 0.1, "carb_100g": 0.3, "grasas_100g": 0.0},
     {"rubro": "Almacén", "producto": "Sal fina", "keywords": ["sal fina"], "excluir": ["gruesa", "parrillera", "marina"], "cantidad_ae": 0.15, "kcal_100g": 0, "prot_100g": 0.0, "carb_100g": 0.0, "grasas_100g": 0.0}
 ]
