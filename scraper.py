@@ -27,7 +27,7 @@ CBA_INDEC = [
     {"rubro": "Carnes", "producto": "Nalga", "keywords": ["nalga"], "excluir": ["cerdo", "pollo"], "cantidad_ae": 1.20, "kcal_100g": 135, "prot_100g": 21.0, "carb_100g": 0.0, "grasas_100g": 5.0},
     {"rubro": "Carnes", "producto": "Paleta", "keywords": ["paleta vacuno", "paleta"], "excluir": ["cerdo", "fiambre", "fresca", "cocida"], "cantidad_ae": 1.20, "kcal_100g": 145, "prot_100g": 20.0, "carb_100g": 0.0, "grasas_100g": 7.0},
     {"rubro": "Carnes", "producto": "Cuadril", "keywords": ["cuadril"], "excluir": ["cerdo"], "cantidad_ae": 0.80, "kcal_100g": 140, "prot_100g": 21.5, "carb_100g": 0.0, "grasas_100g": 5.5},
-    {"rubro": "Carnes", "producto": "Hígado", "keywords": ["higado"], "excluir": ["paté", "pate"], "cantidad_ae": 0.45, "kcal_100g": 133, "prot_100g": 20.4, "carb_100g": 3.8, "grasas_100g": 3.6, "proxy_producto": "Carnaza común / Picada", "proxy_factor": 0.65},
+    {"rubro": "Carnes", "producto": "Hígado", "keywords": ["higado"], "excluir": ["paté", "pate"], "cantidad_ae": 0.45, "kcal_100g": 133, "prot_100g": 20.4, "carb_100g": 3.8, "grasas_100g": 3.6},
     {"rubro": "Carnes", "producto": "Pollo entero", "keywords": ["pollo entero", "pollo fresco", "pollo "], "excluir": ["patitas", "medallon", "alitas", "pata muslo", "suprema", "caldo"], "cantidad_ae": 2.13, "kcal_100g": 170, "prot_100g": 18.0, "carb_100g": 0.0, "grasas_100g": 11.0},
     {"rubro": "Carnes", "producto": "Pescado (Merluza)", "keywords": ["merluza", "filet merluza"], "excluir": ["rebozado", "formitas", "empanado"], "cantidad_ae": 0.40, "kcal_100g": 90, "prot_100g": 19.0, "carb_100g": 0.0, "grasas_100g": 1.2},
     {"rubro": "Fiambrería", "producto": "Paleta cocida / Jamón", "keywords": ["paleta cocida", "paleta fiambre", "jamon cocido"], "excluir": ["vacuno", "fresca"], "cantidad_ae": 0.20, "kcal_100g": 130, "prot_100g": 16.0, "carb_100g": 2.0, "grasas_100g": 6.5},
@@ -161,67 +161,52 @@ def main():
     fecha_hoy = ahora.strftime("%Y-%m-%d")
     timestamp = ahora.strftime("%Y-%m-%d %H:%M:%S")
 
-    print(f"=== INICIANDO SCRAPING AMPLIADO Y FILTRADO ({timestamp}) ===")
+    print(f"=== INICIANDO SCRAPING (MENOR PRECIO POR PRODUCTO) ({timestamp}) ===")
     
     todas_observaciones_raw = []
     resumen_productos = []
 
-    # 1. Scraping exhaustivo con paginación y filtrado por rubro y producto
+    # 1. Scraping y selección del producto con menor precio
     for item in CBA_INDEC:
         obs = extraer_observaciones_raw(scraper, item, fecha_hoy, timestamp)
-        todas_observaciones_raw.extend(obs)
-        
-        precios = [o['precio'] for o in obs]
-        cant_obs = len(precios)
-
         registro = item.copy()
-        
-        if cant_obs > 0:
-            precio_final = float(pd.Series(precios).median())
-            metodo_calculo = "Mediana directa"
+
+        if obs:
+            # Seleccionar la observación de menor precio
+            obs_minima = min(obs, key=lambda x: x['precio'])
+            precio_final = obs_minima['precio']
+            metodo_calculo = "Precio Mínimo Encontrado"
+            coincidencias = 1
+            todas_observaciones_raw.append(obs_minima)
         else:
-            precio_final = None
-            metodo_calculo = "Faltante (Pendiente Imputación)"
+            # Si no hay observaciones, se asigna 0
+            precio_final = 0.0
+            metodo_calculo = "Sin coincidencias (0)"
+            coincidencias = 0
 
         registro.update({
             'fecha': fecha_hoy,
             'timestamp': timestamp,
             'precio_unitario_estimado': precio_final,
-            'coincidencias': cant_obs,
+            'coincidencias': coincidencias,
             'metodo_calculo': metodo_calculo
         })
         resumen_productos.append(registro)
-        print(f"-> Rubro: '{item['rubro']}' | Producto: '{item['producto']}' | Obs: {cant_obs}")
+        print(f"-> Rubro: '{item['rubro']}' | Producto: '{item['producto']}' | Precio seleccionado: ${precio_final:,.2f}")
 
     df_resumen = pd.DataFrame(resumen_productos)
     df_raw = pd.DataFrame(todas_observaciones_raw)
 
-    # 2. Persistir archivo histórico RAW
+    # 2. Persistir archivo histórico RAW (Solo los productos seleccionados)
     file_raw = "cba_observaciones_raw.csv"
     if not df_raw.empty:
         if os.path.exists(file_raw):
             df_raw.to_csv(file_raw, mode='a', header=False, index=False, encoding='utf-8-sig')
         else:
             df_raw.to_csv(file_raw, index=False, encoding='utf-8-sig')
-        print(f"\n📦 Se guardaron {len(df_raw)} observaciones de precios crudas.")
+        print(f"\n📦 Se guardaron {len(df_raw)} productos seleccionados (los de menor precio).")
 
-    # 3. Imputación de Proxies para Faltantes
-    for idx, row in df_resumen.iterrows():
-        if pd.isna(row['precio_unitario_estimado']) or row['coincidencias'] == 0:
-            proxy = row.get('proxy_producto')
-            factor = row.get('proxy_factor', 1.0)
-            
-            if proxy and proxy in df_resumen['producto'].values:
-                precio_proxy = df_resumen.loc[df_resumen['producto'] == proxy, 'precio_unitario_estimado'].values[0]
-                if pd.notna(precio_proxy):
-                    df_resumen.at[idx, 'precio_unitario_estimado'] = precio_proxy * factor
-                    df_resumen.at[idx, 'metodo_calculo'] = f"Proxy ({proxy} x {factor})"
-            else:
-                mediana_valida = df_resumen['precio_unitario_estimado'].dropna().median()
-                df_resumen.at[idx, 'precio_unitario_estimado'] = mediana_valida
-                df_resumen.at[idx, 'metodo_calculo'] = "Mediana General"
-
-    # 4. Cálculo de Totales y Exportación de Detalle
+    # 3. Cálculo de Totales y Exportación de Detalle
     df_resumen['costo_mensual_ae'] = df_resumen['cantidad_ae'] * df_resumen['precio_unitario_estimado']
     df_resumen['costo_hogar_tipo'] = df_resumen['costo_mensual_ae'] * COEFICIENTE_HOGAR_TIPO
 
@@ -237,7 +222,7 @@ def main():
 
     df_det_final.to_csv(file_detalle, index=False, encoding='utf-8-sig')
 
-    # 5. Exportación de Totales Históricos
+    # 4. Exportación de Totales Históricos
     file_totales = "cba_historico_totales.csv"
     df_totales = pd.DataFrame([{
         'fecha': fecha_hoy,
@@ -251,7 +236,7 @@ def main():
     else:
         df_totales.to_csv(file_totales, index=False, encoding='utf-8-sig')
 
-    # 6. Exportación de Tabla Nutricional
+    # 5. Exportación de Tabla Nutricional
     df_nutri = df_resumen[[
         'rubro', 'producto', 'cantidad_ae', 'kcal_100g', 'prot_100g', 'carb_100g', 'grasas_100g'
     ]].copy()
@@ -270,17 +255,17 @@ def main():
     else:
         df_nutri.to_csv(file_nutricional, index=False, encoding='utf-8-sig')
 
-    # 7. Mostrar la tabla resultante por consola
+    # 6. Mostrar la tabla resultante por consola
     cols_pantalla = ['rubro', 'producto', 'coincidencias', 'precio_unitario_estimado', 'costo_mensual_ae', 'metodo_calculo']
     
     print("\n" + "="*95)
-    print("RESUMEN DE RESULTADOS (CBA - INDEC)")
+    print("RESUMEN DE RESULTADOS (CBA - MENOR PRECIO O CERO)")
     print("="*95)
     print(df_resumen[cols_pantalla].rename(columns={
         'rubro': 'Rubro',
         'producto': 'Producto',
-        'coincidencias': 'Obs.',
-        'precio_unitario_estimado': 'Precio Mediana ($)',
+        'coincidencias': 'Encontrado',
+        'precio_unitario_estimado': 'Precio Mínimo ($)',
         'costo_mensual_ae': 'Costo Mensual AE ($)',
         'metodo_calculo': 'Método Calculo'
     }).to_string(index=False))
