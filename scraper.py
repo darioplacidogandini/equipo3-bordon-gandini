@@ -279,6 +279,14 @@ def main():
     else:
         df_totales.to_csv(file_totales, index=False, encoding='utf-8-sig')
 
+    # --------------------------------------------------------------------------
+    # EXPORTACIÓN DE TABLA NUTRICIONAL
+    # --------------------------------------------------------------------------
+    cols_nutricionales = ['rubro', 'producto', 'kcal_100g', 'prot_100g', 'carb_100g', 'grasas_100g']
+    df_nutricional = pd.DataFrame(CBA_INDEC)[cols_nutricionales]
+    file_nutricional = "cba_tabla_nutricional.csv"
+    df_nutricional.to_csv(file_nutricional, index=False, encoding='utf-8-sig')
+
     # Resumen por consola
     cols_pantalla = ['rubro', 'producto', 'coincidencias', 'precio_unitario_estimado', 'costo_mensual_ae', 'metodo_calculo']
     
@@ -296,6 +304,7 @@ def main():
     print("="*95)
     print(f"✅ Costo Total Adulto Equivalente (AE): ${costo_total_ae:,.2f}")
     print(f"✅ Costo Total Hogar Tipo (3.09 AE):     ${costo_total_hogar:,.2f}")
+    print(f"✅ Tabla nutricional exportada en:      '{file_nutricional}'")
     print("="*95)
 
 if __name__ == "__main__":
