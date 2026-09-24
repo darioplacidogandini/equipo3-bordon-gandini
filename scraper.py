@@ -47,29 +47,22 @@ CBA_INDEC = [
 ]
 
 def extraer_factor_unidad(texto):
-    """
-    Detecta la cantidad/unidad en el texto comercial y devuelve el factor 
-    para escalar el precio a 1 Kilogramo o 1 Litro (ej: 500g -> factor 0.5 -> precio / 0.5).
-    """
     texto = texto.lower()
     
-    # 1. Búsqueda de Kilos o Litros directos: "1.5 kg", "1kg", "2 l", "1.5l"
     match_kgl = re.search(r'(\d+(?:[\.,]\d+)?)\s*(kg|kilo|kilos|l|lt|litro|litros)\b', texto)
     if match_kgl:
         val = float(match_kgl.group(1).replace(',', '.'))
         return val if val > 0 else 1.0
 
-    # 2. Búsqueda de Gramos, Millilitros o CC: "500g", "900 ml", "750 cc", "400 gr"
     match_gml = re.search(r'(\d+(?:[\.,]\d+)?)\s*(g|gr|grs|gramos|ml|cc)\b', texto)
     if match_gml:
         val = float(match_gml.group(1).replace(',', '.'))
         return (val / 1000.0) if val > 0 else 1.0
 
-    # 3. Unidades especiales (ej: maple de 30 huevos -> 2.5 docenas)
     if 'maple' in texto or '30' in texto:
         return 2.5
 
-    return 1.0  # Asunción por defecto (1 kg / 1 L)
+    return 1.0
 
 def extraer_observaciones_raw(scraper, item_config, fecha, timestamp, max_paginas=3):
     observaciones = []
@@ -132,7 +125,7 @@ def extraer_observaciones_raw(scraper, item_config, fecha, timestamp, max_pagina
                                     'descripcion_producto': texto[:80],
                                     'precio_publicado': valor_publicado,
                                     'factor_unidad': factor_unidad,
-                                    'precio': precio_normalizado_kgl  # Guardamos el precio normalizado por KG/L
+                                    'precio': precio_normalizado_kgl
                                 })
                                 nuevas_obs_pagina += 1
                         except ValueError:
@@ -171,9 +164,6 @@ def main():
         registro = item.copy()
         precio_indec = item.get("precio_indec", 0.0)
 
-        # --------------------------------------------------------------------------
-        # FILTRADO Y SELECCIÓN REPRESENTATIVA (BANDA DE TOLERANCIA + MEDIANA)
-        # --------------------------------------------------------------------------
         obs_validas = []
         if precio_indec > 0 and obs:
             p_min = precio_indec * 0.50
@@ -183,13 +173,11 @@ def main():
             obs_validas = obs
 
         if obs_validas:
-            # Seleccionar la Mediana para evitar sesgos de promociones puntuales o unidades pequeñas
             precios_normalizados = [o['precio'] for o in obs_validas]
             precio_final = float(np.median(precios_normalizados))
             metodo_calculo = "Mediana Normalizada (Scraping)"
             coincidencias = len(obs_validas)
             
-            # Guardamos la observación representativa más cercana a la mediana
             obs_representativa = min(obs_validas, key=lambda x: abs(x['precio'] - precio_final))
             todas_observaciones_raw.append(obs_representativa)
         else:
@@ -227,6 +215,26 @@ def main():
     print(f"✅ Costo Total Adulto Equivalente (AE): ${costo_total_ae:,.2f}")
     print(f"✅ Costo Total Hogar Tipo (3.09 AE):     ${costo_total_hogar:,.2f}")
     print("="*95)
+
+    # --------------------------------------------------------------------------
+    # GUARDAR DATOS EN ARCHIVO CSV HISTÓRICO
+    # --------------------------------------------------------------------------
+    archivo_csv = "cba_historico_detalle.csv"
+    
+    # Se remueve la columna de listas 'keywords' para evitar incoherencias en el formato del CSV
+    if 'keywords' in df_resumen.columns:
+        df_resumen_csv = df_resumen.drop(columns=['keywords'])
+    else:
+        df_resumen_csv = df_resumen.copy()
+
+    if os.path.exists(archivo_csv):
+        # Si el archivo ya existe, añade las nuevas filas
+        df_resumen_csv.to_csv(archivo_csv, mode='a', header=False, index=False, encoding="utf-8-sig")
+        print(f"📁 Registros añadidos exitosamente a '{archivo_csv}'.")
+    else:
+        # Si el archivo no existe, lo crea con la cabecera
+        df_resumen_csv.to_csv(archivo_csv, index=False, encoding="utf-8-sig")
+        print(f"📁 Archivo '{archivo_csv}' creado exitosamente.")
 
 if __name__ == "__main__":
     main()
