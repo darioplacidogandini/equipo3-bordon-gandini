@@ -1,0 +1,20 @@
+﻿rubro,producto,precio_indec,cantidad_ae,kcal_100g,prot_100g,carb_100g,grasas_100g,fecha,timestamp,precio_unitario_estimado,coincidencias,metodo_calculo,costo_mensual_ae,costo_hogar_tipo
+Panadería,Pan francés,2400.0,6.75,265,9.0,55.0,1.2,2026-09-24,2026-09-24 21:19:26,2400.0,0,Referencia Oficial INDEC,16200.0,50058.0
+Panadería,Galletitas de agua,3800.0,0.42,420,9.5,68.0,12.0,2026-09-24,2026-09-24 21:19:26,3800.0,0,Referencia Oficial INDEC,1596.0,4931.639999999999
+Panadería,Galletitas dulces,4200.0,0.21,450,6.5,72.0,15.0,2026-09-24,2026-09-24 21:19:26,4200.0,0,Referencia Oficial INDEC,882.0,2725.3799999999997
+Almacén,Harina de trigo 000,1200.0,1.08,340,10.0,72.0,1.2,2026-09-24,2026-09-24 21:19:26,873.16,1,Mediana Normalizada (Scraping),943.0128000000001,2913.909552
+Almacén,Arroz blanco,2800.0,1.2,354,7.0,78.0,0.6,2026-09-24,2026-09-24 21:19:26,2800.0,0,Referencia Oficial INDEC,3360.0,10382.4
+Almacén,Fideos secos,2200.0,1.74,355,12.0,73.0,1.5,2026-09-24,2026-09-24 21:19:26,2200.0,0,Referencia Oficial INDEC,3828.0,11828.519999999999
+Almacén,Harina de maíz (Polenta),1800.0,0.21,350,8.0,76.0,1.0,2026-09-24,2026-09-24 21:19:26,1800.0,0,Referencia Oficial INDEC,378.0,1168.02
+Frutas y Verduras,Papa blanca,1200.0,6.51,80,2.0,18.0,0.1,2026-09-24,2026-09-24 21:19:26,1200.0,0,Referencia Oficial INDEC,7812.0,24139.079999999998
+Frutas y Verduras,Batata,1600.0,0.51,86,1.6,20.0,0.1,2026-09-24,2026-09-24 21:19:26,1600.0,0,Referencia Oficial INDEC,816.0,2521.44
+Almacén,Azúcar,1400.0,1.23,387,0.0,100.0,0.0,2026-09-24,2026-09-24 21:19:26,1400.0,0,Referencia Oficial INDEC,1722.0,5320.98
+Almacén,Dulce de leche,3800.0,0.11,315,6.0,55.0,7.5,2026-09-24,2026-09-24 21:19:26,2864.82,1,Mediana Normalizada (Scraping),315.1302,973.752318
+Carnes,Asado con hueso,9500.0,0.7,250,18.0,0.0,20.0,2026-09-24,2026-09-24 21:19:26,9500.0,0,Referencia Oficial INDEC,6650.0,20548.5
+Carnes,Carnaza común / Picada,7200.0,1.2,210,19.5,0.0,14.0,2026-09-24,2026-09-24 21:19:26,7200.0,0,Referencia Oficial INDEC,8640.0,26697.6
+Carnes,Pollo entero,3800.0,1.67,170,18.0,0.0,11.0,2026-09-24,2026-09-24 21:19:26,3800.0,0,Referencia Oficial INDEC,6346.0,19609.14
+Lácteos y Huevos,Huevos (docena),3800.0,0.6,150,12.5,0.7,10.0,2026-09-24,2026-09-24 21:19:26,3800.0,0,Referencia Oficial INDEC,2280.0,7045.2
+Lácteos y Huevos,Leche entera,1650.0,9.27,60,3.1,4.7,3.0,2026-09-24,2026-09-24 21:19:26,1650.0,0,Referencia Oficial INDEC,15295.5,47263.095
+Lácteos y Huevos,Queso cuartirolo / cremoso,9800.0,0.15,310,18.0,1.5,26.0,2026-09-24,2026-09-24 21:19:26,9800.0,0,Referencia Oficial INDEC,1470.0,4542.3
+Almacén,Aceite de girasol,3200.0,1.2,884,0.0,0.0,100.0,2026-09-24,2026-09-24 21:19:26,3200.0,0,Referencia Oficial INDEC,3840.0,11865.599999999999
+Almacén,Yerba mate,4200.0,0.51,30,1.0,6.0,0.0,2026-09-24,2026-09-24 21:19:26,4200.0,0,Referencia Oficial INDEC,2142.0,6618.78
