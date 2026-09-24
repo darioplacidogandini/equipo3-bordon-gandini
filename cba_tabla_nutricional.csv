@@ -1,0 +1,56 @@
+﻿rubro,producto,kcal_100g,prot_100g,carb_100g,grasas_100g
+Panadería,Pan francés,265,9.0,55.0,1.2
+Panadería,Galletitas de agua,420,9.5,68.0,12.0
+Panadería,Galletitas dulces,450,6.5,72.0,15.0
+Almacén,Harina de trigo 000,340,10.0,72.0,1.2
+Almacén,Arroz blanco,354,7.0,78.0,0.6
+Almacén,Fideos secos,355,12.0,73.0,1.5
+Almacén,Harina de maíz (Polenta),350,8.0,76.0,1.0
+Frutas y Verduras,Papa blanca,80,2.0,18.0,0.1
+Frutas y Verduras,Batata,86,1.6,20.0,0.1
+Almacén,Azúcar,387,0.0,100.0,0.0
+Almacén,Dulce de leche,315,6.0,55.0,7.5
+Almacén,Dulce de batata,255,0.5,63.0,0.1
+Almacén,Mermelada,260,0.4,65.0,0.1
+Almacén,Lentejas secas,350,25.0,60.0,1.0
+Almacén,Arvejas secas / en lata,340,22.0,60.0,1.4
+Frutas y Verduras,Acelga,19,1.8,3.7,0.2
+Frutas y Verduras,Cebolla,40,1.1,9.0,0.1
+Frutas y Verduras,Lechuga,15,1.3,2.8,0.2
+Frutas y Verduras,Tomate perita / redondo,18,0.9,3.9,0.2
+Frutas y Verduras,Tomate envasado (pure/pelado),24,1.2,4.5,0.2
+Frutas y Verduras,Zanahoria,41,0.9,9.5,0.2
+Frutas y Verduras,Zapallo Anco,45,1.0,11.0,0.1
+Frutas y Verduras,Manzana,52,0.3,14.0,0.2
+Frutas y Verduras,Mandarina,53,0.8,13.3,0.3
+Frutas y Verduras,Naranja,47,0.9,12.0,0.1
+Frutas y Verduras,Banana,89,1.1,23.0,0.3
+Frutas y Verduras,Pera,57,0.4,15.0,0.1
+Carnes,Asado con hueso,250,18.0,0.0,20.0
+Carnes,Carnaza común / Picada,210,19.5,0.0,14.0
+Carnes,Espinazo,190,16.0,0.0,14.0
+Carnes,Paleta vacuno,145,20.0,0.0,7.0
+Carnes,Nalga,135,21.0,0.0,5.0
+Carnes,Pollo entero,170,18.0,0.0,11.0
+Carnes,Pescado (Merluza),90,19.0,0.0,1.2
+Carnes,Hígado (Menudencias),133,20.4,3.8,3.6
+Fiambrería,Paleta cocida,130,16.0,2.0,6.5
+Fiambrería,Salame,380,20.0,1.5,33.0
+Lácteos y Huevos,Huevos (unidades/kg),150,12.5,0.7,10.0
+Lácteos y Huevos,Leche entera,60,3.1,4.7,3.0
+Lácteos y Huevos,Queso crema,240,6.0,4.0,22.0
+Lácteos y Huevos,Queso cuartirolo / cremoso,310,18.0,1.5,26.0
+Lácteos y Huevos,Queso de rallar / Sardo,370,28.0,1.8,28.0
+Lácteos y Huevos,Yogur entero,63,3.3,5.0,3.2
+Lácteos y Huevos,Manteca,740,0.8,0.1,82.0
+Almacén,Aceite de girasol,884,0.0,0.0,100.0
+Bebidas,Gaseosa,25,0.0,6.0,0.0
+Bebidas,Soda,25,0.0,6.0,0.0
+Bebidas,Cerveza,55,0.3,3.5,0.0
+Bebidas,Vino,55,0.3,3.5,0.0
+Almacén,Sal fina,0,0.0,0.0,0.0
+Almacén,Mayonesa,450,1.0,8.0,45.0
+Almacén,Caldos,450,1.0,8.0,45.0
+Almacén,Vinagre,18,0.0,0.5,0.0
+Almacén,Café molido,2,0.1,0.3,0.0
+Almacén,Yerba mate,30,1.0,6.0,0.0
