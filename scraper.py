@@ -10,30 +10,29 @@ COEFICIENTE_HOGAR_TIPO = 3.09
 
 # ------------------------------------------------------------------------------
 # CANASTA BÁSICA ALIMENTARIA COMPLETA (INDEC) CON PRECIOS OFICIALES DE REFERENCIA
-# Ajustada según la composición oficial por Adulto Equivalente (AE)
 # ------------------------------------------------------------------------------
 CBA_INDEC = [
     # --- PANADERÍA Y CEREALES ---
-    {"rubro": "Panadería", "producto": "Pan francés", "keywords": ["pani"], "precio_indec": 2400.0, "cantidad_ae": 6.75, "kcal_100g": 265, "prot_100g": 9.0, "carb_100g": 55.0, "grasas_100g": 1.2},
-    {"rubro": "Panadería", "producto": "Galletitas de agua", "keywords": ["gals", "galleta agua"], "precio_indec": 1800.0, "cantidad_ae": 0.42, "kcal_100g": 420, "prot_100g": 9.5, "carb_100g": 68.0, "grasas_100g": 12.0},
-    {"rubro": "Panadería", "producto": "Galletitas dulces", "keywords": ["gald", "galleta dulce"], "precio_indec": 2200.0, "cantidad_ae": 0.21, "kcal_100g": 450, "prot_100g": 6.5, "carb_100g": 72.0, "grasas_100g": 15.0},
-    {"rubro": "Almacén", "producto": "Harina de trigo 000", "keywords": ["hart", "harina trigo"], "precio_indec": 950.0, "cantidad_ae": 1.08, "kcal_100g": 340, "prot_100g": 10.0, "carb_100g": 72.0, "grasas_100g": 1.2},
-    {"rubro": "Almacén", "producto": "Arroz blanco", "keywords": ["arr"], "precio_indec": 1900.0, "cantidad_ae": 1.20, "kcal_100g": 354, "prot_100g": 7.0, "carb_100g": 78.0, "grasas_100g": 0.6},
-    {"rubro": "Almacén", "producto": "Fideos secos", "keywords": ["fido"], "precio_indec": 1600.0, "cantidad_ae": 1.74, "kcal_100g": 355, "prot_100g": 12.0, "carb_100g": 73.0, "grasas_100g": 1.5},
-    {"rubro": "Almacén", "producto": "Harina de maíz (Polenta)", "keywords": ["harm"], "precio_indec": 1200.0, "cantidad_ae": 0.21, "kcal_100g": 350, "prot_100g": 8.0, "carb_100g": 76.0, "grasas_100g": 1.0},
+    {"rubro": "Panadería", "producto": "Pan francés", "keywords": ["pan frances", "pan kg"], "precio_indec": 2400.0, "cantidad_ae": 6.75, "kcal_100g": 265, "prot_100g": 9.0, "carb_100g": 55.0, "grasas_100g": 1.2},
+    {"rubro": "Panadería", "producto": "Galletitas de agua", "keywords": ["galletitas agua", "galleta agua"], "precio_indec": 1800.0, "cantidad_ae": 0.42, "kcal_100g": 420, "prot_100g": 9.5, "carb_100g": 68.0, "grasas_100g": 12.0},
+    {"rubro": "Panadería", "producto": "Galletitas dulces", "keywords": ["galletitas dulces", "galleta dulce"], "precio_indec": 2200.0, "cantidad_ae": 0.21, "kcal_100g": 450, "prot_100g": 6.5, "carb_100g": 72.0, "grasas_100g": 15.0},
+    {"rubro": "Almacén", "producto": "Harina de trigo 000", "keywords": ["harina trigo 000", "harina 000"], "precio_indec": 950.0, "cantidad_ae": 1.08, "kcal_100g": 340, "prot_100g": 10.0, "carb_100g": 72.0, "grasas_100g": 1.2},
+    {"rubro": "Almacén", "producto": "Arroz blanco", "keywords": ["arroz blanco", "arroz 1kg"], "precio_indec": 1900.0, "cantidad_ae": 1.20, "kcal_100g": 354, "prot_100g": 7.0, "carb_100g": 78.0, "grasas_100g": 0.6},
+    {"rubro": "Almacén", "producto": "Fideos secos", "keywords": ["fideos secos", "fideos guiseros", "tallarines"], "precio_indec": 1600.0, "cantidad_ae": 1.74, "kcal_100g": 355, "prot_100g": 12.0, "carb_100g": 73.0, "grasas_100g": 1.5},
+    {"rubro": "Almacén", "producto": "Harina de maíz (Polenta)", "keywords": ["polenta", "harina de maiz"], "precio_indec": 1200.0, "cantidad_ae": 0.21, "kcal_100g": 350, "prot_100g": 8.0, "carb_100g": 76.0, "grasas_100g": 1.0},
 
     # --- PAPA Y BATATA ---
-    {"rubro": "Frutas y Verduras", "producto": "Papa blanca", "keywords": ["papa blanca", "papa "], "precio_indec": 1100.0, "cantidad_ae": 6.51, "kcal_100g": 80, "prot_100g": 2.0, "carb_100g": 18.0, "grasas_100g": 0.1},
+    {"rubro": "Frutas y Verduras", "producto": "Papa blanca", "keywords": ["papa blanca", "papa x kg"], "precio_indec": 1100.0, "cantidad_ae": 6.51, "kcal_100g": 80, "prot_100g": 2.0, "carb_100g": 18.0, "grasas_100g": 0.1},
     {"rubro": "Frutas y Verduras", "producto": "Batata", "keywords": ["batata"], "precio_indec": 1500.0, "cantidad_ae": 0.51, "kcal_100g": 86, "prot_100g": 1.6, "carb_100g": 20.0, "grasas_100g": 0.1},
 
     # --- AZÚCAR Y DULCES ---
-    {"rubro": "Almacén", "producto": "Azúcar", "keywords": ["azuc", "azucar"], "precio_indec": 1200.0, "cantidad_ae": 1.23, "kcal_100g": 387, "prot_100g": 0.0, "carb_100g": 100.0, "grasas_100g": 0.0},
-    {"rubro": "Almacén", "producto": "Dulce de leche", "keywords": ["dulce leche"], "precio_indec": 2600.0, "cantidad_ae": 0.11, "kcal_100g": 315, "prot_100g": 6.0, "carb_100g": 55.0, "grasas_100g": 7.5},
-    {"rubro": "Almacén", "producto": "Dulce de batata", "keywords": ["dulce batata"], "precio_indec": 2300.0, "cantidad_ae": 0.11, "kcal_100g": 255, "prot_100g": 0.5, "carb_100g": 63.0, "grasas_100g": 0.1},
-    {"rubro": "Almacén", "producto": "Mermelada", "keywords": ["mer", "mermelada"], "precio_indec": 2400.0, "cantidad_ae": 0.11, "kcal_100g": 260, "prot_100g": 0.4, "carb_100g": 65.0, "grasas_100g": 0.1},
+    {"rubro": "Almacén", "producto": "Azúcar", "keywords": ["azucar", "azucar 1kg"], "precio_indec": 1200.0, "cantidad_ae": 1.23, "kcal_100g": 387, "prot_100g": 0.0, "carb_100g": 100.0, "grasas_100g": 0.0},
+    {"rubro": "Almacén", "producto": "Dulce de leche", "keywords": ["dulce de leche"], "precio_indec": 2600.0, "cantidad_ae": 0.11, "kcal_100g": 315, "prot_100g": 6.0, "carb_100g": 55.0, "grasas_100g": 7.5},
+    {"rubro": "Almacén", "producto": "Dulce de batata", "keywords": ["dulce de batata"], "precio_indec": 2300.0, "cantidad_ae": 0.11, "kcal_100g": 255, "prot_100g": 0.5, "carb_100g": 63.0, "grasas_100g": 0.1},
+    {"rubro": "Almacén", "producto": "Mermelada", "keywords": ["mermelada"], "precio_indec": 2400.0, "cantidad_ae": 0.11, "kcal_100g": 260, "prot_100g": 0.4, "carb_100g": 65.0, "grasas_100g": 0.1},
 
     # --- LEGUMBRES SECAS ---
-    {"rubro": "Almacén", "producto": "Lentejas secas", "keywords": ["legu"], "precio_indec": 3200.0, "cantidad_ae": 0.12, "kcal_100g": 350, "prot_100g": 25.0, "carb_100g": 60.0, "grasas_100g": 1.0},
+    {"rubro": "Almacén", "producto": "Lentejas secas", "keywords": ["lentejas"], "precio_indec": 3200.0, "cantidad_ae": 0.12, "kcal_100g": 350, "prot_100g": 25.0, "carb_100g": 60.0, "grasas_100g": 1.0},
     {"rubro": "Almacén", "producto": "Arvejas secas / en lata", "keywords": ["arvejas"], "precio_indec": 1800.0, "cantidad_ae": 0.12, "kcal_100g": 340, "prot_100g": 22.0, "carb_100g": 60.0, "grasas_100g": 1.4},
 
     # --- HORTALIZAS ---
@@ -41,7 +40,7 @@ CBA_INDEC = [
     {"rubro": "Frutas y Verduras", "producto": "Cebolla", "keywords": ["cebolla"], "precio_indec": 1200.0, "cantidad_ae": 1.10, "kcal_100g": 40, "prot_100g": 1.1, "carb_100g": 9.0, "grasas_100g": 0.1},
     {"rubro": "Frutas y Verduras", "producto": "Lechuga", "keywords": ["lechuga"], "precio_indec": 2800.0, "cantidad_ae": 0.60, "kcal_100g": 15, "prot_100g": 1.3, "carb_100g": 2.8, "grasas_100g": 0.2},
     {"rubro": "Frutas y Verduras", "producto": "Tomate perita / redondo", "keywords": ["tomate perita", "tomate redondo"], "precio_indec": 2400.0, "cantidad_ae": 1.20, "kcal_100g": 18, "prot_100g": 0.9, "carb_100g": 3.9, "grasas_100g": 0.2},
-    {"rubro": "Frutas y Verduras", "producto": "Tomate envasado (pure/pelado)", "keywords": ["pure"], "precio_indec": 1400.0, "cantidad_ae": 0.53, "kcal_100g": 24, "prot_100g": 1.2, "carb_100g": 4.5, "grasas_100g": 0.2},
+    {"rubro": "Frutas y Verduras", "producto": "Tomate envasado (pure/pelado)", "keywords": ["pure de tomate", "tomate pelado"], "precio_indec": 1400.0, "cantidad_ae": 0.53, "kcal_100g": 24, "prot_100g": 1.2, "carb_100g": 4.5, "grasas_100g": 0.2},
     {"rubro": "Frutas y Verduras", "producto": "Zanahoria", "keywords": ["zanahoria"], "precio_indec": 1100.0, "cantidad_ae": 0.70, "kcal_100g": 41, "prot_100g": 0.9, "carb_100g": 9.5, "grasas_100g": 0.2},
     {"rubro": "Frutas y Verduras", "producto": "Zapallo Anco", "keywords": ["zapallo anco", "zapallo"], "precio_indec": 1300.0, "cantidad_ae": 0.80, "kcal_100g": 45, "prot_100g": 1.0, "carb_100g": 11.0, "grasas_100g": 0.1},
 
@@ -54,37 +53,37 @@ CBA_INDEC = [
 
     # --- CARNES Y DERIVADOS ---
     {"rubro": "Carnes", "producto": "Asado con hueso", "keywords": ["asado"], "precio_indec": 8500.0, "cantidad_ae": 0.70, "kcal_100g": 250, "prot_100g": 18.0, "carb_100g": 0.0, "grasas_100g": 20.0},
-    {"rubro": "Carnes", "producto": "Carnaza común / Picada", "keywords": ["carne picada", "picada"], "precio_indec": 6200.0, "cantidad_ae": 1.20, "kcal_100g": 210, "prot_100g": 19.5, "carb_100g": 0.0, "grasas_100g": 14.0},
+    {"rubro": "Carnes", "producto": "Carnaza común / Picada", "keywords": ["carne picada", "picada comun"], "precio_indec": 6200.0, "cantidad_ae": 1.20, "kcal_100g": 210, "prot_100g": 19.5, "carb_100g": 0.0, "grasas_100g": 14.0},
     {"rubro": "Carnes", "producto": "Espinazo", "keywords": ["espinazo"], "precio_indec": 3500.0, "cantidad_ae": 0.50, "kcal_100g": 190, "prot_100g": 16.0, "carb_100g": 0.0, "grasas_100g": 14.0},
-    {"rubro": "Carnes", "producto": "Paleta vacuno", "keywords": ["paleta vacuno", "paleta"], "precio_indec": 8200.0, "cantidad_ae": 0.90, "kcal_100g": 145, "prot_100g": 20.0, "carb_100g": 0.0, "grasas_100g": 7.0},
+    {"rubro": "Carnes", "producto": "Paleta vacuno", "keywords": ["paleta vacuno", "paleta x kg"], "precio_indec": 8200.0, "cantidad_ae": 0.90, "kcal_100g": 145, "prot_100g": 20.0, "carb_100g": 0.0, "grasas_100g": 7.0},
     {"rubro": "Carnes", "producto": "Nalga", "keywords": ["nalga"], "precio_indec": 9800.0, "cantidad_ae": 0.90, "kcal_100g": 135, "prot_100g": 21.0, "carb_100g": 0.0, "grasas_100g": 5.0},
     {"rubro": "Carnes", "producto": "Pollo entero", "keywords": ["pollo entero", "pollo fresco"], "precio_indec": 3100.0, "cantidad_ae": 1.67, "kcal_100g": 170, "prot_100g": 18.0, "carb_100g": 0.0, "grasas_100g": 11.0},
-    {"rubro": "Carnes", "producto": "Pescado (Merluza)", "keywords": ["merluza", "filet merluza"], "precio_indec": 7500.0, "cantidad_ae": 0.40, "kcal_100g": 90, "prot_100g": 19.0, "carb_100g": 0.0, "grasas_100g": 1.2},
-    {"rubro": "Carnes", "producto": "Hígado (Menudencias)", "keywords": ["higado"], "precio_indec": 3200.0, "cantidad_ae": 0.27, "kcal_100g": 133, "prot_100g": 20.4, "carb_100g": 3.8, "grasas_100g": 3.6},
-    {"rubro": "Fiambrería", "producto": "Paleta cocida", "keywords": ["paleta cocida", "paleta fiambre"], "precio_indec": 8900.0, "cantidad_ae": 0.03, "kcal_100g": 130, "prot_100g": 16.0, "carb_100g": 2.0, "grasas_100g": 6.5},
+    {"rubro": "Carnes", "producto": "Pescado (Merluza)", "keywords": ["filet de merluza", "merluza"], "precio_indec": 7500.0, "cantidad_ae": 0.40, "kcal_100g": 90, "prot_100g": 19.0, "carb_100g": 0.0, "grasas_100g": 1.2},
+    {"rubro": "Carnes", "producto": "Hígado (Menudencias)", "keywords": ["higado vacuno", "higado"], "precio_indec": 3200.0, "cantidad_ae": 0.27, "kcal_100g": 133, "prot_100g": 20.4, "carb_100g": 3.8, "grasas_100g": 3.6},
+    {"rubro": "Fiambrería", "producto": "Paleta cocida", "keywords": ["paleta cocida"], "precio_indec": 8900.0, "cantidad_ae": 0.03, "kcal_100g": 130, "prot_100g": 16.0, "carb_100g": 2.0, "grasas_100g": 6.5},
     {"rubro": "Fiambrería", "producto": "Salame", "keywords": ["salame", "salamin"], "precio_indec": 11500.0, "cantidad_ae": 0.03, "kcal_100g": 380, "prot_100g": 20.0, "carb_100g": 1.5, "grasas_100g": 33.0},
 
     # --- LÁCTEOS Y HUEVOS ---
-    {"rubro": "Lácteos y Huevos", "producto": "Huevos (unidades/kg)", "keywords": ["huevos", "huevo"], "precio_indec": 3200.0, "cantidad_ae": 0.60, "kcal_100g": 150, "prot_100g": 12.5, "carb_100g": 0.7, "grasas_100g": 10.0},
-    {"rubro": "Lácteos y Huevos", "producto": "Leche entera", "keywords": ["luat"], "precio_indec": 1250.0, "cantidad_ae": 9.27, "kcal_100g": 60, "prot_100g": 3.1, "carb_100g": 4.7, "grasas_100g": 3.0},
+    {"rubro": "Lácteos y Huevos", "producto": "Huevos (unidades/kg)", "keywords": ["huevos docena", "maple huevos", "huevos"], "precio_indec": 3200.0, "cantidad_ae": 0.60, "kcal_100g": 150, "prot_100g": 12.5, "carb_100g": 0.7, "grasas_100g": 10.0},
+    {"rubro": "Lácteos y Huevos", "producto": "Leche entera", "keywords": ["leche entera 1l", "leche sachet"], "precio_indec": 1250.0, "cantidad_ae": 9.27, "kcal_100g": 60, "prot_100g": 3.1, "carb_100g": 4.7, "grasas_100g": 3.0},
     {"rubro": "Lácteos y Huevos", "producto": "Queso crema", "keywords": ["queso crema"], "precio_indec": 6800.0, "cantidad_ae": 0.10, "kcal_100g": 240, "prot_100g": 6.0, "carb_100g": 4.0, "grasas_100g": 22.0},
     {"rubro": "Lácteos y Huevos", "producto": "Queso cuartirolo / cremoso", "keywords": ["queso cremoso", "queso cuartirolo"], "precio_indec": 8200.0, "cantidad_ae": 0.15, "kcal_100g": 310, "prot_100g": 18.0, "carb_100g": 1.5, "grasas_100g": 26.0},
     {"rubro": "Lácteos y Huevos", "producto": "Queso de rallar / Sardo", "keywords": ["queso sardo", "queso rallar"], "precio_indec": 12500.0, "cantidad_ae": 0.08, "kcal_100g": 370, "prot_100g": 28.0, "carb_100g": 1.8, "grasas_100g": 28.0},
     {"rubro": "Lácteos y Huevos", "producto": "Yogur entero", "keywords": ["yogur entero", "yogur firme"], "precio_indec": 1800.0, "cantidad_ae": 0.57, "kcal_100g": 63, "prot_100g": 3.3, "carb_100g": 5.0, "grasas_100g": 3.2},
-    {"rubro": "Lácteos y Huevos", "producto": "Manteca", "keywords": ["manteca"], "precio_indec": 15500.0, "cantidad_ae": 0.06, "kcal_100g": 740, "prot_100g": 0.8, "carb_100g": 0.1, "grasas_100g": 82.0},
+    {"rubro": "Lácteos y Huevos", "producto": "Manteca", "keywords": ["manteca 200g", "manteca"], "precio_indec": 15500.0, "cantidad_ae": 0.06, "kcal_100g": 740, "prot_100g": 0.8, "carb_100g": 0.1, "grasas_100g": 82.0},
 
     # --- ACEITES, BEBIDAS, CONDIMENTOS Y VARIOS ---
-    {"rubro": "Almacén", "producto": "Aceite de girasol", "keywords": ["acei"], "precio_indec": 2800.0, "cantidad_ae": 1.20, "kcal_100g": 884, "prot_100g": 0.0, "carb_100g": 0.0, "grasas_100g": 100.0},
-    {"rubro": "Bebidas", "producto": "Gaseosa", "keywords": ["gas"], "precio_indec": 1500.0, "cantidad_ae": 3.45, "kcal_100g": 25, "prot_100g": 0.0, "carb_100g": 6.0, "grasas_100g": 0.0},
-    {"rubro": "Bebidas", "producto": "Soda", "keywords": ["gaseosa", "soda"], "precio_indec": 1500.0, "cantidad_ae": 3.45, "kcal_100g": 25, "prot_100g": 0.0, "carb_100g": 6.0, "grasas_100g": 0.0},  
-    {"rubro": "Bebidas", "producto": "Cerveza", "keywords": ["cerv"], "precio_indec": 2200.0, "cantidad_ae": 1.08, "kcal_100g": 55, "prot_100g": 0.3, "carb_100g": 3.5, "grasas_100g": 0.0},
-    {"rubro": "Bebidas", "producto": "Vino", "keywords": ["vinf"], "precio_indec": 2200.0, "cantidad_ae": 1.08, "kcal_100g": 55, "prot_100g": 0.3, "carb_100g": 3.5, "grasas_100g": 0.0}, 
-    {"rubro": "Almacén", "producto": "Sal fina", "keywords": ["salf"], "precio_indec": 900.0, "cantidad_ae": 0.12, "kcal_100g": 0, "prot_100g": 0.0, "carb_100g": 0.0, "grasas_100g": 0.0},
-    {"rubro": "Almacén", "producto": "Mayonesa", "keywords": ["mayo"], "precio_indec": 3500.0, "cantidad_ae": 0.12, "kcal_100g": 450, "prot_100g": 1.0, "carb_100g": 8.0, "grasas_100g": 45.0},
-    {"rubro": "Almacén", "producto": "Caldos", "keywords": ["cald"], "precio_indec": 3500.0, "cantidad_ae": 0.12, "kcal_100g": 450, "prot_100g": 1.0, "carb_100g": 8.0, "grasas_100g": 45.0},
-    {"rubro": "Almacén", "producto": "Vinagre", "keywords": ["vina"], "precio_indec": 1100.0, "cantidad_ae": 0.06, "kcal_100g": 18, "prot_100g": 0.0, "carb_100g": 0.5, "grasas_100g": 0.0},
-    {"rubro": "Almacén", "producto": "Café molido", "keywords": ["cafm", "cafe molido"], "precio_indec": 8500.0, "cantidad_ae": 0.03, "kcal_100g": 2, "prot_100g": 0.1, "carb_100g": 0.3, "grasas_100g": 0.0},
-    {"rubro": "Almacén", "producto": "Yerba mate", "keywords": ["yerb"], "precio_indec": 3800.0, "cantidad_ae": 0.51, "kcal_100g": 30, "prot_100g": 1.0, "carb_100g": 6.0, "grasas_100g": 0.0}
+    {"rubro": "Almacén", "producto": "Aceite de girasol", "keywords": ["aceite girasol 900", "aceite girasol 1l"], "precio_indec": 2800.0, "cantidad_ae": 1.20, "kcal_100g": 884, "prot_100g": 0.0, "carb_100g": 0.0, "grasas_100g": 100.0},
+    {"rubro": "Bebidas", "producto": "Gaseosa", "keywords": ["gaseosa 1.5", "gaseosa 2.25", "gaseosa cola"], "precio_indec": 1500.0, "cantidad_ae": 3.45, "kcal_100g": 25, "prot_100g": 0.0, "carb_100g": 6.0, "grasas_100g": 0.0},
+    {"rubro": "Bebidas", "producto": "Soda", "keywords": ["soda 1.5", "soda 2l"], "precio_indec": 1500.0, "cantidad_ae": 3.45, "kcal_100g": 25, "prot_100g": 0.0, "carb_100g": 6.0, "grasas_100g": 0.0},  
+    {"rubro": "Bebidas", "producto": "Cerveza", "keywords": ["cerveza 1l", "cerveza lata"], "precio_indec": 2200.0, "cantidad_ae": 1.08, "kcal_100g": 55, "prot_100g": 0.3, "carb_100g": 3.5, "grasas_100g": 0.0},
+    {"rubro": "Bebidas", "producto": "Vino", "keywords": ["vino tinto 1l", "vino tetrabrik"], "precio_indec": 2200.0, "cantidad_ae": 1.08, "kcal_100g": 55, "prot_100g": 0.3, "carb_100g": 3.5, "grasas_100g": 0.0}, 
+    {"rubro": "Almacén", "producto": "Sal fina", "keywords": ["sal fina 500g", "sal fina"], "precio_indec": 900.0, "cantidad_ae": 0.12, "kcal_100g": 0, "prot_100g": 0.0, "carb_100g": 0.0, "grasas_100g": 0.0},
+    {"rubro": "Almacén", "producto": "Mayonesa", "keywords": ["mayonesa 500g", "mayonesa doypack"], "precio_indec": 3500.0, "cantidad_ae": 0.12, "kcal_100g": 450, "prot_100g": 1.0, "carb_100g": 8.0, "grasas_100g": 45.0},
+    {"rubro": "Almacén", "producto": "Caldos", "keywords": ["caldo en cubos", "caldo verdura"], "precio_indec": 3500.0, "cantidad_ae": 0.12, "kcal_100g": 450, "prot_100g": 1.0, "carb_100g": 8.0, "grasas_100g": 45.0},
+    {"rubro": "Almacén", "producto": "Vinagre", "keywords": ["vinagre de alcohol", "vinagre manzana"], "precio_indec": 1100.0, "cantidad_ae": 0.06, "kcal_100g": 18, "prot_100g": 0.0, "carb_100g": 0.5, "grasas_100g": 0.0},
+    {"rubro": "Almacén", "producto": "Café molido", "keywords": ["cafe molido 250g", "cafe molido"], "precio_indec": 8500.0, "cantidad_ae": 0.03, "kcal_100g": 2, "prot_100g": 0.1, "carb_100g": 0.3, "grasas_100g": 0.0},
+    {"rubro": "Almacén", "producto": "Yerba mate", "keywords": ["yerba mate 1kg", "yerba mate 500g"], "precio_indec": 3800.0, "cantidad_ae": 0.51, "kcal_100g": 30, "prot_100g": 1.0, "carb_100g": 6.0, "grasas_100g": 0.0}
 ]
 
 def obtener_ultimo_precio_historico(nombre_producto):
@@ -100,13 +99,13 @@ def obtener_ultimo_precio_historico(nombre_producto):
             pass
     return 0.0
 
-def extraer_observaciones_raw(scraper, item_config, fecha, timestamp, max_paginas=5):
+def extraer_observaciones_raw(scraper, item_config, fecha, timestamp, max_paginas=3):
     observaciones = []
     textos_vistos = set()
 
     rubro = item_config['rubro']
     producto = item_config['producto']
-    keywords = item_config.get('keywords', [item_config.get('keyword', '')])
+    keywords = item_config.get('keywords', [])
 
     for kw in keywords:
         if not kw:
@@ -116,19 +115,12 @@ def extraer_observaciones_raw(scraper, item_config, fecha, timestamp, max_pagina
             search_url = f"https://depotexpress.com.ar/?s={kw}&post_type=product&paged={pagina}"
 
             try:
-                res = scraper.get(search_url, timeout=25)
+                res = scraper.get(search_url, timeout=20)
                 if res.status_code != 200:
                     break
 
                 soup = BeautifulSoup(res.text, 'html.parser')
                 items = soup.select('.product, .type-product, div.item-producto, article')
-                
-                if not items:
-                    menciones = soup.find_all(string=lambda t: t and '$' in t)
-                    for m in menciones:
-                        padre = m.find_parent(['div', 'li', 'article'])
-                        if padre and padre not in items:
-                            items.append(padre)
 
                 if not items:
                     break
@@ -172,7 +164,7 @@ def extraer_observaciones_raw(scraper, item_config, fecha, timestamp, max_pagina
                 if nuevas_obs_pagina == 0:
                     break
 
-                time.sleep(0.5)
+                time.sleep(0.3)
 
             except Exception as e:
                 print(f"Error scraping '{kw}' (Pág {pagina}): {e}")
@@ -192,7 +184,7 @@ def main():
     fecha_hoy = ahora.strftime("%Y-%m-%d")
     timestamp = ahora.strftime("%Y-%m-%d %H:%M:%S")
 
-    print(f"=== INICIANDO SCRAPING (MENOR PRECIO / FALLBACK INDEC) ({timestamp}) ===")
+    print(f"=== INICIANDO SCRAPING (VALIDACIÓN CON BANDA DE TOLERANCIA INDEC) ({timestamp}) ===")
     
     todas_observaciones_raw = []
     resumen_productos = []
@@ -200,22 +192,31 @@ def main():
     for item in CBA_INDEC:
         obs = extraer_observaciones_raw(scraper, item, fecha_hoy, timestamp)
         registro = item.copy()
+        precio_indec = item.get("precio_indec", 0.0)
 
-        if obs:
-            # 1. Prioridad: Scraping Web exitoso
-            obs_minima = min(obs, key=lambda x: x['precio'])
+        # --------------------------------------------------------------------------
+        # FILTRADO CON BANDA DE TOLERANCIA (40% - 250% del valor INDEC)
+        # --------------------------------------------------------------------------
+        obs_validas = []
+        if precio_indec > 0 and obs:
+            p_min = precio_indec * 0.40
+            p_max = precio_indec * 2.50
+            obs_validas = [o for o in obs if p_min <= o['precio'] <= p_max]
+        elif obs:
+            obs_validas = obs
+
+        if obs_validas:
+            # 1. Prioridad: Scraping Web exitoso y validado dentro de la banda lógica
+            obs_minima = min(obs_validas, key=lambda x: x['precio'])
             precio_final = obs_minima['precio']
-            metodo_calculo = "Precio Mínimo Encontrado"
-            coincidencias = 1
+            metodo_calculo = "Precio Mínimo Valido (Scraping)"
+            coincidencias = len(obs_validas)
             todas_observaciones_raw.append(obs_minima)
         else:
-            # 2. Prioridad: Referencia Oficial INDEC
-            precio_indec = item.get("precio_indec", 0.0)
-            
+            # 2. Prioridad: Referencia Oficial INDEC (Si no hubo scraping o devolvió anomalías)
             if precio_indec > 0:
                 precio_final = precio_indec
                 metodo_calculo = "Referencia Oficial INDEC"
-                coincidencias = 0
             else:
                 # 3. Prioridad: Último histórico guardado
                 precio_hist = obtener_ultimo_precio_historico(item['producto'])
@@ -225,7 +226,7 @@ def main():
                 else:
                     precio_final = 0.0
                     metodo_calculo = "Sin coincidencias (0)"
-                coincidencias = 0
+            coincidencias = 0
 
         registro.update({
             'fecha': fecha_hoy,
@@ -248,7 +249,7 @@ def main():
         else:
             df_raw.to_csv(file_raw, index=False, encoding='utf-8-sig')
 
-    # Cálculo de Totales y Exportación de Detalle
+    # Cálculo de Totales
     df_resumen['costo_mensual_ae'] = df_resumen['cantidad_ae'] * df_resumen['precio_unitario_estimado']
     df_resumen['costo_hogar_tipo'] = df_resumen['costo_mensual_ae'] * COEFICIENTE_HOGAR_TIPO
 
@@ -278,35 +279,16 @@ def main():
     else:
         df_totales.to_csv(file_totales, index=False, encoding='utf-8-sig')
 
-    # Exportación de Tabla Nutricional
-    df_nutri = df_resumen[[
-        'rubro', 'producto', 'cantidad_ae', 'kcal_100g', 'prot_100g', 'carb_100g', 'grasas_100g'
-    ]].copy()
-
-    df_nutri['kcal_diarias_ae'] = (df_nutri['cantidad_ae'] * 10 * df_nutri['kcal_100g']) / 30.0
-    df_nutri['prot_diarias_g'] = (df_nutri['cantidad_ae'] * 10 * df_nutri['prot_100g']) / 30.0
-    df_nutri['carb_diarios_g'] = (df_nutri['cantidad_ae'] * 10 * df_nutri['carb_100g']) / 30.0
-    df_nutri['grasas_diarias_g'] = (df_nutri['cantidad_ae'] * 10 * df_nutri['grasas_100g']) / 30.0
-
-    df_nutri['fecha'] = fecha_hoy
-    df_nutri['timestamp'] = timestamp
-
-    file_nutricional = "cba_tabla_nutricional.csv"
-    if os.path.exists(file_nutricional):
-        df_nutri.to_csv(file_nutricional, mode='a', header=False, index=False, encoding='utf-8-sig')
-    else:
-        df_nutri.to_csv(file_nutricional, index=False, encoding='utf-8-sig')
-
     # Resumen por consola
     cols_pantalla = ['rubro', 'producto', 'coincidencias', 'precio_unitario_estimado', 'costo_mensual_ae', 'metodo_calculo']
     
     print("\n" + "="*95)
-    print("RESUMEN DE RESULTADOS (CBA - SCRAPING + REFERENCIA INDEC)")
+    print("RESUMEN DE RESULTADOS (CBA - SCRAPING CON TOLERANCIA + FALLBACK INDEC)")
     print("="*95)
     print(df_resumen[cols_pantalla].rename(columns={
         'rubro': 'Rubro',
         'producto': 'Producto',
-        'coincidencias': 'Encontrado',
+        'coincidencias': 'Validados',
         'precio_unitario_estimado': 'Precio Final ($)',
         'costo_mensual_ae': 'Costo Mensual AE ($)',
         'metodo_calculo': 'Método Cálculo'
