@@ -217,24 +217,50 @@ def main():
     print("="*95)
 
     # --------------------------------------------------------------------------
-    # GUARDAR DATOS EN ARCHIVO CSV HISTÓRICO
+    # GUARDAR DATOS EN ARCHIVOS CSV HISTÓRICOS
     # --------------------------------------------------------------------------
-    archivo_csv = "cba_historico_detalle.csv"
-    
-    # Se remueve la columna de listas 'keywords' para evitar incoherencias en el formato del CSV
+
+    # 1. Guardar detalle de productos por fecha
+    archivo_detalle = "cba_historico_detalle.csv"
     if 'keywords' in df_resumen.columns:
         df_resumen_csv = df_resumen.drop(columns=['keywords'])
     else:
         df_resumen_csv = df_resumen.copy()
 
-    if os.path.exists(archivo_csv):
-        # Si el archivo ya existe, añade las nuevas filas
-        df_resumen_csv.to_csv(archivo_csv, mode='a', header=False, index=False, encoding="utf-8-sig")
-        print(f"📁 Registros añadidos exitosamente a '{archivo_csv}'.")
+    if os.path.exists(archivo_detalle):
+        df_resumen_csv.to_csv(archivo_detalle, mode='a', header=False, index=False, encoding="utf-8-sig")
+        print(f"📁 Registros añadidos a '{archivo_detalle}'.")
     else:
-        # Si el archivo no existe, lo crea con la cabecera
-        df_resumen_csv.to_csv(archivo_csv, index=False, encoding="utf-8-sig")
-        print(f"📁 Archivo '{archivo_csv}' creado exitosamente.")
+        df_resumen_csv.to_csv(archivo_detalle, index=False, encoding="utf-8-sig")
+        print(f"📁 Archivo '{archivo_detalle}' creado exitosamente.")
+
+    # 2. Guardar resumen de totales acumulados
+    archivo_totales = "cba_historico_totales.csv"
+    df_totales = pd.DataFrame([{
+        'fecha': fecha_hoy,
+        'timestamp': timestamp,
+        'costo_total_ae': costo_total_ae,
+        'costo_total_hogar': costo_total_hogar
+    }])
+
+    if os.path.exists(archivo_totales):
+        df_totales.to_csv(archivo_totales, mode='a', header=False, index=False, encoding="utf-8-sig")
+        print(f"📁 Registros añadidos a '{archivo_totales}'.")
+    else:
+        df_totales.to_csv(archivo_totales, index=False, encoding="utf-8-sig")
+        print(f"📁 Archivo '{archivo_totales}' creado exitosamente.")
+
+    # 3. Guardar desglose nutricional
+    archivo_nutricional = "cba_tabla_nutricional.csv"
+    cols_nutricion = ['fecha', 'timestamp', 'rubro', 'producto', 'cantidad_ae', 'kcal_100g', 'prot_100g', 'carb_100g', 'grasas_100g', 'costo_mensual_ae']
+    df_nutricional = df_resumen[cols_nutricion]
+
+    if os.path.exists(archivo_nutricional):
+        df_nutricional.to_csv(archivo_nutricional, mode='a', header=False, index=False, encoding="utf-8-sig")
+        print(f"📁 Registros añadidos a '{archivo_nutricional}'.")
+    else:
+        df_nutricional.to_csv(archivo_nutricional, index=False, encoding="utf-8-sig")
+        print(f"📁 Archivo '{archivo_nutricional}' creado exitosamente.")
 
 if __name__ == "__main__":
     main()
