@@ -78,3 +78,33 @@ Almacén,"Condimentos (mayonesa, caldos)",7500.0,0.12,350,1.0,10.0,35.0,2026-09-
 Almacén,Vinagre,2200.0,0.06,18,0.0,0.1,0.0,2026-09-24,2026-09-24 22:02:28,2200.0,0,Referencia Oficial INDEC,132.0,407.88
 Almacén,Café,32000.0,0.03,200,14.0,40.0,0.2,2026-09-24,2026-09-24 22:02:28,32000.0,0,Referencia Oficial INDEC,960.0,2966.3999999999996
 Almacén,Yerba mate,6500.0,0.51,30,1.0,6.0,0.0,2026-09-24,2026-09-24 22:02:28,6500.0,0,Referencia Oficial INDEC,3315.0,10243.35
+Panadería,Pan francés,4500.0,6.75,265,9.0,55.0,1.2,2026-09-25,2026-09-25 15:38:51,4500.0,0,Referencia Oficial INDEC,30375.0,93858.75
+Panadería,Galletitas de agua,6800.0,0.42,420,9.5,68.0,12.0,2026-09-25,2026-09-25 15:38:51,6800.0,0,Referencia Oficial INDEC,2856.0,8825.039999999999
+Panadería,Galletitas dulces,7500.0,0.21,450,6.5,72.0,15.0,2026-09-25,2026-09-25 15:38:51,7500.0,0,Referencia Oficial INDEC,1575.0,4866.75
+Almacén,Arroz blanco,3800.0,1.2,354,7.0,78.0,0.6,2026-09-25,2026-09-25 15:38:51,3800.0,0,Referencia Oficial INDEC,4560.0,14090.4
+Almacén,Harina de trigo 000,2200.0,1.08,340,10.0,72.0,1.2,2026-09-25,2026-09-25 15:38:51,873.16,1,Mediana Normalizada (Scraping),943.0128000000001,2913.909552
+Almacén,Otras harinas (maíz / Polenta),2800.0,0.21,350,8.0,76.0,1.0,2026-09-25,2026-09-25 15:38:51,2800.0,0,Referencia Oficial INDEC,588.0,1816.9199999999998
+Almacén,Fideos secos,3800.0,1.74,355,12.0,73.0,1.5,2026-09-25,2026-09-25 15:38:51,3800.0,0,Referencia Oficial INDEC,6612.0,20431.079999999998
+Frutas y Verduras,Papa blanca,1800.0,6.51,80,2.0,18.0,0.1,2026-09-25,2026-09-25 15:38:51,1800.0,0,Referencia Oficial INDEC,11718.0,36208.619999999995
+Frutas y Verduras,Batata,2500.0,0.51,86,1.6,20.0,0.1,2026-09-25,2026-09-25 15:38:51,2500.0,0,Referencia Oficial INDEC,1275.0,3939.75
+Frutas y Verduras,"Hortalizas (cebolla, tomate, zanahoria, zapallo, etc.)",2200.0,5.73,30,1.2,6.0,0.2,2026-09-25,2026-09-25 15:38:51,2200.0,0,Referencia Oficial INDEC,12606.000000000002,38952.54
+Frutas y Verduras,"Frutas (manzana, naranja, banana, pera)",2800.0,4.95,52,0.5,13.5,0.2,2026-09-25,2026-09-25 15:38:51,2800.0,0,Referencia Oficial INDEC,13860.0,42827.4
+Almacén,Azúcar,2000.0,1.23,387,0.0,100.0,0.0,2026-09-25,2026-09-25 15:38:51,2000.0,0,Referencia Oficial INDEC,2460.0,7601.4
+Almacén,"Dulces (dulce de leche, mermelada, batata)",6500.0,0.33,315,4.0,60.0,5.0,2026-09-25,2026-09-25 15:38:51,2864.82,1,Mediana Normalizada (Scraping),945.3906000000001,2921.256954
+Almacén,"Legumbres secas (lentejas, arvejas)",4200.0,0.24,340,24.0,60.0,1.0,2026-09-25,2026-09-25 15:38:51,1681.9,1,Mediana Normalizada (Scraping),403.656,1247.29704
+Carnes,"Carnes (asado, picada, paleta, nalga, pollo, pescado)",13500.0,6.27,210,19.0,0.0,14.0,2026-09-25,2026-09-25 15:38:51,13500.0,0,Referencia Oficial INDEC,84645.0,261553.05
+Carnes,Menudencias (hígado),5500.0,0.27,135,20.0,3.8,4.0,2026-09-25,2026-09-25 15:38:51,5500.0,0,Referencia Oficial INDEC,1485.0,4588.65
+Carnes,"Fiambres (paleta cocida, salame)",15000.0,0.06,300,16.0,2.0,25.0,2026-09-25,2026-09-25 15:38:51,15000.0,0,Referencia Oficial INDEC,900.0,2781.0
+Lácteos y Huevos,Huevos (docena),6000.0,0.6,150,12.5,0.7,10.0,2026-09-25,2026-09-25 15:38:51,6000.0,0,Referencia Oficial INDEC,3600.0,11124.0
+Lácteos y Huevos,Leche entera,2400.0,9.27,60,3.1,4.7,3.0,2026-09-25,2026-09-25 15:38:51,2400.0,0,Referencia Oficial INDEC,22248.0,68746.31999999999
+Lácteos y Huevos,"Queso (cremoso, cuartirolo, de rallar)",16000.0,0.33,320,20.0,1.5,26.0,2026-09-25,2026-09-25 15:38:51,16000.0,0,Referencia Oficial INDEC,5280.0,16315.199999999999
+Lácteos y Huevos,Yogur,3800.0,0.57,65,3.2,9.0,2.5,2026-09-25,2026-09-25 15:38:51,3800.0,0,Referencia Oficial INDEC,2166.0,6692.94
+Lácteos y Huevos,Manteca,16000.0,0.06,717,0.9,0.1,81.0,2026-09-25,2026-09-25 15:38:51,16000.0,0,Referencia Oficial INDEC,960.0,2966.3999999999996
+Almacén,Aceite de girasol,4800.0,1.2,884,0.0,0.0,100.0,2026-09-25,2026-09-25 15:38:51,4800.0,0,Referencia Oficial INDEC,5760.0,17798.399999999998
+Bebidas,"Bebidas no alcohólicas (gaseosas, jugos, soda)",3200.0,3.45,35,0.0,9.0,0.0,2026-09-25,2026-09-25 15:38:51,3200.0,0,Referencia Oficial INDEC,11040.0,34113.6
+Bebidas,"Bebidas alcohólicas (cerveza, vino)",4500.0,1.08,60,0.3,3.0,0.0,2026-09-25,2026-09-25 15:38:51,4500.0,0,Referencia Oficial INDEC,4860.0,15017.4
+Almacén,Sal fina,1500.0,0.12,0,0.0,0.0,0.0,2026-09-25,2026-09-25 15:38:51,1500.0,0,Referencia Oficial INDEC,180.0,556.1999999999999
+Almacén,"Condimentos (mayonesa, caldos)",7500.0,0.12,350,1.0,10.0,35.0,2026-09-25,2026-09-25 15:38:51,7500.0,0,Referencia Oficial INDEC,900.0,2781.0
+Almacén,Vinagre,2200.0,0.06,18,0.0,0.1,0.0,2026-09-25,2026-09-25 15:38:51,1216.75,1,Mediana Normalizada (Scraping),73.005,225.58544999999998
+Almacén,Café,32000.0,0.03,200,14.0,40.0,0.2,2026-09-25,2026-09-25 15:38:51,32000.0,0,Referencia Oficial INDEC,960.0,2966.3999999999996
+Almacén,Yerba mate,6500.0,0.51,30,1.0,6.0,0.0,2026-09-25,2026-09-25 15:38:51,6500.0,0,Referencia Oficial INDEC,3315.0,10243.35
