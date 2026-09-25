@@ -32,7 +32,7 @@ CBA_INDEC = [
     # --- AZÚCAR, DULCES Y LEGUMBRES ---
     {"rubro": "Almacén", "producto": "Azúcar", "keywords": ["azucar 1kg", "azucar blanca", "azuc"], "precio_indec": 2000.0, "cantidad_ae": 1.230, "kcal_100g": 387, "prot_100g": 0.0, "carb_100g": 100.0, "grasas_100g": 0.0},
     {"rubro": "Almacén", "producto": "Dulces (dulce de leche, mermelada, batata)", "keywords": ["dulce de leche", "mermelada", "dulce de batata", "dulce leche"], "precio_indec": 6500.0, "cantidad_ae": 0.330, "kcal_100g": 315, "prot_100g": 4.0, "carb_100g": 60.0, "grasas_100g": 5.0},
-    {"rubro": "Almacén", "producto": "Legumbres secas (lentejas, arvejas)", "keywords": ["lentejas 500g", "arvejas 500g", "lentejas", "legu"], "precio_indec": 4200.0, "cantidad_ae": 0.240, "kcal_100g": 340, "prot_100g": 24.0, "carb_100g": 60.0, "grasas_100g": 1.0},
+    {"rubro": "Almacén", "producto": "Legumbres secas (lentejas, arvejas)", "keywords": ["lentejas 500g", "arvejas 500g", "lentejas", "legu", "arv"], "precio_indec": 4200.0, "cantidad_ae": 0.240, "kcal_100g": 340, "prot_100g": 24.0, "carb_100g": 60.0, "grasas_100g": 1.0},
 
     # --- CARNES, MENUDENCIAS Y FIAMBRES ---
     {"rubro": "Carnes", "producto": "Carnes (asado, picada, paleta, nalga, pollo, pescado)", "keywords": ["carne picada", "asado kg", "nalga kg", "paleta kg", "pollo entero kg"], "precio_indec": 13500.0, "cantidad_ae": 6.270, "kcal_100g": 210, "prot_100g": 19.0, "carb_100g": 0.0, "grasas_100g": 14.0},
@@ -47,13 +47,13 @@ CBA_INDEC = [
     {"rubro": "Lácteos y Huevos", "producto": "Manteca", "keywords": ["manteca 200g", "manteca 100g"], "precio_indec": 16000.0, "cantidad_ae": 0.060, "kcal_100g": 717, "prot_100g": 0.9, "carb_100g": 0.1, "grasas_100g": 81.0},
 
     # --- ACEITES, CONDIMENTOS Y BEBIDAS ---
-    {"rubro": "Almacén", "producto": "Aceite de girasol", "keywords": ["aceite girasol 900", "aceite girasol 1l"], "precio_indec": 4800.0, "cantidad_ae": 1.200, "kcal_100g": 884, "prot_100g": 0.0, "carb_100g": 0.0, "grasas_100g": 100.0},
+    {"rubro": "Almacén", "producto": "Aceite de girasol", "keywords": ["aceite girasol 900", "aceite girasol 1l", "aggi"], "precio_indec": 4800.0, "cantidad_ae": 1.200, "kcal_100g": 884, "prot_100g": 0.0, "carb_100g": 0.0, "grasas_100g": 100.0},
     {"rubro": "Bebidas", "producto": "Bebidas no alcohólicas (gaseosas, jugos, soda)", "keywords": ["gaseosa 1.5l", "gaseosa 2l", "jugo concentrado", "soda 1.5l"], "precio_indec": 3200.0, "cantidad_ae": 3.450, "kcal_100g": 35, "prot_100g": 0.0, "carb_100g": 9.0, "grasas_100g": 0.0},
     {"rubro": "Bebidas", "producto": "Bebidas alcohólicas (cerveza, vino)", "keywords": ["cerveza 1l", "vino tinto 1l"], "precio_indec": 4500.0, "cantidad_ae": 1.080, "kcal_100g": 60, "prot_100g": 0.3, "carb_100g": 3.0, "grasas_100g": 0.0},
     {"rubro": "Almacén", "producto": "Sal fina", "keywords": ["sal fina 500g", "sal fina 1kg"], "precio_indec": 1500.0, "cantidad_ae": 0.120, "kcal_100g": 0, "prot_100g": 0.0, "carb_100g": 0.0, "grasas_100g": 0.0},
-    {"rubro": "Almacén", "producto": "Condimentos (mayonesa, caldos)", "keywords": ["mayonesa", "caldo de verdura", "caldo de gallina"], "precio_indec": 7500.0, "cantidad_ae": 0.120, "kcal_100g": 350, "prot_100g": 1.0, "carb_100g": 10.0, "grasas_100g": 35.0},
+    {"rubro": "Almacén", "producto": "Condimentos (mayonesa, caldos)", "keywords": ["mayonesa", "caldo de verdura", "caldo de gallina", "cald"], "precio_indec": 7500.0, "cantidad_ae": 0.120, "kcal_100g": 350, "prot_100g": 1.0, "carb_100g": 10.0, "grasas_100g": 35.0},
     {"rubro": "Almacén", "producto": "Vinagre", "keywords": ["vinagre de alcohol", "vinagre de manzana"], "precio_indec": 2200.0, "cantidad_ae": 0.060, "kcal_100g": 18, "prot_100g": 0.0, "carb_100g": 0.1, "grasas_100g": 0.0},
-    {"rubro": "Almacén", "producto": "Café", "keywords": ["cafe molido", "cafe instantaneo"], "precio_indec": 32000.0, "cantidad_ae": 0.030, "kcal_100g": 200, "prot_100g": 14.0, "carb_100g": 40.0, "grasas_100g": 0.2},
+    {"rubro": "Almacén", "producto": "Café", "keywords": ["cafe molido", "cafe instantaneo", "cafem"], "precio_indec": 32000.0, "cantidad_ae": 0.030, "kcal_100g": 200, "prot_100g": 14.0, "carb_100g": 40.0, "grasas_100g": 0.2},
     {"rubro": "Almacén", "producto": "Yerba mate", "keywords": ["yerba mate 1kg", "yerba mate 500g"], "precio_indec": 6500.0, "cantidad_ae": 0.510, "kcal_100g": 30, "prot_100g": 1.0, "carb_100g": 6.0, "grasas_100g": 0.0}
 ]
 
