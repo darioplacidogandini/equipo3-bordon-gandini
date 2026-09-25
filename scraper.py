@@ -15,13 +15,13 @@ COEFICIENTE_HOGAR_TIPO = 3.09
 # ------------------------------------------------------------------------------
 CBA_INDEC = [
     # --- PANADERÍA Y CEREALES ---
-    {"rubro": "Panadería", "producto": "Pan francés", "keywords": ["pan frances", "pan kg"], "precio_indec": 4500.0, "cantidad_ae": 6.750, "kcal_100g": 265, "prot_100g": 9.0, "carb_100g": 55.0, "grasas_100g": 1.2},
-    {"rubro": "Panadería", "producto": "Galletitas de agua", "keywords": ["galletitas agua", "galleta agua"], "precio_indec": 6800.0, "cantidad_ae": 0.420, "kcal_100g": 420, "prot_100g": 9.5, "carb_100g": 68.0, "grasas_100g": 12.0},
-    {"rubro": "Panadería", "producto": "Galletitas dulces", "keywords": ["galletitas dulces", "galleta dulce"], "precio_indec": 7500.0, "cantidad_ae": 0.210, "kcal_100g": 450, "prot_100g": 6.5, "carb_100g": 72.0, "grasas_100g": 15.0},
-    {"rubro": "Almacén", "producto": "Arroz blanco", "keywords": ["arroz blanco 1kg", "arroz 1kg"], "precio_indec": 3800.0, "cantidad_ae": 1.200, "kcal_100g": 354, "prot_100g": 7.0, "carb_100g": 78.0, "grasas_100g": 0.6},
+    {"rubro": "Panadería", "producto": "Pan francés", "keywords": ["pan frances", "pan kg", "pani"], "precio_indec": 4500.0, "cantidad_ae": 6.750, "kcal_100g": 265, "prot_100g": 9.0, "carb_100g": 55.0, "grasas_100g": 1.2},
+    {"rubro": "Panadería", "producto": "Galletitas de agua", "keywords": ["galletitas agua", "galleta agua", "gals"], "precio_indec": 6800.0, "cantidad_ae": 0.420, "kcal_100g": 420, "prot_100g": 9.5, "carb_100g": 68.0, "grasas_100g": 12.0},
+    {"rubro": "Panadería", "producto": "Galletitas dulces", "keywords": ["galletitas dulces", "galleta dulce", "gald"], "precio_indec": 7500.0, "cantidad_ae": 0.210, "kcal_100g": 450, "prot_100g": 6.5, "carb_100g": 72.0, "grasas_100g": 15.0},
+    {"rubro": "Almacén", "producto": "Arroz blanco", "keywords": ["arroz blanco 1kg", "arroz 1kg", "arr"], "precio_indec": 3800.0, "cantidad_ae": 1.200, "kcal_100g": 354, "prot_100g": 7.0, "carb_100g": 78.0, "grasas_100g": 0.6},
     {"rubro": "Almacén", "producto": "Harina de trigo 000", "keywords": ["harina trigo 000", "harina 000"], "precio_indec": 2200.0, "cantidad_ae": 1.080, "kcal_100g": 340, "prot_100g": 10.0, "carb_100g": 72.0, "grasas_100g": 1.2},
-    {"rubro": "Almacén", "producto": "Otras harinas (maíz / Polenta)", "keywords": ["polenta", "harina de maiz"], "precio_indec": 2800.0, "cantidad_ae": 0.210, "kcal_100g": 350, "prot_100g": 8.0, "carb_100g": 76.0, "grasas_100g": 1.0},
-    {"rubro": "Almacén", "producto": "Fideos secos", "keywords": ["fideos secos 500g", "fideos guiseros", "tallarines"], "precio_indec": 3800.0, "cantidad_ae": 1.740, "kcal_100g": 355, "prot_100g": 12.0, "carb_100g": 73.0, "grasas_100g": 1.5},
+    {"rubro": "Almacén", "producto": "Otras harinas (maíz / Polenta)", "keywords": ["polenta", "harina de maiz", "harm"], "precio_indec": 2800.0, "cantidad_ae": 0.210, "kcal_100g": 350, "prot_100g": 8.0, "carb_100g": 76.0, "grasas_100g": 1.0},
+    {"rubro": "Almacén", "producto": "Fideos secos", "keywords": ["fideos secos 500g", "fideos guiseros", "tallarines", "fido"], "precio_indec": 3800.0, "cantidad_ae": 1.740, "kcal_100g": 355, "prot_100g": 12.0, "carb_100g": 73.0, "grasas_100g": 1.5},
 
     # --- VERDURAS, TUBÉRCULOS Y FRUTAS ---
     {"rubro": "Frutas y Verduras", "producto": "Papa blanca", "keywords": ["papa blanca", "papa x kg"], "precio_indec": 1800.0, "cantidad_ae": 6.510, "kcal_100g": 80, "prot_100g": 2.0, "carb_100g": 18.0, "grasas_100g": 0.1},
@@ -30,9 +30,9 @@ CBA_INDEC = [
     {"rubro": "Frutas y Verduras", "producto": "Frutas (manzana, naranja, banana, pera)", "keywords": ["manzana kg", "naranja kg", "banana kg", "pera kg"], "precio_indec": 2800.0, "cantidad_ae": 4.950, "kcal_100g": 52, "prot_100g": 0.5, "carb_100g": 13.5, "grasas_100g": 0.2},
 
     # --- AZÚCAR, DULCES Y LEGUMBRES ---
-    {"rubro": "Almacén", "producto": "Azúcar", "keywords": ["azucar 1kg", "azucar blanca"], "precio_indec": 2000.0, "cantidad_ae": 1.230, "kcal_100g": 387, "prot_100g": 0.0, "carb_100g": 100.0, "grasas_100g": 0.0},
-    {"rubro": "Almacén", "producto": "Dulces (dulce de leche, mermelada, batata)", "keywords": ["dulce de leche", "mermelada", "dulce de batata"], "precio_indec": 6500.0, "cantidad_ae": 0.330, "kcal_100g": 315, "prot_100g": 4.0, "carb_100g": 60.0, "grasas_100g": 5.0},
-    {"rubro": "Almacén", "producto": "Legumbres secas (lentejas, arvejas)", "keywords": ["lentejas 500g", "arvejas 500g", "lentejas"], "precio_indec": 4200.0, "cantidad_ae": 0.240, "kcal_100g": 340, "prot_100g": 24.0, "carb_100g": 60.0, "grasas_100g": 1.0},
+    {"rubro": "Almacén", "producto": "Azúcar", "keywords": ["azucar 1kg", "azucar blanca", "azuc"], "precio_indec": 2000.0, "cantidad_ae": 1.230, "kcal_100g": 387, "prot_100g": 0.0, "carb_100g": 100.0, "grasas_100g": 0.0},
+    {"rubro": "Almacén", "producto": "Dulces (dulce de leche, mermelada, batata)", "keywords": ["dulce de leche", "mermelada", "dulce de batata", "dulce leche"], "precio_indec": 6500.0, "cantidad_ae": 0.330, "kcal_100g": 315, "prot_100g": 4.0, "carb_100g": 60.0, "grasas_100g": 5.0},
+    {"rubro": "Almacén", "producto": "Legumbres secas (lentejas, arvejas)", "keywords": ["lentejas 500g", "arvejas 500g", "lentejas", "legu"], "precio_indec": 4200.0, "cantidad_ae": 0.240, "kcal_100g": 340, "prot_100g": 24.0, "carb_100g": 60.0, "grasas_100g": 1.0},
 
     # --- CARNES, MENUDENCIAS Y FIAMBRES ---
     {"rubro": "Carnes", "producto": "Carnes (asado, picada, paleta, nalga, pollo, pescado)", "keywords": ["carne picada", "asado kg", "nalga kg", "paleta kg", "pollo entero kg"], "precio_indec": 13500.0, "cantidad_ae": 6.270, "kcal_100g": 210, "prot_100g": 19.0, "carb_100g": 0.0, "grasas_100g": 14.0},
