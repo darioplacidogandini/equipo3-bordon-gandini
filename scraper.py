@@ -1,13 +1,17 @@
 import os
 import re
 import time
-from datetime import datetime
+from datetime import datetime, timedelta
 import pandas as pd
 from bs4 import BeautifulSoup
 import cloudscraper
 import numpy as np
 
-COEFICIENTE_HOGAR_TIPO = 3.09
+# ------------------------------------------------------------------------------
+# CONSTANTES DE CONFIGURACIÓN Y PONDERACIÓN
+# ------------------------------------------------------------------------------
+COEFICIENTE_HOGAR_TIPO = 3.09  # Equivalencia de integrantes en un hogar tipo según INDEC
+INVERSO_COEFICIENTE_ENGEL = 2.25  # Coeficiente para estimar la CBT a partir de la CBA (Línea de pobreza)
 
 # ------------------------------------------------------------------------------
 # CANASTA BÁSICA ALIMENTARIA COMPLETA (INDEC) - PRECIOS BASE ACTUALIZADOS
@@ -153,6 +157,54 @@ def extraer_observaciones_raw(scraper, item_config, fecha, timestamp, max_pagina
 
     return observaciones
 
+def calcular_indicadores_historicos(archivo_totales, fecha_hoy_str, costo_total_ae_actual):
+    """
+    Calcula:
+    1. Días desde la última actualización real
+    2. Variación diaria (%)
+    3. Variación mensual (%)
+    """
+    dias_desde_actualizacion = 0
+    var_diaria = 0.0
+    var_mensual = 0.0
+
+    if os.path.exists(archivo_totales):
+        try:
+            df_hist = pd.read_csv(archivo_totales)
+            if not df_hist.empty and 'fecha' in df_hist.columns and 'costo_total_ae' in df_hist.columns:
+                df_hist['fecha_dt'] = pd.to_datetime(df_hist['fecha'])
+                hoy_dt = pd.to_datetime(fecha_hoy_str)
+
+                # Excluir fecha de hoy si ya estuviese cargada
+                df_previo = df_hist[df_hist['fecha_dt'] < hoy_dt].sort_values('fecha_dt')
+
+                if not df_previo.empty:
+                    # 1. Días desde la última actualización real
+                    ultima_fecha = df_previo['fecha_dt'].max()
+                    dias_desde_actualizacion = (hoy_dt - ultima_fecha).days
+
+                    # 2. Variación diaria (comparado con la última fecha registrada)
+                    ultimo_costo_ae = df_previo.iloc[-1]['costo_total_ae']
+                    if ultimo_costo_ae > 0:
+                        var_diaria = ((costo_total_ae_actual - ultimo_costo_ae) / ultimo_costo_ae) * 100.0
+
+                    # 3. Variación mensual (comparado con aprox. 30 días atrás o primer registro del mes previo)
+                    fecha_hace_mes = hoy_dt - timedelta(days=30)
+                    df_mes_previo = df_previo[df_previo['fecha_dt'] <= fecha_hace_mes]
+
+                    if not df_mes_previo.empty:
+                        costo_mes_previo = df_mes_previo.iloc[-1]['costo_total_ae']
+                    else:
+                        costo_mes_previo = df_previo.iloc[0]['costo_total_ae']
+
+                    if costo_mes_previo > 0:
+                        var_mensual = ((costo_total_ae_actual - costo_mes_previo) / costo_mes_previo) * 100.0
+
+        except Exception as e:
+            print(f"⚠️ No se pudieron calcular variaciones históricas: {e}")
+
+    return dias_desde_actualizacion, var_diaria, var_mensual
+
 def main():
     pd.set_option('display.max_columns', None)
     pd.set_option('display.width', 1000)
@@ -176,7 +228,6 @@ def main():
         precio_indec = item.get("precio_indec", 0.0)
 
         obs_validas = []
-        # FILTRO FLEXIBILIZADO: Acepta variaciones entre 30% y 350% respecto al valor base
         if precio_indec > 0 and obs:
             p_min = precio_indec * 0.30
             p_max = precio_indec * 3.50
@@ -187,6 +238,8 @@ def main():
         if obs_validas:
             precios_normalizados = [o['precio'] for o in obs_validas]
             precio_final = float(np.median(precios_normalizados))
+            # INDICADOR: Dispersión de precios (Desvío estándar entre muestras)
+            dispersion_std = float(np.std(precios_normalizados)) if len(precios_normalizados) > 1 else 0.0
             metodo_calculo = "Mediana Normalizada (Scraping)"
             coincidencias = len(obs_validas)
             
@@ -199,13 +252,26 @@ def main():
             else:
                 precio_final = 0.0
                 metodo_calculo = "Sin datos"
+            dispersion_std = 0.0
             coincidencias = 0
+
+        # INDICADORES NUTRICIONALES POR PRODUCTO
+        # Costo por 1.000 kcal: precio_unitario / (kcal por kg/L / 1000)
+        kcal_por_kg = item.get("kcal_100g", 0) * 10.0
+        costo_1000_kcal = (precio_final / (kcal_por_kg / 1000.0)) if kcal_por_kg > 0 else 0.0
+
+        # Costo por 100g de proteína: precio_unitario / prot_100g
+        prot_100g = item.get("prot_100g", 0.0)
+        costo_100g_proteina = (precio_final / prot_100g) if prot_100g > 0 else 0.0
 
         registro.update({
             'fecha': fecha_hoy,
             'timestamp': timestamp,
             'precio_unitario_estimado': precio_final,
             'coincidencias': coincidencias,
+            'dispersion_std': dispersion_std,
+            'costo_1000_kcal': costo_1000_kcal,
+            'costo_100g_proteina': costo_100g_proteina,
             'metodo_calculo': metodo_calculo
         })
         resumen_productos.append(registro)
@@ -213,42 +279,74 @@ def main():
 
     df_resumen = pd.DataFrame(resumen_productos)
 
-    # Cálculo de Totales
+    # CÁLCULOS PRINCIPALES
     df_resumen['costo_mensual_ae'] = df_resumen['cantidad_ae'] * df_resumen['precio_unitario_estimado']
     df_resumen['costo_hogar_tipo'] = df_resumen['costo_mensual_ae'] * COEFICIENTE_HOGAR_TIPO
 
     costo_total_ae = df_resumen['costo_mensual_ae'].sum()
     costo_total_hogar = costo_total_ae * COEFICIENTE_HOGAR_TIPO
 
-    # Resumen por consola
+    # INDICADOR: Cobertura del scraper (% de productos con coincidencias > 0)
+    total_productos = len(df_resumen)
+    prod_con_coincidencias = (df_resumen['coincidencias'] > 0).sum()
+    cobertura_scraper_pct = (prod_con_coincidencias / total_productos * 100.0) if total_productos > 0 else 0.0
+
+    # INDICADOR: Peso de cada producto / rubro (% sobre el costo total de la CBA)
+    df_resumen['peso_en_cba_pct'] = (df_resumen['costo_mensual_ae'] / costo_total_ae * 100.0) if costo_total_ae > 0 else 0.0
+
+    # INDICADOR: Canasta Básica Total (CBT)
+    costo_cbt_ae = costo_total_ae * INVERSO_COEFICIENTE_ENGEL
+    costo_cbt_hogar = costo_total_hogar * INVERSO_COEFICIENTE_ENGEL
+
+    # INDICADORES HISTÓRICOS Y DE ACTUALIZACIÓN
+    archivo_totales = "cba_historico_totales.csv"
+    dias_desde_actualizacion, var_diaria, var_mensual = calcular_indicadores_historicos(
+        archivo_totales, fecha_hoy, costo_total_ae
+    )
+
+    # RESUMEN EN CONSOLA
     print("\n" + "="*95)
-    print("RESUMEN DE RESULTADOS RECALCULADOS (NORMALIZADOS X KG/L)")
+    print("INDICADORES CLAVE DEL TABLERO DE CONTROL (CBA & CBT)")
     print("="*95)
-    print(f"✅ Costo Total Adulto Equivalente (AE): ${costo_total_ae:,.2f}")
-    print(f"✅ Costo Total Hogar Tipo (3.09 AE):     ${costo_total_hogar:,.2f}")
+    print(f"📊 Cobertura del Scraper:                {cobertura_scraper_pct:.1f}% ({prod_con_coincidencias}/{total_productos} productos con coincidencias)")
+    print(f"⏱️  Días desde última actualización:      {dias_desde_actualizacion} día(s)")
+    print(f"📈 Variación diaria (CBA):              {var_diaria:+.2f}%")
+    print(f"📅 Variación mensual (CBA):             {var_mensual:+.2f}%")
+    print("-" * 95)
+    print(f"🛒 Costo Total CBA Adulto Equiv. (AE):  ${costo_total_ae:,.2f}")
+    print(f"🏡 Costo Total CBA Hogar Tipo (3.09 AE): ${costo_total_hogar:,.2f}")
+    print(f"💳 Costo Total CBT Adulto Equiv. (AE):  ${costo_cbt_ae:,.2f}")
+    print(f"🏠 Costo Total CBT Hogar Tipo (3.09 AE): ${costo_cbt_hogar:,.2f}")
     print("="*95)
 
-    # 1. Guardar detalle de productos por fecha
+    print("\nPESO RELATIVO POR RUBRO EN LA CBA:")
+    peso_rubros = df_resumen.groupby('rubro')['peso_en_cba_pct'].sum().sort_values(ascending=False)
+    for rubro_nombre, pct in peso_rubros.items():
+        print(f"  • {rubro_nombre:<25}: {pct:.2f}%")
+
+    # 1. Guardar detalle de productos
     archivo_detalle = "cba_historico_detalle.csv"
-    if 'keywords' in df_resumen.columns:
-        df_resumen_csv = df_resumen.drop(columns=['keywords'])
-    else:
-        df_resumen_csv = df_resumen.copy()
+    df_resumen_csv = df_resumen.drop(columns=['keywords']) if 'keywords' in df_resumen.columns else df_resumen.copy()
 
     if os.path.exists(archivo_detalle):
         df_resumen_csv.to_csv(archivo_detalle, mode='a', header=False, index=False, encoding="utf-8-sig")
-        print(f"📁 Registros añadidos a '{archivo_detalle}'.")
+        print(f"\n📁 Registros añadidos a '{archivo_detalle}'.")
     else:
         df_resumen_csv.to_csv(archivo_detalle, index=False, encoding="utf-8-sig")
-        print(f"📁 Archivo '{archivo_detalle}' creado exitosamente.")
+        print(f"\n📁 Archivo '{archivo_detalle}' creado exitosamente.")
 
-    # 2. Guardar resumen de totales acumulados
-    archivo_totales = "cba_historico_totales.csv"
+    # 2. Guardar resumen de totales acumulados con indicadores
     df_totales = pd.DataFrame([{
         'fecha': fecha_hoy,
         'timestamp': timestamp,
-        'costo_total_ae': costo_total_ae,
-        'costo_total_hogar': costo_total_hogar
+        'cobertura_scraper_pct': cobertura_scraper_pct,
+        'dias_desde_actualizacion': dias_desde_actualizacion,
+        'var_diaria_pct': var_diaria,
+        'var_mensual_pct': var_mensual,
+        'costo_total_cba_ae': costo_total_ae,
+        'costo_total_cba_hogar': costo_total_hogar,
+        'costo_total_cbt_ae': costo_cbt_ae,
+        'costo_total_cbt_hogar': costo_cbt_hogar
     }])
 
     if os.path.exists(archivo_totales):
@@ -258,9 +356,13 @@ def main():
         df_totales.to_csv(archivo_totales, index=False, encoding="utf-8-sig")
         print(f"📁 Archivo '{archivo_totales}' creado exitosamente.")
 
-    # 3. Guardar desglose nutricional
+    # 3. Guardar desglose nutricional e indicadores de eficiencia
     archivo_nutricional = "cba_tabla_nutricional.csv"
-    cols_nutricion = ['fecha', 'timestamp', 'rubro', 'producto', 'cantidad_ae', 'kcal_100g', 'prot_100g', 'carb_100g', 'grasas_100g', 'costo_mensual_ae']
+    cols_nutricion = [
+        'fecha', 'timestamp', 'rubro', 'producto', 'cantidad_ae',
+        'costo_1000_kcal', 'costo_100g_proteina', 'dispersion_std',
+        'peso_en_cba_pct', 'costo_mensual_ae'
+    ]
     df_nutricional = df_resumen[cols_nutricion]
 
     if os.path.exists(archivo_nutricional):
