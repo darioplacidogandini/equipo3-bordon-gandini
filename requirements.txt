@@ -1,3 +1,7 @@
 fastapi
+pandas
+cloudscraper
+beautifulsoup4
+numpy
 
 
