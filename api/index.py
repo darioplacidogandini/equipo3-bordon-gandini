@@ -7,7 +7,10 @@ import io
 import ssl
 import urllib.request
 
-app = FastAPI(title="CBA Scraper API", docs_url="/docs")
+app = FastAPI(title="CBA Scraper API")
+
+# Alias explícito para Vercel
+handler = app
 
 USUARIO_GITHUB = "darioplacidogandini"
 REPO_GITHUB = "equipo3-bordon-gandini"
@@ -28,7 +31,7 @@ def leer_csv(nombre_archivo):
     try:
         req = urllib.request.Request(url_remota, headers={'User-Agent': 'Mozilla/5.0'})
         ssl_context = ssl._create_unverified_context()
-        with urllib.request.urlopen(req, timeout=10, context=ssl_context) as response:
+        with urllib.request.urlopen(req, timeout=8, context=ssl_context) as response:
             contenido = response.read().decode('utf-8-sig')
             df = pd.read_csv(io.StringIO(contenido))
             if not df.empty:
@@ -48,7 +51,7 @@ def leer_csv(nombre_archivo):
                 if not df.empty:
                     return df.fillna("")
             except Exception as e:
-                print(f"Error leyendo archivo local {ruta}: {e}")
+                print(f"Error leyendo local {ruta}: {e}")
 
     return None
 
@@ -79,3 +82,8 @@ def get_nutricional():
 @app.get("/api/index.py", response_class=HTMLResponse)
 def dashboard():
     return ""
+
+
+    
+    
+    CBA Dashboard
