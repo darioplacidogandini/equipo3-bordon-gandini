@@ -1,5 +1,6 @@
-cloudscraper
-pandas
-beautifulsoup4
 fastapi
 uvicorn
+pandas
+numpy
+cloudscraper
+beautifulsoup4
