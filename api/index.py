@@ -57,9 +57,4 @@ def leer_csv(nombre_archivo):
 @app.get("/api/index", response_class=HTMLResponse)
 @app.get("/api/index.py", response_class=HTMLResponse)
 def dashboard():
-    return """
-    
-    
-    
-        
-        API Canasta Básica Alimentaria
+    return "API Canasta Básica Alimentaria"
