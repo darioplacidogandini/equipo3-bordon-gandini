@@ -1,15 +1,15 @@
 from fastapi import FastAPI
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
-import pandas as pd
 import os
 import io
 import ssl
+import csv
 import urllib.request
 
 app = FastAPI(title="CBA Scraper API")
 
-# Alias explícito para Vercel
+# Exportación requerida por Vercel
 handler = app
 
 USUARIO_GITHUB = "darioplacidogandini"
@@ -33,9 +33,8 @@ def leer_csv(nombre_archivo):
         ssl_context = ssl._create_unverified_context()
         with urllib.request.urlopen(req, timeout=8, context=ssl_context) as response:
             contenido = response.read().decode('utf-8-sig')
-            df = pd.read_csv(io.StringIO(contenido))
-            if not df.empty:
-                return df.fillna("")
+            reader = csv.DictReader(io.StringIO(contenido))
+            return list(reader)
     except Exception as e:
         print(f"Error descargando {url_remota}: {e}")
 
@@ -47,9 +46,9 @@ def leer_csv(nombre_archivo):
     for ruta in rutas_locales:
         if os.path.exists(ruta):
             try:
-                df = pd.read_csv(ruta, encoding='utf-8-sig')
-                if not df.empty:
-                    return df.fillna("")
+                with open(ruta, mode='r', encoding='utf-8-sig') as f:
+                    reader = csv.DictReader(f)
+                    return list(reader)
             except Exception as e:
                 print(f"Error leyendo local {ruta}: {e}")
 
@@ -57,23 +56,23 @@ def leer_csv(nombre_archivo):
 
 @app.get("/api/totales")
 def get_totales():
-    df = leer_csv("cba_historico_totales.csv")
-    if df is not None:
-        return df.to_dict(orient="records")
+    data = leer_csv("cba_historico_totales.csv")
+    if data is not None:
+        return data
     return JSONResponse(status_code=404, content={"error": "Archivo no encontrado"})
 
 @app.get("/api/detalle")
 def get_detalle():
-    df = leer_csv("cba_historico_detalle.csv")
-    if df is not None:
-        return df.to_dict(orient="records")
+    data = leer_csv("cba_historico_detalle.csv")
+    if data is not None:
+        return data
     return JSONResponse(status_code=404, content={"error": "Archivo no encontrado"})
 
 @app.get("/api/nutricional")
 def get_nutricional():
-    df = leer_csv("cba_tabla_nutricional.csv")
-    if df is not None:
-        return df.to_dict(orient="records")
+    data = leer_csv("cba_tabla_nutricional.csv")
+    if data is not None:
+        return data
     return JSONResponse(status_code=404, content={"error": "Archivo no encontrado"})
 
 @app.get("/", response_class=HTMLResponse)
@@ -81,4 +80,9 @@ def get_nutricional():
 @app.get("/api/index", response_class=HTMLResponse)
 @app.get("/api/index.py", response_class=HTMLResponse)
 def dashboard():
-    return ""
+    return """
+
+
+    
+    
+    CBA Dashboard
