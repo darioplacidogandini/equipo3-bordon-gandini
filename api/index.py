@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from fastapi.responses import HTMLResponse, JSONResponse
+from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 import os
 import io
@@ -8,8 +8,6 @@ import csv
 import urllib.request
 
 app = FastAPI(title="CBA Scraper API")
-
-# Exportación requerida por Vercel
 handler = app
 
 USUARIO_GITHUB = "darioplacidogandini"
@@ -75,14 +73,15 @@ def get_nutricional():
         return data
     return JSONResponse(status_code=404, content={"error": "Archivo no encontrado"})
 
-@app.get("/", response_class=HTMLResponse)
-@app.get("/api", response_class=HTMLResponse)
-@app.get("/api/index", response_class=HTMLResponse)
-@app.get("/api/index.py", response_class=HTMLResponse)
-def dashboard():
-    return """
-
-
-    
-    
-    CBA Dashboard
+@app.get("/")
+@app.get("/api")
+def root_status():
+    return {
+        "status": "online",
+        "message": "CBA Scraper API activa",
+        "endpoints": [
+            "/api/totales",
+            "/api/detalle",
+            "/api/nutricional"
+        ]
+    }
