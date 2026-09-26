@@ -75,9 +75,6 @@ def render_dashboard():
         .kpi-card .value { font-size: 1.6rem; font-weight: 700; margin-top: 8px; color: var(--text); }
         .chart-card { background: var(--card); padding: 24px; border-radius: 12px; border: 1px solid #e2e8f0; }
         .chart-container { position: relative; height: 380px; width: 100%; }
-        .endpoints { margin-top: 24px; background: var(--card); padding: 16px; border-radius: 8px; border: 1px solid #e2e8f0; }
-        .endpoints a { color: var(--primary); font-weight: 600; text-decoration: none; margin-right: 16px; }
-        .endpoints a:hover { text-decoration: underline; }
       </style>
     </head>
     <body>
@@ -107,13 +104,6 @@ def render_dashboard():
           <div class="chart-container">
             <canvas id="cbaChart"></canvas>
           </div>
-        </div>
-
-        <div class="endpoints">
-          <strong>Acceso a datos crudos (API JSON):</strong><br><br>
-          <a href="/api/totales" target="_blank">/api/totales</a>
-          <a href="/api/detalle" target="_blank">/api/detalle</a>
-          <a href="/api/nutricional" target="_blank">/api/nutricional</a>
         </div>
       </div>
 
@@ -184,35 +174,9 @@ def render_dashboard():
     </html>
     """
 
-@app.get("/api")
-def root_status():
-    return {
-        "status": "online",
-        "message": "CBA Scraper API activa",
-        "endpoints": [
-            "/api/totales",
-            "/api/detalle",
-            "/api/nutricional"
-        ]
-    }
-
 @app.get("/api/totales")
 def get_totales():
     data = leer_csv("cba_historico_totales.csv")
-    if data is not None:
-        return data
-    return JSONResponse(status_code=404, content={"error": "Archivo no encontrado"})
-
-@app.get("/api/detalle")
-def get_detalle():
-    data = leer_csv("cba_historico_detalle.csv")
-    if data is not None:
-        return data
-    return JSONResponse(status_code=404, content={"error": "Archivo no encontrado"})
-
-@app.get("/api/nutricional")
-def get_nutricional():
-    data = leer_csv("cba_tabla_nutricional.csv")
     if data is not None:
         return data
     return JSONResponse(status_code=404, content={"error": "Archivo no encontrado"})
