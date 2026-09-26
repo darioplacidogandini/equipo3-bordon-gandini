@@ -7,7 +7,7 @@ import io
 import ssl
 import urllib.request
 
-app = FastAPI(title="CBA Scraper API")
+app = FastAPI(title="CBA Scraper API", docs_url="/docs")
 
 USUARIO_GITHUB = "darioplacidogandini"
 REPO_GITHUB = "equipo3-bordon-gandini"
@@ -52,9 +52,30 @@ def leer_csv(nombre_archivo):
 
     return None
 
+@app.get("/api/totales")
+def get_totales():
+    df = leer_csv("cba_historico_totales.csv")
+    if df is not None:
+        return df.to_dict(orient="records")
+    return JSONResponse(status_code=404, content={"error": "Archivo no encontrado"})
+
+@app.get("/api/detalle")
+def get_detalle():
+    df = leer_csv("cba_historico_detalle.csv")
+    if df is not None:
+        return df.to_dict(orient="records")
+    return JSONResponse(status_code=404, content={"error": "Archivo no encontrado"})
+
+@app.get("/api/nutricional")
+def get_nutricional():
+    df = leer_csv("cba_tabla_nutricional.csv")
+    if df is not None:
+        return df.to_dict(orient="records")
+    return JSONResponse(status_code=404, content={"error": "Archivo no encontrado"})
+
 @app.get("/", response_class=HTMLResponse)
 @app.get("/api", response_class=HTMLResponse)
 @app.get("/api/index", response_class=HTMLResponse)
 @app.get("/api/index.py", response_class=HTMLResponse)
 def dashboard():
-    return "API Canasta Básica Alimentaria"
+    return """
