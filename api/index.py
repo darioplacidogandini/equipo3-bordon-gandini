@@ -78,4 +78,4 @@ def get_nutricional():
 @app.get("/api/index", response_class=HTMLResponse)
 @app.get("/api/index.py", response_class=HTMLResponse)
 def dashboard():
-    return """
+    return ""
