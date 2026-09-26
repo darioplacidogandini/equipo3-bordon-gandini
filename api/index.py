@@ -82,8 +82,3 @@ def get_nutricional():
 @app.get("/api/index.py", response_class=HTMLResponse)
 def dashboard():
     return ""
-
-
-    
-    
-    CBA Dashboard
