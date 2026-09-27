@@ -64,69 +64,138 @@ def render_dashboard():
       <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
       <style>
         :root { 
-          --bg: #f8fafc; 
+          --bg: #f1f5f9; 
           --card: #ffffff; 
-          --primary: #2563eb; 
-          --secondary: #059669; 
+          --primary: #4f46e5; 
+          --primary-gradient: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+          --secondary: #10b981; 
           --text: #0f172a; 
           --sub: #64748b; 
           --border: #e2e8f0;
         }
-        body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 24px; }
-        .container { max-width: 1200px; margin: 0 auto; }
-        header { margin-bottom: 24px; }
-        h1 { margin: 0 0 8px 0; font-size: 1.75rem; }
-        p.subtitle { margin: 0; color: var(--sub); font-size: 0.95rem; }
+        body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 24px; }
+        .container { max-width: 1280px; margin: 0 auto; }
+        
+        /* Header vistoso con gradiente */
+        header { 
+          background: linear-gradient(135deg, #3b82f6 0%, #6366f1 50%, #8b5cf6 100%); 
+          color: white; 
+          padding: 28px 32px; 
+          border-radius: 16px; 
+          margin-bottom: 28px;
+          box-shadow: 0 10px 25px -5px rgba(99, 102, 241, 0.3);
+        }
+        h1 { margin: 0 0 6px 0; font-size: 2rem; font-weight: 800; display: flex; align-items: center; gap: 12px; }
+        p.subtitle { margin: 0; opacity: 0.9; font-size: 1rem; font-weight: 400; }
         
         /* Navegación por pestañas */
         .tabs {
           display: flex;
-          gap: 12px;
-          border-bottom: 2px solid var(--border);
+          gap: 10px;
           margin-bottom: 24px;
+          flex-wrap: wrap;
         }
         .tab-btn {
-          padding: 12px 20px;
-          background: none;
-          border: none;
-          border-bottom: 3px solid transparent;
+          padding: 12px 24px;
+          background: #ffffff;
+          border: 1px solid #cbd5e1;
+          border-radius: 12px;
           font-size: 0.95rem;
           font-weight: 600;
-          color: var(--sub);
+          color: #475569;
           cursor: pointer;
-          transition: all 0.2s ease;
+          transition: all 0.25s ease;
+          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+          display: flex;
+          align-items: center;
+          gap: 8px;
         }
         .tab-btn:hover {
+          background: #f8fafc;
           color: var(--primary);
+          border-color: #a5b4fc;
+          transform: translateY(-1px);
         }
         .tab-btn.active {
-          color: var(--primary);
-          border-bottom-color: var(--primary);
+          background: var(--primary-gradient);
+          color: #ffffff;
+          border-color: transparent;
+          box-shadow: 0 6px 16px rgba(79, 70, 229, 0.35);
         }
         .tab-content {
           display: none;
+          animation: fadeIn 0.3s ease-in-out;
         }
         .tab-content.active {
           display: block;
         }
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(6px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
 
-        /* KPIs */
-        .kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-bottom: 24px; }
-        .kpi-card { background: var(--card); padding: 20px; border-radius: 12px; border: 1px solid var(--border); }
-        .kpi-card span { font-size: 0.85rem; color: var(--sub); font-weight: 600; text-transform: uppercase; }
-        .kpi-card .value { font-size: 1.6rem; font-weight: 700; margin-top: 8px; color: var(--text); }
-        
-        /* Tarjetas e Historgramas/Tablas */
-        .chart-card, .table-card { background: var(--card); padding: 24px; border-radius: 12px; border: 1px solid var(--border); margin-bottom: 24px; }
-        .chart-container { position: relative; height: 380px; width: 100%; }
+        /* KPIs Estilizados y Coloridos */
+        .kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; margin-bottom: 24px; }
+        .kpi-card { 
+          background: var(--card); 
+          padding: 22px; 
+          border-radius: 16px; 
+          border: 1px solid var(--border);
+          box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+          position: relative;
+          overflow: hidden;
+          transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .kpi-card:hover {
+          transform: translateY(-3px);
+          box-shadow: 0 8px 25px rgba(0,0,0,0.06);
+        }
+        .kpi-card.cba {
+          border-left: 6px solid #3b82f6;
+          background: linear-gradient(135deg, #ffffff 0%, #eff6ff 100%);
+        }
+        .kpi-card.cbt {
+          border-left: 6px solid #10b981;
+          background: linear-gradient(135deg, #ffffff 0%, #ecfdf5 100%);
+        }
+        .kpi-card.cobertura {
+          border-left: 6px solid #f59e0b;
+          background: linear-gradient(135deg, #ffffff 0%, #fffbeb 100%);
+        }
+        .kpi-card span { font-size: 0.85rem; color: var(--sub); font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; }
+        .kpi-card .value { font-size: 1.8rem; font-weight: 800; margin-top: 10px; color: var(--text); }
+        .kpi-card.cba .value { color: #1d4ed8; }
+        .kpi-card.cbt .value { color: #047857; }
+        .kpi-card.cobertura .value { color: #b45309; }
+
+        /* Tarjetas e Histogramas/Tablas */
+        .chart-card, .table-card { 
+          background: var(--card); 
+          padding: 26px; 
+          border-radius: 16px; 
+          border: 1px solid var(--border); 
+          margin-bottom: 24px;
+          box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+        }
+        .card-title {
+          margin: 0 0 18px 0;
+          font-size: 1.2rem;
+          font-weight: 700;
+          color: #1e293b;
+          display: flex;
+          align-items: center;
+          gap: 10px;
+        }
+        .chart-container { position: relative; height: 400px; width: 100%; }
 
         /* Estilos de tablas */
         .table-container {
           overflow-x: auto;
-          max-height: 500px;
+          max-height: 520px;
           border: 1px solid var(--border);
-          border-radius: 8px;
-          margin-top: 16px;
+          border-radius: 12px;
+          margin-top: 12px;
+          box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
         }
         table {
           width: 100%;
@@ -137,21 +206,28 @@ def render_dashboard():
         th {
           position: sticky;
           top: 0;
-          background: #f1f5f9;
-          color: #334155;
-          font-weight: 600;
-          padding: 12px 16px;
-          border-bottom: 2px solid var(--border);
+          background: linear-gradient(90deg, #3b82f6 0%, #6366f1 100%);
+          color: #ffffff;
+          font-weight: 700;
+          padding: 14px 18px;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+          font-size: 0.78rem;
           white-space: nowrap;
           z-index: 10;
         }
         td {
-          padding: 10px 16px;
+          padding: 12px 18px;
           border-bottom: 1px solid var(--border);
           white-space: nowrap;
+          color: #334155;
+        }
+        tr:nth-child(even) {
+          background-color: #f8fafc;
         }
         tr:hover {
-          background-color: #f8fafc;
+          background-color: #e0e7ff;
+          transition: background-color 0.15s ease;
         }
       </style>
     </head>
@@ -164,57 +240,61 @@ def render_dashboard():
 
         <!-- Navegación por Pestañas -->
         <nav class="tabs">
-          <button class="tab-btn active" onclick="cambiarTab(event, 'tab-totales')">Totales</button>
-          <button class="tab-btn" onclick="cambiarTab(event, 'tab-nutricional')">Información Nutricional</button>
-          <button class="tab-btn" onclick="cambiarTab(event, 'tab-historico')">Histórico</button>
+          <button class="tab-btn active" onclick="cambiarTab(event, 'tab-resumen')">📈 Resumen General</button>
+          <button class="tab-btn" onclick="cambiarTab(event, 'tab-totales')">📋 Tabla de Totales</button>
+          <button class="tab-btn" onclick="cambiarTab(event, 'tab-nutricional')">🥗 Información Nutricional</button>
+          <button class="tab-btn" onclick="cambiarTab(event, 'tab-historico')">🗂️ Histórico Detallado</button>
         </nav>
 
-        <!-- Pestaña 1: Totales -->
-        <div id="tab-totales" class="tab-content active">
+        <!-- Pestaña 1: Resumen General (KPIs y Gráfico) -->
+        <div id="tab-resumen" class="tab-content active">
           <div class="kpis">
-            <div class="kpi-card">
+            <div class="kpi-card cba">
               <span>CBA Hogar Tipo</span>
               <div class="value" id="kpi-cba">$ --</div>
             </div>
-            <div class="kpi-card">
+            <div class="kpi-card cbt">
               <span>CBT Hogar Tipo</span>
               <div class="value" id="kpi-cbt">$ --</div>
             </div>
-            <div class="kpi-card">
+            <div class="kpi-card cobertura">
               <span>Cobertura Scraper</span>
               <div class="value" id="kpi-cobertura">-- %</div>
             </div>
           </div>
 
           <div class="chart-card">
-            <h3>Evolución Histórica de Costos</h3>
+            <h3 class="card-title">📈 Evolución Histórica de Costos</h3>
             <div class="chart-container">
               <canvas id="cbaChart"></canvas>
             </div>
           </div>
+        </div>
 
+        <!-- Pestaña 2: Tabla de Totales -->
+        <div id="tab-totales" class="tab-content">
           <div class="table-card">
-            <h3>Tabla de Totales</h3>
+            <h3 class="card-title">📋 Tabla de Totales (CBA / CBT)</h3>
             <div class="table-container" id="tabla-totales-container">
               <p style="padding: 16px; color: var(--sub);">Cargando tabla de totales...</p>
             </div>
           </div>
         </div>
 
-        <!-- Pestaña 2: Información Nutricional -->
+        <!-- Pestaña 3: Información Nutricional -->
         <div id="tab-nutricional" class="tab-content">
           <div class="table-card">
-            <h3>Tabla de Información Nutricional</h3>
+            <h3 class="card-title">🥗 Tabla de Información Nutricional</h3>
             <div class="table-container" id="tabla-nutricional-container">
               <p style="padding: 16px; color: var(--sub);">Cargando información nutricional...</p>
             </div>
           </div>
         </div>
 
-        <!-- Pestaña 3: Histórico -->
+        <!-- Pestaña 4: Histórico Detallado -->
         <div id="tab-historico" class="tab-content">
           <div class="table-card">
-            <h3>Tabla de Datos Históricos</h3>
+            <h3 class="card-title">🗂️ Tabla de Datos Históricos</h3>
             <div class="table-container" id="tabla-historico-container">
               <p style="padding: 16px; color: var(--sub);">Cargando histórico...</p>
             </div>
@@ -278,7 +358,17 @@ def render_dashboard():
             const cbaHogar = data.map(i => parseFloat(i.costo_total_cba_hogar));
             const cbtHogar = data.map(i => parseFloat(i.costo_total_cbt_hogar));
 
-            new Chart(document.getElementById('cbaChart'), {
+            const ctx = document.getElementById('cbaChart').getContext('2d');
+            
+            const gradCBA = ctx.createLinearGradient(0, 0, 0, 400);
+            gradCBA.addColorStop(0, 'rgba(59, 130, 246, 0.35)');
+            gradCBA.addColorStop(1, 'rgba(59, 130, 246, 0.01)');
+
+            const gradCBT = ctx.createLinearGradient(0, 0, 0, 400);
+            gradCBT.addColorStop(0, 'rgba(16, 185, 129, 0.35)');
+            gradCBT.addColorStop(1, 'rgba(16, 185, 129, 0.01)');
+
+            new Chart(ctx, {
               type: 'line',
               data: {
                 labels: fechas,
@@ -287,27 +377,52 @@ def render_dashboard():
                     label: 'CBA Hogar Tipo',
                     data: cbaHogar,
                     borderColor: '#2563eb',
-                    backgroundColor: 'rgba(37, 99, 235, 0.1)',
+                    backgroundColor: gradCBA,
+                    borderWidth: 3,
+                    pointBackgroundColor: '#1d4ed8',
+                    pointRadius: 4,
+                    pointHoverRadius: 7,
                     fill: true,
-                    tension: 0.2
+                    tension: 0.3
                   },
                   {
                     label: 'CBT Hogar Tipo',
                     data: cbtHogar,
-                    borderColor: '#059669',
-                    backgroundColor: 'rgba(5, 150, 105, 0.1)',
+                    borderColor: '#10b981',
+                    backgroundColor: gradCBT,
+                    borderWidth: 3,
+                    pointBackgroundColor: '#047857',
+                    pointRadius: 4,
+                    pointHoverRadius: 7,
                     fill: true,
-                    tension: 0.2
+                    tension: 0.3
                   }
                 ]
               },
               options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                plugins: { legend: { position: 'top' } },
+                plugins: { 
+                  legend: { 
+                    position: 'top',
+                    labels: {
+                      font: { size: 13, weight: 'bold' },
+                      usePointStyle: true,
+                      padding: 20
+                    }
+                  } 
+                },
                 scales: {
                   y: {
-                    ticks: { callback: (val) => '$' + val.toLocaleString('es-AR') }
+                    grid: { color: '#f1f5f9' },
+                    ticks: { 
+                      font: { size: 12 },
+                      callback: (val) => '$' + val.toLocaleString('es-AR') 
+                    }
+                  },
+                  x: {
+                    grid: { display: false },
+                    ticks: { font: { size: 12 } }
                   }
                 }
               }
