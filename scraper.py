@@ -19,8 +19,8 @@ CBA_INDEC = [
     {"rubro": "Panadería", "producto": "Pan francés", "keywords": ["pan frances", "pan kg", "pani"], "precio_indec": 4500.0, "cantidad_ae": 6.750, "kcal_100g": 265, "prot_100g": 9.0, "carb_100g": 55.0, "grasas_100g": 1.2},
     {"rubro": "Panadería", "producto": "Galletitas de agua", "keywords": ["galletitas agua", "galleta agua", "gals"], "precio_indec": 6800.0, "cantidad_ae": 0.420, "kcal_100g": 420, "prot_100g": 9.5, "carb_100g": 68.0, "grasas_100g": 12.0},
     {"rubro": "Panadería", "producto": "Galletitas dulces", "keywords": ["galletitas dulces", "galleta dulce", "gald"], "precio_indec": 7500.0, "cantidad_ae": 0.210, "kcal_100g": 450, "prot_100g": 6.5, "carb_100g": 72.0, "grasas_100g": 15.0},
-    {"rubro": "Almacén", "producto": "Arroz blanco", "keywords": ["arroz blanco 1kg", "arroz 1kg", "arr"], "precio_indec": 3800.0, "cantidad_ae": 1.200, "kcal_100g": 354, "prot_100g": 7.0, "carb_100g": 78.0, "grasas_100g": 0.6},
-    {"rubro": "Almacén", "producto": "Harina de trigo 000", "keywords": ["harina trigo 000", "harina 000"], "precio_indec": 2200.0, "cantidad_ae": 1.080, "kcal_100g": 340, "prot_100g": 10.0, "carb_100g": 72.0, "grasas_100g": 1.2},
+    {"rubro": "Almacén", "producto": "Arroz blanco", "keywords": ["arroz blanco 1kg", "arroz 1kg", "arr", "arroz"], "precio_indec": 3800.0, "cantidad_ae": 1.200, "kcal_100g": 354, "prot_100g": 7.0, "carb_100g": 78.0, "grasas_100g": 0.6},
+    {"rubro": "Almacén", "producto": "Harina de trigo 000", "keywords": ["harina trigo 000", "harina 000", "harina", "hart"], "precio_indec": 2200.0, "cantidad_ae": 1.080, "kcal_100g": 340, "prot_100g": 10.0, "carb_100g": 72.0, "grasas_100g": 1.2},
     {"rubro": "Almacén", "producto": "Otras harinas (maíz / Polenta)", "keywords": ["polenta", "harina de maiz", "harm"], "precio_indec": 2800.0, "cantidad_ae": 0.210, "kcal_100g": 350, "prot_100g": 8.0, "carb_100g": 76.0, "grasas_100g": 1.0},
     {"rubro": "Almacén", "producto": "Fideos secos", "keywords": ["fideos secos 500g", "fideos guiseros", "tallarines", "fido"], "precio_indec": 3800.0, "cantidad_ae": 1.740, "kcal_100g": 355, "prot_100g": 12.0, "carb_100g": 73.0, "grasas_100g": 1.5},
 
@@ -48,8 +48,8 @@ CBA_INDEC = [
     {"rubro": "Lácteos y Huevos", "producto": "Manteca", "keywords": ["manteca 200g", "manteca 100g"], "precio_indec": 16000.0, "cantidad_ae": 0.060, "kcal_100g": 717, "prot_100g": 0.9, "carb_100g": 0.1, "grasas_100g": 81.0},
 
     # --- ACEITES, CONDIMENTOS Y BEBIDAS ---
-    {"rubro": "Almacén", "producto": "Aceite de girasol", "keywords": ["aceite girasol 900", "aceite girasol 1l", "aggi"], "precio_indec": 4800.0, "cantidad_ae": 1.200, "kcal_100g": 884, "prot_100g": 0.0, "carb_100g": 0.0, "grasas_100g": 100.0},
-    {"rubro": "Bebidas", "producto": "Bebidas no alcohólicas (gaseosas, jugos, soda)", "keywords": ["gaseosa 1.5l", "gaseosa 2l", "jugo concentrado", "soda 1.5l", "gas"], "precio_indec": 3200.0, "cantidad_ae": 3.450, "kcal_100g": 35, "prot_100g": 0.0, "carb_100g": 9.0, "grasas_100g": 0.0},
+    {"rubro": "Almacén", "producto": "Aceite de girasol", "keywords": ["aceite girasol 900", "aceite girasol 1l", "acgi"], "precio_indec": 4800.0, "cantidad_ae": 1.200, "kcal_100g": 884, "prot_100g": 0.0, "carb_100g": 0.0, "grasas_100g": 100.0},
+    {"rubro": "Bebidas", "producto": "Bebidas no alcohólicas (gaseosas, jugos, soda)", "keywords": ["gaseosa 1.5l", "gaseosa 2l", "jugo concentrado", "soda 1.5l", "gas", "agus"], "precio_indec": 3200.0, "cantidad_ae": 3.450, "kcal_100g": 35, "prot_100g": 0.0, "carb_100g": 9.0, "grasas_100g": 0.0},
     {"rubro": "Bebidas", "producto": "Bebidas alcohólicas (cerveza, vino)", "keywords": ["cerveza 1l", "vino tinto 1l", "cerv", "vinf"], "precio_indec": 4500.0, "cantidad_ae": 1.080, "kcal_100g": 60, "prot_100g": 0.3, "carb_100g": 3.0, "grasas_100g": 0.0},
     {"rubro": "Almacén", "producto": "Sal fina", "keywords": ["sal fina 500g", "sal fina 1kg", "salf"], "precio_indec": 1500.0, "cantidad_ae": 0.120, "kcal_100g": 0, "prot_100g": 0.0, "carb_100g": 0.0, "grasas_100g": 0.0},
     {"rubro": "Almacén", "producto": "Condimentos (mayonesa, caldos)", "keywords": ["mayonesa", "caldo de verdura", "caldo de gallina", "cald", "esp", "mayo"], "precio_indec": 7500.0, "cantidad_ae": 0.120, "kcal_100g": 350, "prot_100g": 1.0, "carb_100g": 10.0, "grasas_100g": 35.0},
