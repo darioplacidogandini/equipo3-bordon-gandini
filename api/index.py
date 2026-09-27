@@ -319,7 +319,15 @@ def render_dashboard():
         <!-- Pestaña 4: Información Nutricional -->
         <div id="tab-nutricional" class="tab-content">
           <div class="table-card">
-            <h3 class="card-title">🥗 Tabla de Información Nutricional</h3>
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 18px;">
+              <h3 class="card-title" style="margin: 0;">🥗 Tabla de Información Nutricional</h3>
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <label for="filtro-rubro-nutricional" style="font-weight: 600; font-size: 0.9rem; color: #475569;">Filtrar por Rubro:</label>
+                <select id="filtro-rubro-nutricional" onchange="filtrarNutricional()" style="padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border); font-size: 0.9rem; background: #ffffff; cursor: pointer; color: var(--text);">
+                  <option value="todos">Todos los rubros</option>
+                </select>
+              </div>
+            </div>
             <div class="table-container" id="tabla-nutricional-container">
               <p style="padding: 16px; color: var(--sub);">Cargando información nutricional...</p>
             </div>
@@ -351,6 +359,7 @@ def render_dashboard():
         let chartNutricionalInstance = null;
         let chartRubroInstance = null;
         let datosHistoricosGlobal = [];
+        let datosNutricionalGlobal = [];
 
         function cambiarTab(evt, tabId) {
           const contents = document.querySelectorAll('.tab-content');
@@ -609,6 +618,39 @@ def render_dashboard():
           });
         }
 
+        function poblarFiltroRubroNutricional(data) {
+          const selectRubro = document.getElementById('filtro-rubro-nutricional');
+          if (!selectRubro || !data || data.length === 0) return;
+
+          const keyRubro = Object.keys(data[0]).find(k => k.includes('rubro') || k.includes('categoria') || k.includes('grupo')) || 'rubro';
+          
+          const rubrosUnicos = [...new Set(data.map(item => item[keyRubro]).filter(Boolean))].sort();
+
+          selectRubro.innerHTML = '<option value="todos">Todos los rubros</option>';
+          rubrosUnicos.forEach(rubro => {
+            const option = document.createElement('option');
+            option.value = rubro;
+            option.textContent = rubro;
+            selectRubro.appendChild(option);
+          });
+        }
+
+        function filtrarNutricional() {
+          const selectRubro = document.getElementById('filtro-rubro-nutricional');
+          const rubroSeleccionado = selectRubro ? selectRubro.value : 'todos';
+
+          if (!datosNutricionalGlobal || datosNutricionalGlobal.length === 0) return;
+
+          const keyRubro = Object.keys(datosNutricionalGlobal[0]).find(k => k.includes('rubro') || k.includes('categoria') || k.includes('grupo')) || 'rubro';
+
+          let datosFiltrados = datosNutricionalGlobal;
+          if (rubroSeleccionado !== 'todos') {
+            datosFiltrados = datosNutricionalGlobal.filter(row => row[keyRubro] === rubroSeleccionado);
+          }
+
+          crearTabla(datosFiltrados, 'tabla-nutricional-container');
+        }
+
         function poblarFiltroRubro(data) {
           const selectRubro = document.getElementById('filtro-rubro');
           if (!selectRubro || !data || data.length === 0) return;
@@ -667,8 +709,10 @@ def render_dashboard():
           try {
             const res = await fetch('/api/nutricional');
             const data = await res.json();
+            datosNutricionalGlobal = data;
+            poblarFiltroRubroNutricional(data);
             renderizarGraficoNutricional(data);
-            crearTabla(data, 'tabla-nutricional-container');
+            filtrarNutricional();
           } catch (err) {
             console.error('Error cargando información nutricional:', err);
             document.getElementById('tabla-nutricional-container').innerHTML = '<p style="padding: 16px; color: var(--sub);">No se pudo cargar la información nutricional.</p>';
