@@ -282,13 +282,6 @@ def render_dashboard():
 
         <!-- Pestaña 2: Gráficos Analíticos -->
         <div id="tab-graficos" class="tab-content">
-          <div class="chart-card">
-            <h3 class="card-title">📈 Comparativa Histórica CBA vs. CBT (Hogar)</h3>
-            <div class="chart-container">
-              <canvas id="cbaChartFull"></canvas>
-            </div>
-          </div>
-
           <div class="grid-charts">
             <div class="chart-card">
               <h3 class="card-title">🏷️ Contribución al Costo por Rubro (%)</h3>
@@ -346,7 +339,6 @@ def render_dashboard():
 
       <script>
         let chartResumenInstance = null;
-        let chartFullInstance = null;
         let chartCoberturaInstance = null;
         let chartNutricionalInstance = null;
         let chartRubroInstance = null;
@@ -459,11 +451,6 @@ def render_dashboard():
 
           if (chartResumenInstance) chartResumenInstance.destroy();
           chartResumenInstance = new Chart(ctxResumen, chartConfigEvolucion);
-
-          // Gráfico en la pestaña Gráficos
-          const ctxFull = document.getElementById('cbaChartFull').getContext('2d');
-          if (chartFullInstance) chartFullInstance.destroy();
-          chartFullInstance = new Chart(ctxFull, JSON.parse(JSON.stringify(chartConfigEvolucion)));
 
           // Gráfico de Cobertura (%)
           const ctxCobertura = document.getElementById('coberturaChart').getContext('2d');
