@@ -186,7 +186,15 @@ def render_dashboard():
           align-items: center;
           gap: 10px;
         }
-        .chart-container { position: relative; height: 400px; width: 100%; }
+        .chart-container { position: relative; height: 380px; width: 100%; }
+        .grid-charts {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+          gap: 24px;
+        }
+        @media (max-width: 640px) {
+          .grid-charts { grid-template-columns: 1fr; }
+        }
 
         /* Estilos de tablas */
         .table-container {
@@ -241,12 +249,13 @@ def render_dashboard():
         <!-- Navegación por Pestañas -->
         <nav class="tabs">
           <button class="tab-btn active" onclick="cambiarTab(event, 'tab-resumen')">📈 Resumen General</button>
+          <button class="tab-btn" onclick="cambiarTab(event, 'tab-graficos')">📊 Gráficos Analíticos</button>
           <button class="tab-btn" onclick="cambiarTab(event, 'tab-totales')">📋 Tabla de Totales</button>
           <button class="tab-btn" onclick="cambiarTab(event, 'tab-nutricional')">🥗 Información Nutricional</button>
           <button class="tab-btn" onclick="cambiarTab(event, 'tab-historico')">🗂️ Histórico Detallado</button>
         </nav>
 
-        <!-- Pestaña 1: Resumen General (KPIs y Gráfico) -->
+        <!-- Pestaña 1: Resumen General (KPIs y Gráfico Principal) -->
         <div id="tab-resumen" class="tab-content active">
           <div class="kpis">
             <div class="kpi-card cba">
@@ -266,12 +275,38 @@ def render_dashboard():
           <div class="chart-card">
             <h3 class="card-title">📈 Evolución Histórica de Costos</h3>
             <div class="chart-container">
-              <canvas id="cbaChart"></canvas>
+              <canvas id="cbaChartResumen"></canvas>
             </div>
           </div>
         </div>
 
-        <!-- Pestaña 2: Tabla de Totales -->
+        <!-- Pestaña 2: Gráficos Analíticos -->
+        <div id="tab-graficos" class="tab-content">
+          <div class="chart-card">
+            <h3 class="card-title">📈 Comparativa Histórica CBA vs. CBT (Hogar)</h3>
+            <div class="chart-container">
+              <canvas id="cbaChartFull"></canvas>
+            </div>
+          </div>
+
+          <div class="grid-charts">
+            <div class="chart-card">
+              <h3 class="card-title">🎯 Cobertura del Scraper (%)</h3>
+              <div class="chart-container">
+                <canvas id="coberturaChart"></canvas>
+              </div>
+            </div>
+
+            <div class="chart-card">
+              <h3 class="card-title">🥗 Composición Nutricional / Gramaje por Alimento</h3>
+              <div class="chart-container">
+                <canvas id="nutricionalChart"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pestaña 3: Tabla de Totales -->
         <div id="tab-totales" class="tab-content">
           <div class="table-card">
             <h3 class="card-title">📋 Tabla de Totales (CBA / CBT)</h3>
@@ -281,7 +316,7 @@ def render_dashboard():
           </div>
         </div>
 
-        <!-- Pestaña 3: Información Nutricional -->
+        <!-- Pestaña 4: Información Nutricional -->
         <div id="tab-nutricional" class="tab-content">
           <div class="table-card">
             <h3 class="card-title">🥗 Tabla de Información Nutricional</h3>
@@ -291,7 +326,7 @@ def render_dashboard():
           </div>
         </div>
 
-        <!-- Pestaña 4: Histórico Detallado -->
+        <!-- Pestaña 5: Histórico Detallado -->
         <div id="tab-historico" class="tab-content">
           <div class="table-card">
             <h3 class="card-title">🗂️ Tabla de Datos Históricos</h3>
@@ -303,6 +338,11 @@ def render_dashboard():
       </div>
 
       <script>
+        let chartResumenInstance = null;
+        let chartFullInstance = null;
+        let chartCoberturaInstance = null;
+        let chartNutricionalInstance = null;
+
         function cambiarTab(evt, tabId) {
           const contents = document.querySelectorAll('.tab-content');
           contents.forEach(c => c.classList.remove('active'));
@@ -341,6 +381,155 @@ def render_dashboard():
           container.innerHTML = html;
         }
 
+        function renderizarGraficosTotales(data) {
+          if (!data || data.length === 0) return;
+
+          const fechas = data.map(i => i.fecha);
+          const cbaHogar = data.map(i => parseFloat(i.costo_total_cba_hogar));
+          const cbtHogar = data.map(i => parseFloat(i.costo_total_cbt_hogar));
+          const coberturas = data.map(i => parseFloat(i.cobertura_scraper_pct || 0));
+
+          // Gráfico en la pestaña Resumen
+          const ctxResumen = document.getElementById('cbaChartResumen').getContext('2d');
+          const gradCBA = ctxResumen.createLinearGradient(0, 0, 0, 400);
+          gradCBA.addColorStop(0, 'rgba(59, 130, 246, 0.35)');
+          gradCBA.addColorStop(1, 'rgba(59, 130, 246, 0.01)');
+
+          const gradCBT = ctxResumen.createLinearGradient(0, 0, 0, 400);
+          gradCBT.addColorStop(0, 'rgba(16, 185, 129, 0.35)');
+          gradCBT.addColorStop(1, 'rgba(16, 185, 129, 0.01)');
+
+          const chartConfigEvolucion = {
+            type: 'line',
+            data: {
+              labels: fechas,
+              datasets: [
+                {
+                  label: 'CBA Hogar Tipo',
+                  data: cbaHogar,
+                  borderColor: '#2563eb',
+                  backgroundColor: gradCBA,
+                  borderWidth: 3,
+                  pointBackgroundColor: '#1d4ed8',
+                  pointRadius: 4,
+                  pointHoverRadius: 7,
+                  fill: true,
+                  tension: 0.3
+                },
+                {
+                  label: 'CBT Hogar Tipo',
+                  data: cbtHogar,
+                  borderColor: '#10b981',
+                  backgroundColor: gradCBT,
+                  borderWidth: 3,
+                  pointBackgroundColor: '#047857',
+                  pointRadius: 4,
+                  pointHoverRadius: 7,
+                  fill: true,
+                  tension: 0.3
+                }
+              ]
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              plugins: { 
+                legend: { 
+                  position: 'top',
+                  labels: { font: { size: 13, weight: 'bold' }, usePointStyle: true, padding: 20 }
+                } 
+              },
+              scales: {
+                y: {
+                  grid: { color: '#f1f5f9' },
+                  ticks: { font: { size: 12 }, callback: (val) => '$' + val.toLocaleString('es-AR') }
+                },
+                x: { grid: { display: false }, ticks: { font: { size: 12 } } }
+              }
+            }
+          };
+
+          if (chartResumenInstance) chartResumenInstance.destroy();
+          chartResumenInstance = new Chart(ctxResumen, chartConfigEvolucion);
+
+          // Gráfico en la pestaña Gráficos
+          const ctxFull = document.getElementById('cbaChartFull').getContext('2d');
+          if (chartFullInstance) chartFullInstance.destroy();
+          chartFullInstance = new Chart(ctxFull, JSON.parse(JSON.stringify(chartConfigEvolucion)));
+
+          // Gráfico de Cobertura (%)
+          const ctxCobertura = document.getElementById('coberturaChart').getContext('2d');
+          if (chartCoberturaInstance) chartCoberturaInstance.destroy();
+          chartCoberturaInstance = new Chart(ctxCobertura, {
+            type: 'bar',
+            data: {
+              labels: fechas,
+              datasets: [{
+                label: 'Cobertura del Scraper (%)',
+                data: coberturas,
+                backgroundColor: 'rgba(245, 158, 11, 0.75)',
+                borderColor: '#d97706',
+                borderWidth: 1.5,
+                borderRadius: 6
+              }]
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              plugins: {
+                legend: { display: false }
+              },
+              scales: {
+                y: {
+                  min: 0,
+                  max: 100,
+                  ticks: { callback: (val) => val + '%' }
+                },
+                x: { grid: { display: false } }
+              }
+            }
+          });
+        }
+
+        function renderizarGraficoNutricional(data) {
+          if (!data || data.length === 0) return;
+
+          const keyProducto = Object.keys(data[0]).find(k => k.includes('producto') || k.includes('alimento') || k.includes('item')) || Object.keys(data[0])[0];
+          const keyValor = Object.keys(data[0]).find(k => k.includes('gramo') || k.includes('cantidad') || k.includes('valor') || k.includes('kcal')) || Object.keys(data[0])[1];
+
+          const productos = data.slice(0, 12).map(i => i[keyProducto] || 'N/D');
+          const valores = data.slice(0, 12).map(i => parseFloat(i[keyValor] || 0));
+
+          const ctxNut = document.getElementById('nutricionalChart').getContext('2d');
+          if (chartNutricionalInstance) chartNutricionalInstance.destroy();
+          chartNutricionalInstance = new Chart(ctxNut, {
+            type: 'bar',
+            data: {
+              labels: productos,
+              datasets: [{
+                label: keyValor.replace(/_/g, ' ').toUpperCase(),
+                data: valores,
+                backgroundColor: 'rgba(99, 102, 241, 0.75)',
+                borderColor: '#4f46e5',
+                borderWidth: 1.5,
+                borderRadius: 6
+              }]
+            },
+            options: {
+              indexAxis: 'y',
+              responsive: true,
+              maintainAspectRatio: false,
+              plugins: {
+                legend: { display: false }
+              },
+              scales: {
+                x: { grid: { color: '#f1f5f9' } },
+                y: { grid: { display: false } }
+              }
+            }
+          });
+        }
+
         async function cargarTotales() {
           try {
             const res = await fetch('/api/totales');
@@ -354,80 +543,7 @@ def render_dashboard():
             document.getElementById('kpi-cbt').textContent = fmt(ultimo.costo_total_cbt_hogar || 0);
             document.getElementById('kpi-cobertura').textContent = `${parseFloat(ultimo.cobertura_scraper_pct || 0).toFixed(1)}%`;
 
-            const fechas = data.map(i => i.fecha);
-            const cbaHogar = data.map(i => parseFloat(i.costo_total_cba_hogar));
-            const cbtHogar = data.map(i => parseFloat(i.costo_total_cbt_hogar));
-
-            const ctx = document.getElementById('cbaChart').getContext('2d');
-            
-            const gradCBA = ctx.createLinearGradient(0, 0, 0, 400);
-            gradCBA.addColorStop(0, 'rgba(59, 130, 246, 0.35)');
-            gradCBA.addColorStop(1, 'rgba(59, 130, 246, 0.01)');
-
-            const gradCBT = ctx.createLinearGradient(0, 0, 0, 400);
-            gradCBT.addColorStop(0, 'rgba(16, 185, 129, 0.35)');
-            gradCBT.addColorStop(1, 'rgba(16, 185, 129, 0.01)');
-
-            new Chart(ctx, {
-              type: 'line',
-              data: {
-                labels: fechas,
-                datasets: [
-                  {
-                    label: 'CBA Hogar Tipo',
-                    data: cbaHogar,
-                    borderColor: '#2563eb',
-                    backgroundColor: gradCBA,
-                    borderWidth: 3,
-                    pointBackgroundColor: '#1d4ed8',
-                    pointRadius: 4,
-                    pointHoverRadius: 7,
-                    fill: true,
-                    tension: 0.3
-                  },
-                  {
-                    label: 'CBT Hogar Tipo',
-                    data: cbtHogar,
-                    borderColor: '#10b981',
-                    backgroundColor: gradCBT,
-                    borderWidth: 3,
-                    pointBackgroundColor: '#047857',
-                    pointRadius: 4,
-                    pointHoverRadius: 7,
-                    fill: true,
-                    tension: 0.3
-                  }
-                ]
-              },
-              options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: { 
-                  legend: { 
-                    position: 'top',
-                    labels: {
-                      font: { size: 13, weight: 'bold' },
-                      usePointStyle: true,
-                      padding: 20
-                    }
-                  } 
-                },
-                scales: {
-                  y: {
-                    grid: { color: '#f1f5f9' },
-                    ticks: { 
-                      font: { size: 12 },
-                      callback: (val) => '$' + val.toLocaleString('es-AR') 
-                    }
-                  },
-                  x: {
-                    grid: { display: false },
-                    ticks: { font: { size: 12 } }
-                  }
-                }
-              }
-            });
-
+            renderizarGraficosTotales(data);
             crearTabla(data, 'tabla-totales-container');
           } catch (err) {
             console.error('Error cargando totales:', err);
@@ -439,6 +555,7 @@ def render_dashboard():
           try {
             const res = await fetch('/api/nutricional');
             const data = await res.json();
+            renderizarGraficoNutricional(data);
             crearTabla(data, 'tabla-nutricional-container');
           } catch (err) {
             console.error('Error cargando información nutricional:', err);
