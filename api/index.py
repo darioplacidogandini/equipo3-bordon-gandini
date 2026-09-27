@@ -61,7 +61,7 @@ def render_dashboard():
       <meta charset="UTF-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <title>Dashboard - Canasta Básica Alimentaria</title>
-      <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
       <style>
         :root { 
           --bg: #f8fafc; 
@@ -364,6 +364,7 @@ def get_totales():
 @app.get("/api/nutricional")
 def get_nutricional():
     data = (
+        leer_csv("cba_tabla_nutricional.csv") or
         leer_csv("cba_nutricional.csv") or
         leer_csv("cba_informacion_nutricional.csv") or
         leer_csv("cba_nutricion.csv")
@@ -375,6 +376,7 @@ def get_nutricional():
 @app.get("/api/historico")
 def get_historico():
     data = (
+        leer_csv("cba_historico_detalle.csv") or
         leer_csv("cba_historico.csv") or
         leer_csv("cba_historico_precios.csv") or
         leer_csv("cba_precios.csv")
