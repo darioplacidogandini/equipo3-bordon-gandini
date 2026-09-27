@@ -291,6 +291,13 @@ def render_dashboard():
 
           <div class="grid-charts">
             <div class="chart-card">
+              <h3 class="card-title">🏷️ Contribución al Costo por Rubro (%)</h3>
+              <div class="chart-container">
+                <canvas id="rubroChart"></canvas>
+              </div>
+            </div>
+
+            <div class="chart-card">
               <h3 class="card-title">🎯 Cobertura del Scraper (%)</h3>
               <div class="chart-container">
                 <canvas id="coberturaChart"></canvas>
@@ -342,6 +349,7 @@ def render_dashboard():
         let chartFullInstance = null;
         let chartCoberturaInstance = null;
         let chartNutricionalInstance = null;
+        let chartRubroInstance = null;
 
         function cambiarTab(evt, tabId) {
           const contents = document.querySelectorAll('.tab-content');
@@ -530,6 +538,86 @@ def render_dashboard():
           });
         }
 
+        function renderizarGraficoRubros(data) {
+          if (!data || data.length === 0) return;
+
+          // Detectar columnas asociadas a rubro y costo
+          const keyRubro = Object.keys(data[0]).find(k => k.includes('rubro') || k.includes('categoria') || k.includes('grupo')) || 'rubro';
+          const keyCosto = Object.keys(data[0]).find(k => k.includes('costo') || k.includes('subtotal') || k.includes('precio') || k.includes('total')) || 'costo';
+
+          // Filtrar por la última fecha cargada en los datos históricos si existe la columna fecha
+          const fechas = [...new Set(data.map(i => i.fecha).filter(Boolean))];
+          const ultimaFecha = fechas.length > 0 ? fechas[fechas.length - 1] : null;
+          const datosFiltrados = ultimaFecha ? data.filter(i => i.fecha === ultimaFecha) : data;
+
+          const acumRubro = {};
+          let costoTotalGeneral = 0;
+
+          datosFiltrados.forEach(row => {
+            const rubro = row[keyRubro] || 'Otros';
+            const costo = parseFloat(row[keyCosto] || 0);
+            if (!isNaN(costo) && costo > 0) {
+              acumRubro[rubro] = (acumRubro[rubro] || 0) + costo;
+              costoTotalGeneral += costo;
+            }
+          });
+
+          const rubros = Object.keys(acumRubro);
+          if (rubros.length === 0 || costoTotalGeneral === 0) return;
+
+          const porcentajes = rubros.map(r => ((acumRubro[r] / costoTotalGeneral) * 100).toFixed(1));
+
+          // Paleta de colores variados para distinguir cada rubro
+          const colores = [
+            '#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6',
+            '#ec4899', '#06b6d4', '#84cc16', '#f97316', '#6366f1',
+            '#14b8a6', '#a855f7'
+          ];
+
+          const ctxRubro = document.getElementById('rubroChart').getContext('2d');
+          if (chartRubroInstance) chartRubroInstance.destroy();
+
+          chartRubroInstance = new Chart(ctxRubro, {
+            type: 'bar',
+            data: {
+              labels: rubros,
+              datasets: [{
+                label: 'Contribución al Costo (%)',
+                data: porcentajes,
+                backgroundColor: colores.slice(0, rubros.length),
+                borderColor: colores.slice(0, rubros.length),
+                borderWidth: 1,
+                borderRadius: 6
+              }]
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              plugins: {
+                legend: { display: false },
+                tooltip: {
+                  callbacks: {
+                    label: function(context) {
+                      const rubro = context.label;
+                      const pct = context.parsed.y;
+                      const monto = acumRubro[rubro] ? `$${acumRubro[rubro].toLocaleString('es-AR', {maximumFractionDigits: 2})}` : '';
+                      return ` ${pct}% (${monto})`;
+                    }
+                  }
+                }
+              },
+              scales: {
+                y: {
+                  beginAtZero: true,
+                  grid: { color: '#f1f5f9' },
+                  ticks: { callback: (val) => val + '%' }
+                },
+                x: { grid: { display: false } }
+              }
+            }
+          });
+        }
+
         async function cargarTotales() {
           try {
             const res = await fetch('/api/totales');
@@ -567,6 +655,7 @@ def render_dashboard():
           try {
             const res = await fetch('/api/historico');
             const data = await res.json();
+            renderizarGraficoRubros(data);
             crearTabla(data, 'tabla-historico-container');
           } catch (err) {
             console.error('Error cargando histórico:', err);
