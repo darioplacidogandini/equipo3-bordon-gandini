@@ -329,7 +329,15 @@ def render_dashboard():
         <!-- Pestaña 5: Histórico Detallado -->
         <div id="tab-historico" class="tab-content">
           <div class="table-card">
-            <h3 class="card-title">🗂️ Tabla de Datos Históricos</h3>
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 18px;">
+              <h3 class="card-title" style="margin: 0;">🗂️ Tabla de Datos Históricos</h3>
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <label for="filtro-rubro" style="font-weight: 600; font-size: 0.9rem; color: #475569;">Filtrar por Rubro:</label>
+                <select id="filtro-rubro" onchange="filtrarHistorico()" style="padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border); font-size: 0.9rem; background: #ffffff; cursor: pointer; color: var(--text);">
+                  <option value="todos">Todos los rubros</option>
+                </select>
+              </div>
+            </div>
             <div class="table-container" id="tabla-historico-container">
               <p style="padding: 16px; color: var(--sub);">Cargando histórico...</p>
             </div>
@@ -342,6 +350,7 @@ def render_dashboard():
         let chartCoberturaInstance = null;
         let chartNutricionalInstance = null;
         let chartRubroInstance = null;
+        let datosHistoricosGlobal = [];
 
         function cambiarTab(evt, tabId) {
           const contents = document.querySelectorAll('.tab-content');
@@ -389,7 +398,6 @@ def render_dashboard():
           const cbtHogar = data.map(i => parseFloat(i.costo_total_cbt_hogar));
           const coberturas = data.map(i => parseFloat(i.cobertura_scraper_pct || 0));
 
-          // Gráfico en la pestaña Resumen
           const ctxResumen = document.getElementById('cbaChartResumen').getContext('2d');
           const gradCBA = ctxResumen.createLinearGradient(0, 0, 0, 400);
           gradCBA.addColorStop(0, 'rgba(59, 130, 246, 0.35)');
@@ -452,7 +460,6 @@ def render_dashboard():
           if (chartResumenInstance) chartResumenInstance.destroy();
           chartResumenInstance = new Chart(ctxResumen, chartConfigEvolucion);
 
-          // Gráfico de Cobertura (%)
           const ctxCobertura = document.getElementById('coberturaChart').getContext('2d');
           if (chartCoberturaInstance) chartCoberturaInstance.destroy();
           chartCoberturaInstance = new Chart(ctxCobertura, {
@@ -528,11 +535,9 @@ def render_dashboard():
         function renderizarGraficoRubros(data) {
           if (!data || data.length === 0) return;
 
-          // Detectar columnas asociadas a rubro y costo
           const keyRubro = Object.keys(data[0]).find(k => k.includes('rubro') || k.includes('categoria') || k.includes('grupo')) || 'rubro';
           const keyCosto = Object.keys(data[0]).find(k => k.includes('costo') || k.includes('subtotal') || k.includes('precio') || k.includes('total')) || 'costo';
 
-          // Filtrar por la última fecha cargada en los datos históricos si existe la columna fecha
           const fechas = [...new Set(data.map(i => i.fecha).filter(Boolean))];
           const ultimaFecha = fechas.length > 0 ? fechas[fechas.length - 1] : null;
           const datosFiltrados = ultimaFecha ? data.filter(i => i.fecha === ultimaFecha) : data;
@@ -554,7 +559,6 @@ def render_dashboard():
 
           const porcentajes = rubros.map(r => ((acumRubro[r] / costoTotalGeneral) * 100).toFixed(1));
 
-          // Paleta de colores variados para distinguir cada rubro
           const colores = [
             '#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6',
             '#ec4899', '#06b6d4', '#84cc16', '#f97316', '#6366f1',
@@ -605,6 +609,39 @@ def render_dashboard():
           });
         }
 
+        function poblarFiltroRubro(data) {
+          const selectRubro = document.getElementById('filtro-rubro');
+          if (!selectRubro || !data || data.length === 0) return;
+
+          const keyRubro = Object.keys(data[0]).find(k => k.includes('rubro') || k.includes('categoria') || k.includes('grupo')) || 'rubro';
+          
+          const rubrosUnicos = [...new Set(data.map(item => item[keyRubro]).filter(Boolean))].sort();
+
+          selectRubro.innerHTML = '<option value="todos">Todos los rubros</option>';
+          rubrosUnicos.forEach(rubro => {
+            const option = document.createElement('option');
+            option.value = rubro;
+            option.textContent = rubro;
+            selectRubro.appendChild(option);
+          });
+        }
+
+        function filtrarHistorico() {
+          const selectRubro = document.getElementById('filtro-rubro');
+          const rubroSeleccionado = selectRubro ? selectRubro.value : 'todos';
+
+          if (!datosHistoricosGlobal || datosHistoricosGlobal.length === 0) return;
+
+          const keyRubro = Object.keys(datosHistoricosGlobal[0]).find(k => k.includes('rubro') || k.includes('categoria') || k.includes('grupo')) || 'rubro';
+
+          let datosFiltrados = datosHistoricosGlobal;
+          if (rubroSeleccionado !== 'todos') {
+            datosFiltrados = datosHistoricosGlobal.filter(row => row[keyRubro] === rubroSeleccionado);
+          }
+
+          crearTabla(datosFiltrados, 'tabla-historico-container');
+        }
+
         async function cargarTotales() {
           try {
             const res = await fetch('/api/totales');
@@ -642,8 +679,10 @@ def render_dashboard():
           try {
             const res = await fetch('/api/historico');
             const data = await res.json();
+            datosHistoricosGlobal = data;
+            poblarFiltroRubro(data);
             renderizarGraficoRubros(data);
-            crearTabla(data, 'tabla-historico-container');
+            filtrarHistorico();
           } catch (err) {
             console.error('Error cargando histórico:', err);
             document.getElementById('tabla-historico-container').innerHTML = '<p style="padding: 16px; color: var(--sub);">No se pudo cargar el histórico.</p>';
