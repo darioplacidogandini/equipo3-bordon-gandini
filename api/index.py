@@ -691,11 +691,28 @@ def render_dashboard():
             if (!data || data.length === 0) return;
 
             const ultimo = data[data.length - 1];
-            const fmt = (val) => new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS', maximumFractionDigits: 0 }).format(val);
-            
-            document.getElementById('kpi-cba').textContent = fmt(ultimo.costo_total_cba_hogar || 0);
-            document.getElementById('kpi-cbt').textContent = fmt(ultimo.costo_total_cbt_hogar || 0);
-            document.getElementById('kpi-cobertura').textContent = `${parseFloat(ultimo.cobertura_scraper_pct || 0).toFixed(1)}%`;
+            const fmt = (val) => {
+              const num = parseFloat(String(val || 0).replace(',', '.'));
+              if (isNaN(num)) return '$ 0';
+              return new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS', maximumFractionDigits: 0 }).format(num);
+            };
+
+            document.getElementById('kpi-cba').textContent = fmt(ultimo.costo_total_cba_hogar);
+            document.getElementById('kpi-cbt').textContent = fmt(ultimo.costo_total_cbt_hogar);
+
+            // Cobertura: Si la última fecha registró 0%, busca la última ejecución válida
+            let coberturaVal = parseFloat(String(ultimo.cobertura_scraper_pct || 0).replace(',', '.'));
+            if (isNaN(coberturaVal) || coberturaVal === 0) {
+              const ultimaValida = [...data].reverse().find(row => {
+                const cob = parseFloat(String(row.cobertura_scraper_pct || 0).replace(',', '.'));
+                return !isNaN(cob) && cob > 0;
+              });
+              if (ultimaValida) {
+                coberturaVal = parseFloat(String(ultimaValida.cobertura_scraper_pct).replace(',', '.'));
+              }
+            }
+
+            document.getElementById('kpi-cobertura').textContent = `${(isNaN(coberturaVal) ? 0 : coberturaVal).toFixed(1)}%`;
 
             renderizarGraficosTotales(data);
             crearTabla(data, 'tabla-totales-container');
