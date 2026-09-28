@@ -13,7 +13,7 @@ import numpy as np
 COEFICIENTE_HOGAR_TIPO = 3.09  # Equivalencia de integrantes en un hogar tipo según INDEC
 INVERSO_COEFICIENTE_ENGEL = 2.25  # Coeficiente para estimar la CBT a partir de la CBA
 
-# CANASTA BÁSICA ALIMENTARIA COMPLETA (INDEC)
+# CANASTA BÁSICA ALIMENTARIA COMPLETA (INDEC) - PRODUCTOS DESAGREGADOS
 CBA_INDEC = [
     # --- PANADERÍA Y CEREALES ---
     {"rubro": "Panadería", "producto": "Pan francés", "keywords": ["pan frances", "pan kg", "pani"], "precio_indec": 4500.0, "cantidad_ae": 6.750, "kcal_100g": 265, "prot_100g": 9.0, "carb_100g": 55.0, "grasas_100g": 1.2},
@@ -21,38 +21,60 @@ CBA_INDEC = [
     {"rubro": "Panadería", "producto": "Galletitas dulces", "keywords": ["galletitas dulces", "galleta dulce", "gald"], "precio_indec": 7500.0, "cantidad_ae": 0.210, "kcal_100g": 450, "prot_100g": 6.5, "carb_100g": 72.0, "grasas_100g": 15.0},
     {"rubro": "Almacén", "producto": "Arroz blanco", "keywords": ["arroz blanco 1kg", "arroz 1kg", "arr", "arroz"], "precio_indec": 3800.0, "cantidad_ae": 1.200, "kcal_100g": 354, "prot_100g": 7.0, "carb_100g": 78.0, "grasas_100g": 0.6},
     {"rubro": "Almacén", "producto": "Harina de trigo 000", "keywords": ["harina trigo 000", "harina 000", "harina", "hart"], "precio_indec": 2200.0, "cantidad_ae": 1.080, "kcal_100g": 340, "prot_100g": 10.0, "carb_100g": 72.0, "grasas_100g": 1.2},
-    {"rubro": "Almacén", "producto": "Otras harinas (maíz / Polenta)", "keywords": ["polenta", "harina de maiz", "harm"], "precio_indec": 2800.0, "cantidad_ae": 0.210, "kcal_100g": 350, "prot_100g": 8.0, "carb_100g": 76.0, "grasas_100g": 1.0},
+    {"rubro": "Almacén", "producto": "Harina de maíz / Polenta", "keywords": ["polenta", "harina de maiz", "harm"], "precio_indec": 2800.0, "cantidad_ae": 0.210, "kcal_100g": 350, "prot_100g": 8.0, "carb_100g": 76.0, "grasas_100g": 1.0},
     {"rubro": "Almacén", "producto": "Fideos secos", "keywords": ["fideos secos 500g", "fideos guiseros", "tallarines", "fido"], "precio_indec": 3800.0, "cantidad_ae": 1.740, "kcal_100g": 355, "prot_100g": 12.0, "carb_100g": 73.0, "grasas_100g": 1.5},
 
     # --- VERDURAS, TUBÉRCULOS Y FRUTAS ---
     {"rubro": "Frutas y Verduras", "producto": "Papa blanca", "keywords": ["papa blanca", "papa x kg"], "precio_indec": 1800.0, "cantidad_ae": 6.510, "kcal_100g": 80, "prot_100g": 2.0, "carb_100g": 18.0, "grasas_100g": 0.1},
     {"rubro": "Frutas y Verduras", "producto": "Batata", "keywords": ["batata"], "precio_indec": 2500.0, "cantidad_ae": 0.510, "kcal_100g": 86, "prot_100g": 1.6, "carb_100g": 20.0, "grasas_100g": 0.1},
-    {"rubro": "Frutas y Verduras", "producto": "Hortalizas (cebolla, tomate, zanahoria, zapallo, etc.)", "keywords": ["cebolla kg", "tomate kg", "zanahoria kg", "zapallo kg", "acelga"], "precio_indec": 2200.0, "cantidad_ae": 5.730, "kcal_100g": 30, "prot_100g": 1.2, "carb_100g": 6.0, "grasas_100g": 0.2},
-    {"rubro": "Frutas y Verduras", "producto": "Frutas (manzana, naranja, banana, pera)", "keywords": ["manzana kg", "naranja kg", "banana kg", "pera kg"], "precio_indec": 2800.0, "cantidad_ae": 4.950, "kcal_100g": 52, "prot_100g": 0.5, "carb_100g": 13.5, "grasas_100g": 0.2},
+    {"rubro": "Frutas y Verduras", "producto": "Cebolla", "keywords": ["cebolla kg"], "precio_indec": 2200.0, "cantidad_ae": 1.146, "kcal_100g": 40, "prot_100g": 1.1, "carb_100g": 9.0, "grasas_100g": 0.1},
+    {"rubro": "Frutas y Verduras", "producto": "Tomate", "keywords": ["tomate kg"], "precio_indec": 2200.0, "cantidad_ae": 1.146, "kcal_100g": 18, "prot_100g": 0.9, "carb_100g": 3.9, "grasas_100g": 0.2},
+    {"rubro": "Frutas y Verduras", "producto": "Zanahoria", "keywords": ["zanahoria kg"], "precio_indec": 2200.0, "cantidad_ae": 1.146, "kcal_100g": 41, "prot_100g": 0.9, "carb_100g": 9.6, "grasas_100g": 0.2},
+    {"rubro": "Frutas y Verduras", "producto": "Zapallo", "keywords": ["zapallo kg"], "precio_indec": 2200.0, "cantidad_ae": 1.146, "kcal_100g": 26, "prot_100g": 1.0, "carb_100g": 6.5, "grasas_100g": 0.1},
+    {"rubro": "Frutas y Verduras", "producto": "Acelga", "keywords": ["acelga"], "precio_indec": 2200.0, "cantidad_ae": 1.146, "kcal_100g": 19, "prot_100g": 1.8, "carb_100g": 3.7, "grasas_100g": 0.2},
+    {"rubro": "Frutas y Verduras", "producto": "Manzana", "keywords": ["manzana kg"], "precio_indec": 2800.0, "cantidad_ae": 1.2375, "kcal_100g": 52, "prot_100g": 0.3, "carb_100g": 13.8, "grasas_100g": 0.2},
+    {"rubro": "Frutas y Verduras", "producto": "Naranja", "keywords": ["naranja kg"], "precio_indec": 2800.0, "cantidad_ae": 1.2375, "kcal_100g": 47, "prot_100g": 0.9, "carb_100g": 11.8, "grasas_100g": 0.1},
+    {"rubro": "Frutas y Verduras", "producto": "Banana", "keywords": ["banana kg"], "precio_indec": 2800.0, "cantidad_ae": 1.2375, "kcal_100g": 89, "prot_100g": 1.1, "carb_100g": 22.8, "grasas_100g": 0.3},
+    {"rubro": "Frutas y Verduras", "producto": "Pera", "keywords": ["pera kg"], "precio_indec": 2800.0, "cantidad_ae": 1.2375, "kcal_100g": 57, "prot_100g": 0.4, "carb_100g": 15.0, "grasas_100g": 0.1},
 
     # --- AZÚCAR, DULCES Y LEGUMBRES ---
     {"rubro": "Almacén", "producto": "Azúcar", "keywords": ["azucar 1kg", "azucar blanca", "azuc"], "precio_indec": 2000.0, "cantidad_ae": 1.230, "kcal_100g": 387, "prot_100g": 0.0, "carb_100g": 100.0, "grasas_100g": 0.0},
-    {"rubro": "Almacén", "producto": "Dulces (dulce de leche, mermelada, batata)", "keywords": ["dulce de leche", "mermelada", "dulce de batata", "dulce leche", "dulb"], "precio_indec": 6500.0, "cantidad_ae": 0.330, "kcal_100g": 315, "prot_100g": 4.0, "carb_100g": 60.0, "grasas_100g": 5.0},
-    {"rubro": "Almacén", "producto": "Legumbres secas (lentejas, arvejas)", "keywords": ["lentejas 500g", "arvejas 500g", "lentejas", "legu", "arv"], "precio_indec": 4200.0, "cantidad_ae": 0.240, "kcal_100g": 340, "prot_100g": 24.0, "carb_100g": 60.0, "grasas_100g": 1.0},
+    {"rubro": "Almacén", "producto": "Dulce de leche", "keywords": ["dulce de leche", "dulce leche", "dulb"], "precio_indec": 6500.0, "cantidad_ae": 0.110, "kcal_100g": 315, "prot_100g": 7.0, "carb_100g": 55.0, "grasas_100g": 7.0},
+    {"rubro": "Almacén", "producto": "Mermelada", "keywords": ["mermelada"], "precio_indec": 6500.0, "cantidad_ae": 0.110, "kcal_100g": 260, "prot_100g": 0.5, "carb_100g": 65.0, "grasas_100g": 0.1},
+    {"rubro": "Almacén", "producto": "Dulce de batata", "keywords": ["dulce de batata"], "precio_indec": 6500.0, "cantidad_ae": 0.110, "kcal_100g": 255, "prot_100g": 0.5, "carb_100g": 63.0, "grasas_100g": 0.1},
+    {"rubro": "Almacén", "producto": "Lentejas", "keywords": ["lentejas 500g", "lentejas", "legu"], "precio_indec": 4200.0, "cantidad_ae": 0.120, "kcal_100g": 340, "prot_100g": 24.0, "carb_100g": 60.0, "grasas_100g": 1.0},
+    {"rubro": "Almacén", "producto": "Arvejas", "keywords": ["arvejas 500g", "arvejas", "arv"], "precio_indec": 4200.0, "cantidad_ae": 0.120, "kcal_100g": 340, "prot_100g": 22.0, "carb_100g": 60.0, "grasas_100g": 1.2},
 
     # --- CARNES, MENUDENCIAS Y FIAMBRES ---
-    {"rubro": "Carnes", "producto": "Carnes (asado, picada, paleta, nalga, pollo, pescado)", "keywords": ["carne picada", "asado kg", "nalga kg", "paleta kg", "pollo entero kg"], "precio_indec": 13500.0, "cantidad_ae": 6.270, "kcal_100g": 210, "prot_100g": 19.0, "carb_100g": 0.0, "grasas_100g": 14.0},
-    {"rubro": "Carnes", "producto": "Menudencias (hígado)", "keywords": ["higado kg", "higado de vacuno"], "precio_indec": 5500.0, "cantidad_ae": 0.270, "kcal_100g": 135, "prot_100g": 20.0, "carb_100g": 3.8, "grasas_100g": 4.0},
-    {"rubro": "Carnes", "producto": "Fiambres (paleta cocida, salame)", "keywords": ["paleta cocida", "salame"], "precio_indec": 15000.0, "cantidad_ae": 0.060, "kcal_100g": 300, "prot_100g": 16.0, "carb_100g": 2.0, "grasas_100g": 25.0},
+    {"rubro": "Carnes", "producto": "Asado", "keywords": ["asado kg"], "precio_indec": 13500.0, "cantidad_ae": 1.045, "kcal_100g": 250, "prot_100g": 18.0, "carb_100g": 0.0, "grasas_100g": 20.0},
+    {"rubro": "Carnes", "producto": "Carne picada", "keywords": ["carne picada"], "precio_indec": 13500.0, "cantidad_ae": 1.045, "kcal_100g": 210, "prot_100g": 19.0, "carb_100g": 0.0, "grasas_100g": 15.0},
+    {"rubro": "Carnes", "producto": "Paleta", "keywords": ["paleta kg"], "precio_indec": 13500.0, "cantidad_ae": 1.045, "kcal_100g": 170, "prot_100g": 20.0, "carb_100g": 0.0, "grasas_100g": 10.0},
+    {"rubro": "Carnes", "producto": "Nalga", "keywords": ["nalga kg"], "precio_indec": 13500.0, "cantidad_ae": 1.045, "kcal_100g": 140, "prot_100g": 21.0, "carb_100g": 0.0, "grasas_100g": 5.0},
+    {"rubro": "Carnes", "producto": "Pollo entero", "keywords": ["pollo entero kg"], "precio_indec": 13500.0, "cantidad_ae": 1.045, "kcal_100g": 215, "prot_100g": 18.0, "carb_100g": 0.0, "grasas_100g": 15.0},
+    {"rubro": "Carnes", "producto": "Pescado", "keywords": ["pescado kg", "filet de merluza"], "precio_indec": 13500.0, "cantidad_ae": 1.045, "kcal_100g": 90, "prot_100g": 18.0, "carb_100g": 0.0, "grasas_100g": 1.5},
+    {"rubro": "Carnes", "producto": "Hígado", "keywords": ["higado kg", "higado de vacuno"], "precio_indec": 5500.0, "cantidad_ae": 0.270, "kcal_100g": 135, "prot_100g": 20.0, "carb_100g": 3.8, "grasas_100g": 4.0},
+    {"rubro": "Carnes", "producto": "Paleta cocida", "keywords": ["paleta cocida"], "precio_indec": 15000.0, "cantidad_ae": 0.030, "kcal_100g": 130, "prot_100g": 18.0, "carb_100g": 2.0, "grasas_100g": 6.0},
+    {"rubro": "Carnes", "producto": "Salame", "keywords": ["salame"], "precio_indec": 15000.0, "cantidad_ae": 0.030, "kcal_100g": 400, "prot_100g": 20.0, "carb_100g": 1.0, "grasas_100g": 35.0},
 
     # --- LÁCTEOS Y HUEVOS ---
     {"rubro": "Lácteos y Huevos", "producto": "Huevos (docena)", "keywords": ["huevos docena", "maple huevos", "huevos x 12"], "precio_indec": 6000.0, "cantidad_ae": 0.600, "kcal_100g": 150, "prot_100g": 12.5, "carb_100g": 0.7, "grasas_100g": 10.0},
     {"rubro": "Lácteos y Huevos", "producto": "Leche entera", "keywords": ["leche entera 1l", "leche sachet 1l"], "precio_indec": 2400.0, "cantidad_ae": 9.270, "kcal_100g": 60, "prot_100g": 3.1, "carb_100g": 4.7, "grasas_100g": 3.0},
-    {"rubro": "Lácteos y Huevos", "producto": "Queso (cremoso, cuartirolo, de rallar)", "keywords": ["queso cremoso kg", "queso cuartirolo", "queso rallar"], "precio_indec": 16000.0, "cantidad_ae": 0.330, "kcal_100g": 320, "prot_100g": 20.0, "carb_100g": 1.5, "grasas_100g": 26.0},
+    {"rubro": "Lácteos y Huevos", "producto": "Queso cremoso", "keywords": ["queso cremoso kg"], "precio_indec": 16000.0, "cantidad_ae": 0.110, "kcal_100g": 300, "prot_100g": 18.0, "carb_100g": 1.5, "grasas_100g": 25.0},
+    {"rubro": "Lácteos y Huevos", "producto": "Queso cuartirolo", "keywords": ["queso cuartirolo"], "precio_indec": 16000.0, "cantidad_ae": 0.110, "kcal_100g": 280, "prot_100g": 19.0, "carb_100g": 1.5, "grasas_100g": 22.0},
+    {"rubro": "Lácteos y Huevos", "producto": "Queso de rallar", "keywords": ["queso rallar"], "precio_indec": 16000.0, "cantidad_ae": 0.110, "kcal_100g": 380, "prot_100g": 33.0, "carb_100g": 1.5, "grasas_100g": 27.0},
     {"rubro": "Lácteos y Huevos", "producto": "Yogur", "keywords": ["yogur entero", "yogur sachet", "yogur firm"], "precio_indec": 3800.0, "cantidad_ae": 0.570, "kcal_100g": 65, "prot_100g": 3.2, "carb_100g": 9.0, "grasas_100g": 2.5},
     {"rubro": "Lácteos y Huevos", "producto": "Manteca", "keywords": ["manteca 200g", "manteca 100g"], "precio_indec": 16000.0, "cantidad_ae": 0.060, "kcal_100g": 717, "prot_100g": 0.9, "carb_100g": 0.1, "grasas_100g": 81.0},
 
     # --- ACEITES, CONDIMENTOS Y BEBIDAS ---
     {"rubro": "Almacén", "producto": "Aceite de girasol", "keywords": ["aceite girasol 900", "aceite girasol 1l", "acgi"], "precio_indec": 4800.0, "cantidad_ae": 1.200, "kcal_100g": 884, "prot_100g": 0.0, "carb_100g": 0.0, "grasas_100g": 100.0},
-    {"rubro": "Bebidas", "producto": "Bebidas no alcohólicas (gaseosas, jugos, soda)", "keywords": ["gaseosa 1.5l", "gaseosa 2l", "jugo concentrado", "soda 1.5l", "gas", "agus"], "precio_indec": 3200.0, "cantidad_ae": 3.450, "kcal_100g": 35, "prot_100g": 0.0, "carb_100g": 9.0, "grasas_100g": 0.0},
-    {"rubro": "Bebidas", "producto": "Bebidas alcohólicas (cerveza, vino)", "keywords": ["cerveza 1l", "vino tinto 1l", "cerv", "vinf"], "precio_indec": 4500.0, "cantidad_ae": 1.080, "kcal_100g": 60, "prot_100g": 0.3, "carb_100g": 3.0, "grasas_100g": 0.0},
+    {"rubro": "Bebidas", "producto": "Gaseosa", "keywords": ["gaseosa 1.5l", "gaseosa 2l", "gas"], "precio_indec": 3200.0, "cantidad_ae": 1.150, "kcal_100g": 40, "prot_100g": 0.0, "carb_100g": 10.0, "grasas_100g": 0.0},
+    {"rubro": "Bebidas", "producto": "Jugo", "keywords": ["jugo concentrado"], "precio_indec": 3200.0, "cantidad_ae": 1.150, "kcal_100g": 35, "prot_100g": 0.0, "carb_100g": 9.0, "grasas_100g": 0.0},
+    {"rubro": "Bebidas", "producto": "Soda", "keywords": ["soda 1.5l", "agus"], "precio_indec": 3200.0, "cantidad_ae": 1.150, "kcal_100g": 0, "prot_100g": 0.0, "carb_100g": 0.0, "grasas_100g": 0.0},
+    {"rubro": "Bebidas", "producto": "Cerveza", "keywords": ["cerveza 1l", "cerv"], "precio_indec": 4500.0, "cantidad_ae": 0.540, "kcal_100g": 43, "prot_100g": 0.5, "carb_100g": 3.5, "grasas_100g": 0.0},
+    {"rubro": "Bebidas", "producto": "Vino", "keywords": ["vino tinto 1l", "vinf"], "precio_indec": 4500.0, "cantidad_ae": 0.540, "kcal_100g": 85, "prot_100g": 0.1, "carb_100g": 2.5, "grasas_100g": 0.0},
     {"rubro": "Almacén", "producto": "Sal fina", "keywords": ["sal fina 500g", "sal fina 1kg", "salf"], "precio_indec": 1500.0, "cantidad_ae": 0.120, "kcal_100g": 0, "prot_100g": 0.0, "carb_100g": 0.0, "grasas_100g": 0.0},
-    {"rubro": "Almacén", "producto": "Condimentos (mayonesa, caldos)", "keywords": ["mayonesa", "caldo de verdura", "caldo de gallina", "cald", "esp", "mayo"], "precio_indec": 7500.0, "cantidad_ae": 0.120, "kcal_100g": 350, "prot_100g": 1.0, "carb_100g": 10.0, "grasas_100g": 35.0},
+    {"rubro": "Almacén", "producto": "Mayonesa", "keywords": ["mayonesa", "mayo"], "precio_indec": 7500.0, "cantidad_ae": 0.060, "kcal_100g": 680, "prot_100g": 1.0, "carb_100g": 3.0, "grasas_100g": 75.0},
+    {"rubro": "Almacén", "producto": "Caldo en cubo / Polvo", "keywords": ["caldo de verdura", "caldo de gallina", "cald", "esp"], "precio_indec": 7500.0, "cantidad_ae": 0.060, "kcal_100g": 250, "prot_100g": 10.0, "carb_100g": 25.0, "grasas_100g": 10.0},
     {"rubro": "Almacén", "producto": "Vinagre", "keywords": ["vinagre de alcohol", "vinagre de manzana", "vina"], "precio_indec": 2200.0, "cantidad_ae": 0.060, "kcal_100g": 18, "prot_100g": 0.0, "carb_100g": 0.1, "grasas_100g": 0.0},
     {"rubro": "Almacén", "producto": "Café", "keywords": ["cafe molido", "cafe instantaneo", "cafem"], "precio_indec": 32000.0, "cantidad_ae": 0.030, "kcal_100g": 200, "prot_100g": 14.0, "carb_100g": 40.0, "grasas_100g": 0.2},
     {"rubro": "Almacén", "producto": "Yerba mate", "keywords": ["yerba mate 1kg", "yerba mate 500g", "yerb"], "precio_indec": 6500.0, "cantidad_ae": 0.510, "kcal_100g": 30, "prot_100g": 1.0, "carb_100g": 6.0, "grasas_100g": 0.0}
