@@ -53,11 +53,6 @@ def leer_csv(nombre_archivo):
     return []
 
 def procesar_totales(rows):
-    """
-    Si en alguna fecha el scraper reportó 0 productos reales o 0% de cobertura
-    (debido a caída del sitio o bloqueo), se propaga el último valor válido
-    registrado, conservando la fecha actual de la fila.
-    """
     if not rows:
         return []
     ultimo_valido = None
