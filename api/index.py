@@ -52,9 +52,36 @@ def leer_csv(nombre_archivo):
 
     return []
 
+def procesar_totales(rows):
+    """
+    Si en alguna fecha el scraper reportó 0 productos reales o 0% de cobertura
+    (debido a caída del sitio o bloqueo), se propaga el último valor válido
+    registrado, conservando la fecha actual de la fila.
+    """
+    if not rows:
+        return []
+    ultimo_valido = None
+    for row in rows:
+        try:
+            prod_real = float(row.get('prod_real', 0))
+            cobertura = float(row.get('cobertura_scraper_pct', 0))
+        except (ValueError, TypeError):
+            prod_real = 0
+            cobertura = 0
+            
+        if prod_real > 0 or cobertura > 0:
+            ultimo_valido = row.copy()
+        else:
+            if ultimo_valido is not None:
+                fecha_actual = row.get('fecha')
+                row.update(ultimo_valido)
+                row['fecha'] = fecha_actual
+    return rows
+
 @app.get("/api/totales")
 def get_totales():
-    return JSONResponse(content=leer_csv("cba_historico_totales.csv"))
+    datos = leer_csv("cba_historico_totales.csv")
+    return JSONResponse(content=procesar_totales(datos))
 
 @app.get("/api/detalle")
 def get_detalle():
