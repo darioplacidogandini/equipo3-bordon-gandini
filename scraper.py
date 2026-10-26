@@ -114,6 +114,9 @@ def extraer_observaciones_sitio(scraper, item_config, fecha, timestamp, sitio, m
             elif sitio == 'diaonline':
                 search_url = f"https://diaonline.supermercadosdia.com.ar/{kw}?_q={kw}&map=ft" if pagina == 1 else f"https://diaonline.supermercadosdia.com.ar/{kw}?_q={kw}&map=ft&page={pagina}"
                 selectors = ['article', 'div[class*="product"]', 'div[class*="summary"]', 'li[class*="product"]']
+            elif sitio == 'carrefour':
+                search_url = f"https://www.carrefour.com.ar/{kw}?_q={kw}&map=ft" if pagina == 1 else f"https://www.carrefour.com.ar/{kw}?_q={kw}&map=ft&page={pagina}"
+                selectors = ['article', 'div[class*="product"]', 'div[class*="summary"]', 'li[class*="product"]', 'div[class*="valtech-carrefour-ar"]']
             else:
                 break
 
@@ -167,7 +170,7 @@ def extraer_observaciones_sitio(scraper, item_config, fecha, timestamp, sitio, m
                                 nuevas_obs_pagina += 1
                         except ValueError:
                             continue
-                if nuevas_obs_pagina == 0 and sitio == 'diaonline':
+                if nuevas_obs_pagina == 0 and sitio in ['diaonline', 'carrefour']:
                     break
                 time.sleep(0.2)
             except Exception:
@@ -185,12 +188,19 @@ def main():
     resumen_productos = []
 
     for item in CBA_INDEC:
+        # 1. Intentar buscar en Depot Express
         obs = extraer_observaciones_sitio(scraper, item, fecha_hoy, timestamp, 'depotexpress')
         sitio_usado = 'depotexpress'
 
+        # 2. Si no se encuentran resultados, buscar en Día Online
         if not obs:
             obs = extraer_observaciones_sitio(scraper, item, fecha_hoy, timestamp, 'diaonline')
             sitio_usado = 'diaonline' if obs else 'ninguno'
+
+        # 3. Si tampoco se encuentran resultados en Día Online, buscar en Carrefour
+        if not obs:
+            obs = extraer_observaciones_sitio(scraper, item, fecha_hoy, timestamp, 'carrefour')
+            sitio_usado = 'carrefour' if obs else 'ninguno'
 
         registro = item.copy()
 
