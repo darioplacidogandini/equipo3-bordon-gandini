@@ -103,85 +103,81 @@ def render_dashboard():
     <head>
       <meta charset="UTF-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>Dashboard - Canasta Básica Alimentaria</title>
+      <title>Panel de Monitoreo - Canasta Básica Alimentaria</title>
       <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
       <style>
         :root { 
-          --bg: #f1f5f9; 
+          --bg: #f8fafc; 
           --card: #ffffff; 
-          --primary: #4f46e5; 
-          --primary-gradient: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
-          --secondary: #10b981; 
+          --primary: #1e293b; 
+          --primary-accent: #334155;
+          --secondary: #0f172a; 
           --text: #0f172a; 
-          --sub: #64748b; 
-          --border: #e2e8f0;
+          --sub: #475569; 
+          --border: #cbd5e1;
         }
         body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 24px; }
         .container { max-width: 1280px; margin: 0 auto; }
         header { 
-          background: linear-gradient(135deg, #3b82f6 0%, #6366f1 50%, #8b5cf6 100%); 
+          background: #1e293b; 
           color: white; 
-          padding: 28px 32px; 
-          border-radius: 16px; 
-          margin-bottom: 28px;
-          box-shadow: 0 10px 25px -5px rgba(99, 102, 241, 0.3);
+          padding: 24px 32px; 
+          border-radius: 8px; 
+          margin-bottom: 24px;
+          border-left: 6px solid #0f172a;
+          box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
         }
-        h1 { margin: 0 0 6px 0; font-size: 2rem; font-weight: 800; display: flex; align-items: center; gap: 12px; }
-        p.subtitle { margin: 0; opacity: 0.9; font-size: 1rem; font-weight: 400; }
-        .tabs { display: flex; gap: 10px; margin-bottom: 24px; flex-wrap: wrap; }
+        h1 { margin: 0 0 6px 0; font-size: 1.75rem; font-weight: 700; letter-spacing: -0.025em; }
+        p.subtitle { margin: 0; opacity: 0.85; font-size: 0.95rem; font-weight: 400; }
+        .tabs { display: flex; gap: 8px; margin-bottom: 24px; flex-wrap: wrap; border-bottom: 2px solid var(--border); padding-bottom: 12px; }
         .tab-btn {
-          padding: 12px 24px; background: #ffffff; border: 1px solid #cbd5e1; border-radius: 12px;
-          font-size: 0.95rem; font-weight: 600; color: #475569; cursor: pointer; transition: all 0.25s ease;
-          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02); display: flex; align-items: center; gap: 8px;
+          padding: 10px 20px; background: #ffffff; border: 1px solid var(--border); border-radius: 6px;
+          font-size: 0.9rem; font-weight: 600; color: #334155; cursor: pointer; transition: all 0.2s ease;
         }
-        .tab-btn:hover { background: #f8fafc; color: var(--primary); border-color: #a5b4fc; transform: translateY(-1px); }
-        .tab-btn.active { background: var(--primary-gradient); color: #ffffff; border-color: transparent; box-shadow: 0 6px 16px rgba(79, 70, 229, 0.35); }
-        .tab-content { display: none; animation: fadeIn 0.3s ease-in-out; }
+        .tab-btn:hover { background: #f1f5f9; color: var(--primary); border-color: #94a3b8; }
+        .tab-btn.active { background: #1e293b; color: #ffffff; border-color: #1e293b; }
+        .tab-content { display: none; animation: fadeIn 0.25s ease-in-out; }
         .tab-content.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
         .kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; margin-bottom: 24px; }
         .kpi-card { 
-          background: var(--card); padding: 22px; border-radius: 16px; border: 1px solid var(--border);
-          box-shadow: 0 4px 15px rgba(0,0,0,0.03); position: relative; overflow: hidden; transition: transform 0.2s ease;
+          background: var(--card); padding: 20px; border-radius: 8px; border: 1px solid var(--border);
+          box-shadow: 0 1px 3px rgba(0,0,0,0.05); position: relative;
         }
-        .kpi-card:hover { transform: translateY(-3px); box-shadow: 0 8px 25px rgba(0,0,0,0.06); }
-        .kpi-card.cba { border-left: 6px solid #3b82f6; background: linear-gradient(135deg, #ffffff 0%, #eff6ff 100%); }
-        .kpi-card.cbt { border-left: 6px solid #10b981; background: linear-gradient(135deg, #ffffff 0%, #ecfdf5 100%); }
-        .kpi-card.cobertura { border-left: 6px solid #f59e0b; background: linear-gradient(135deg, #ffffff 0%, #fffbeb 100%); }
-        .kpi-card span { font-size: 0.85rem; color: var(--sub); font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; }
-        .kpi-card .value { font-size: 1.8rem; font-weight: 800; margin-top: 10px; color: var(--text); }
-        .kpi-card.cba .value { color: #1d4ed8; }
-        .kpi-card.cbt .value { color: #047857; }
-        .kpi-card.cobertura .value { color: #b45309; }
+        .kpi-card.cba { border-top: 4px solid #334155; }
+        .kpi-card.cbt { border-top: 4px solid #475569; }
+        .kpi-card.cobertura { border-top: 4px solid #64748b; }
+        .kpi-card span { font-size: 0.8rem; color: var(--sub); font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; }
+        .kpi-card .value { font-size: 1.6rem; font-weight: 700; margin-top: 8px; color: var(--text); }
         .chart-card, .table-card { 
-          background: var(--card); padding: 26px; border-radius: 16px; border: 1px solid var(--border); 
-          margin-bottom: 24px; box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+          background: var(--card); padding: 24px; border-radius: 8px; border: 1px solid var(--border); 
+          margin-bottom: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);
         }
-        .card-title { margin: 0 0 18px 0; font-size: 1.2rem; font-weight: 700; color: #1e293b; display: flex; align-items: center; gap: 10px; }
+        .card-title { margin: 0 0 16px 0; font-size: 1.1rem; font-weight: 700; color: #1e293b; border-bottom: 1px solid var(--border); padding-bottom: 10px; }
         .chart-container { position: relative; height: 380px; width: 100%; }
         .grid-charts { display: grid; grid-template-columns: repeat(auto-fit, minmax(500px, 1fr)); gap: 24px; }
         @media (max-width: 640px) { .grid-charts { grid-template-columns: 1fr; } }
-        .table-container { overflow-x: auto; max-height: 520px; border: 1px solid var(--border); border-radius: 12px; margin-top: 12px; }
+        .table-container { overflow-x: auto; max-height: 520px; border: 1px solid var(--border); border-radius: 6px; margin-top: 12px; }
         table { width: 100%; border-collapse: collapse; font-size: 0.875rem; text-align: left; }
-        th { position: sticky; top: 0; background: linear-gradient(90deg, #3b82f6 0%, #6366f1 100%); color: #ffffff; font-weight: 700; padding: 14px 18px; text-transform: uppercase; font-size: 0.78rem; white-space: nowrap; z-index: 10; }
-        td { padding: 12px 18px; border-bottom: 1px solid var(--border); white-space: nowrap; color: #334155; }
+        th { position: sticky; top: 0; background: #334155; color: #ffffff; font-weight: 600; padding: 12px 16px; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.05em; white-space: nowrap; z-index: 10; }
+        td { padding: 10px 16px; border-bottom: 1px solid var(--border); white-space: nowrap; color: #334155; }
         tr:nth-child(even) { background-color: #f8fafc; }
-        tr:hover { background-color: #e0e7ff; }
+        tr:hover { background-color: #f1f5f9; }
       </style>
     </head>
     <body>
       <div class="container">
         <header>
-          <h1>📊 Canasta Básica Alimentaria (CBA & CBT)</h1>
-          <p class="subtitle">Monitoreo y estimación de costos vía Web Scraping</p>
+          <h1>Canasta Básica Alimentaria (CBA & CBT)</h1>
+          <p class="subtitle">Sistema de Monitoreo y Estimación Económica vía Web Scraping</p>
         </header>
 
         <nav class="tabs">
-          <button class="tab-btn active" onclick="cambiarTab(event, 'tab-resumen')">📈 Resumen General</button>
-          <button class="tab-btn" onclick="cambiarTab(event, 'tab-graficos')">📊 Gráficos Analíticos</button>
-          <button class="tab-btn" onclick="cambiarTab(event, 'tab-totales')">📋 Tabla de Totales</button>
-          <button class="tab-btn" onclick="cambiarTab(event, 'tab-nutricional')">🥗 Información Nutricional</button>
-          <button class="tab-btn" onclick="cambiarTab(event, 'tab-historico')">🗂️ Histórico Detallado</button>
+          <button class="tab-btn active" onclick="cambiarTab(event, 'tab-resumen')">Resumen General</button>
+          <button class="tab-btn" onclick="cambiarTab(event, 'tab-graficos')">Gráficos Analíticos</button>
+          <button class="tab-btn" onclick="cambiarTab(event, 'tab-totales')">Tabla de Totales</button>
+          <button class="tab-btn" onclick="cambiarTab(event, 'tab-nutricional')">Información Nutricional</button>
+          <button class="tab-btn" onclick="cambiarTab(event, 'tab-historico')">Histórico Detallado</button>
         </nav>
 
         <div id="tab-resumen" class="tab-content active">
@@ -195,12 +191,12 @@ def render_dashboard():
               <div class="value" id="kpi-cbt">$ --</div>
             </div>
             <div class="kpi-card cobertura">
-              <span>Cobertura Scraper</span>
+              <span>Cobertura de Scraper</span>
               <div class="value" id="kpi-cobertura">-- %</div>
             </div>
           </div>
           <div class="chart-card">
-            <h3 class="card-title">📈 Evolución Histórica de Costos</h3>
+            <h3 class="card-title">Evolución Histórica de Costos</h3>
             <div class="chart-container">
               <canvas id="cbaChartResumen"></canvas>
             </div>
@@ -210,15 +206,15 @@ def render_dashboard():
         <div id="tab-graficos" class="tab-content">
           <div class="grid-charts">
             <div class="chart-card">
-              <h3 class="card-title">🏷️ Contribución al Costo por Rubro (%)</h3>
+              <h3 class="card-title">Contribución al Costo por Rubro (%)</h3>
               <div class="chart-container"><canvas id="rubroChart"></canvas></div>
             </div>
             <div class="chart-card">
-              <h3 class="card-title">🎯 Cobertura del Scraper (%)</h3>
+              <h3 class="card-title">Cobertura del Scraper (%)</h3>
               <div class="chart-container"><canvas id="coberturaChart"></canvas></div>
             </div>
             <div class="chart-card">
-              <h3 class="card-title">🥗 Composición Nutricional / Gramaje por Alimento</h3>
+              <h3 class="card-title">Composición Nutricional / Gramaje por Alimento</h3>
               <div class="chart-container"><canvas id="nutricionalChart"></canvas></div>
             </div>
           </div>
@@ -226,7 +222,7 @@ def render_dashboard():
 
         <div id="tab-totales" class="tab-content">
           <div class="table-card">
-            <h3 class="card-title">📋 Tabla de Totales (CBA / CBT)</h3>
+            <h3 class="card-title">Tabla de Totales (CBA / CBT)</h3>
             <div class="table-container" id="tabla-totales-container">
               <p style="padding: 16px; color: var(--sub);">Cargando tabla de totales...</p>
             </div>
@@ -235,11 +231,11 @@ def render_dashboard():
 
         <div id="tab-nutricional" class="tab-content">
           <div class="table-card">
-            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 18px;">
-              <h3 class="card-title" style="margin: 0;">🥗 Tabla de Información Nutricional</h3>
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 16px;">
+              <h3 class="card-title" style="margin: 0; border: none; padding: 0;">Tabla de Información Nutricional</h3>
               <div style="display: flex; align-items: center; gap: 8px;">
-                <label for="filtro-rubro-nutricional" style="font-weight: 600; font-size: 0.9rem; color: #475569;">Filtrar por Rubro:</label>
-                <select id="filtro-rubro-nutricional" onchange="filtrarNutricional()" style="padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border); font-size: 0.9rem; background: #ffffff; cursor: pointer; color: var(--text);">
+                <label for="filtro-rubro-nutricional" style="font-weight: 600; font-size: 0.9rem; color: #334155;">Filtrar por Rubro:</label>
+                <select id="filtro-rubro-nutricional" onchange="filtrarNutricional()" style="padding: 6px 12px; border-radius: 6px; border: 1px solid var(--border); font-size: 0.9rem; background: #ffffff; cursor: pointer; color: var(--text);">
                   <option value="todos">Todos los rubros</option>
                 </select>
               </div>
@@ -252,7 +248,7 @@ def render_dashboard():
 
         <div id="tab-historico" class="tab-content">
           <div class="table-card">
-            <h3 class="card-title">🗂️ Histórico Detallado</h3>
+            <h3 class="card-title">Histórico Detallado</h3>
             <div class="table-container" id="tabla-historico-container">
               <p style="padding: 16px; color: var(--sub);">Cargando histórico...</p>
             </div>
@@ -327,8 +323,8 @@ def render_dashboard():
             data: {
               labels: labels.length ? labels : ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun'],
               datasets: [
-                { label: 'CBA Hogar', data: cbaHogar.length ? cbaHogar : [120000, 125000, 132000, 140000, 148000, 155000], borderColor: '#3b82f6', backgroundColor: 'rgba(59,130,246,0.1)', fill: true, tension: 0.3 },
-                { label: 'CBT Hogar', data: cbtHogar.length ? cbtHogar : [250000, 260000, 275000, 290000, 305000, 320000], borderColor: '#10b981', backgroundColor: 'rgba(16,185,129,0.1)', fill: true, tension: 0.3 }
+                { label: 'CBA Hogar', data: cbaHogar.length ? cbaHogar : [120000, 125000, 132000, 140000, 148000, 155000], borderColor: '#334155', backgroundColor: 'rgba(51,65,85,0.05)', fill: true, tension: 0.2 },
+                { label: 'CBT Hogar', data: cbtHogar.length ? cbtHogar : [250000, 260000, 275000, 290000, 305000, 320000], borderColor: '#64748b', backgroundColor: 'rgba(100,116,139,0.05)', fill: true, tension: 0.2 }
               ]
             },
             options: { responsive: true, maintainAspectRatio: false }
@@ -355,7 +351,7 @@ def render_dashboard():
             type: 'doughnut',
             data: {
               labels: labels.length ? labels : ['Carnes', 'Almacén', 'Lácteos', 'Verduras'],
-              datasets: [{ data: data.length ? data : [40, 30, 20, 10], backgroundColor: ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899'] }]
+              datasets: [{ data: data.length ? data : [40, 30, 20, 10], backgroundColor: ['#1e293b', '#334155', '#475569', '#64748b', '#94a3b8', '#cbd5e1'] }]
             },
             options: { responsive: true, maintainAspectRatio: false }
           });
@@ -371,7 +367,7 @@ def render_dashboard():
             type: 'bar',
             data: {
               labels: labels.length ? labels : ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun'],
-              datasets: [{ label: 'Cobertura Scraper (%)', data: cobertura.length ? cobertura : [85, 88, 90, 92, 95, 96], backgroundColor: '#6366f1' }]
+              datasets: [{ label: 'Cobertura Scraper (%)', data: cobertura.length ? cobertura : [85, 88, 90, 92, 95, 96], backgroundColor: '#334155' }]
             },
             options: { responsive: true, maintainAspectRatio: false, scales: { y: { max: 100 } } }
           });
@@ -390,7 +386,7 @@ def render_dashboard():
             type: 'bar',
             data: {
               labels: labels.length ? labels : ['Pan', 'Arroz', 'Leche', 'Carne'],
-              datasets: [{ label: 'Kcal Diarias AE', data: kcal.length ? kcal : [200, 150, 180, 220], backgroundColor: '#10b981' }]
+              datasets: [{ label: 'Kcal Diarias AE', data: kcal.length ? kcal : [200, 150, 180, 220], backgroundColor: '#475569' }]
             },
             options: { responsive: true, maintainAspectRatio: false }
           });
