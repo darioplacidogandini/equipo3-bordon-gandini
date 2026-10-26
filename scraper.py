@@ -165,9 +165,7 @@ def main():
     fecha_hoy = ahora.strftime("%Y-%m-%d")
     timestamp = ahora.strftime("%Y-%m-%d %H:%M:%S")
 
-    todas_observaciones_raw = []
     resumen_productos = []
-
     costo_indec_ae_total = sum(i['cantidad_ae'] * i['precio_indec'] for i in CBA_INDEC)
 
     for item in CBA_INDEC:
@@ -177,23 +175,23 @@ def main():
 
         obs_validas = []
         if precio_indec > 0 and obs:
-            p_min = precio_indec * 0.30
-            p_max = precio_indec * 3.50
+            p_min = precio_indec * 0.20
+            p_max = precio_indec * 4.00
             obs_validas = [o for o in obs if p_min <= o['precio'] <= p_max]
 
         if obs_validas:
             precios_normalizados = [o['precio'] for o in obs_validas]
             precio_final = float(np.median(precios_normalizados))
-            metodo_calculo = "Mediana directa"  # VERDE
+            metodo_calculo = "Mediana directa"
             coincidencias = len(obs_validas)
             dispersion_std = float(np.std(precios_normalizados)) if len(precios_normalizados) > 1 else 0.0
         else:
             if precio_indec > 0:
                 precio_final = precio_indec
-                metodo_calculo = "Proxy (Referencia INDEC)"  # GRIS
+                metodo_calculo = "Proxy (Referencia INDEC)"
             else:
                 precio_final = 0.0
-                metodo_calculo = "Mediana General"  # ROJO
+                metodo_calculo = "Mediana General"
             dispersion_std = 0.0
             coincidencias = 0
 
@@ -236,7 +234,6 @@ def main():
     archivo_totales = "cba_historico_totales.csv"
     archivo_nutricional = "cba_tabla_nutricional.csv"
 
-    # Guardar resumenes
     df_resumen.drop(columns=['keywords'], errors='ignore').to_csv(archivo_detalle, mode='a', header=not os.path.exists(archivo_detalle), index=False, encoding="utf-8-sig")
 
     df_totales = pd.DataFrame([{
