@@ -13,7 +13,7 @@ import numpy as np
 COEFICIENTE_HOGAR_TIPO = 3.09  # Equivalencia de integrantes en un hogar tipo según INDEC
 INVERSO_COEFICIENTE_ENGEL = 2.25  # Coeficiente para estimar la CBT a partir de la CBA
 
-# CANASTA BÁSICA ALIMENTARIA COMPLETA - PRODUCTOS DESAGREGADOS (SIN PRECIOS INDEC)
+# CANASTA BÁSICA ALIMENTARIA COMPLETA - PRODUCTOS DESAGREGADOS
 CBA_INDEC = [
     # --- PANADERÍA Y CEREALES ---
     {"rubro": "Panadería", "producto": "Pan francés", "keywords": ["pan frances", "pan kg", "pani"], "cantidad_ae": 6.750, "kcal_100g": 265, "prot_100g": 9.0, "carb_100g": 55.0, "grasas_100g": 1.2},
@@ -185,11 +185,9 @@ def main():
     resumen_productos = []
 
     for item in CBA_INDEC:
-        # 1. Intentar buscar en Depot Express
         obs = extraer_observaciones_sitio(scraper, item, fecha_hoy, timestamp, 'depotexpress')
         sitio_usado = 'depotexpress'
 
-        # 2. Si no se encuentran resultados, buscar en Día Online como respaldo
         if not obs:
             obs = extraer_observaciones_sitio(scraper, item, fecha_hoy, timestamp, 'diaonline')
             sitio_usado = 'diaonline' if obs else 'ninguno'
