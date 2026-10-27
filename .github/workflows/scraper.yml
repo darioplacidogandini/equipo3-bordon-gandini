@@ -2,16 +2,15 @@ name: CBA Scraper Diario
 
 on:
   schedule:
-    # Se ejecuta todos los días a las 11:00 UTC (8:00 AM Argentina)
     - cron: '0 11 * * *'
-  workflow_dispatch: # Permite ejecutarlo manualmente desde la pestaña 'Actions' en GitHub
+  workflow_dispatch: 
 
 jobs:
   run-scraper:
     runs-on: ubuntu-latest
 
     permissions:
-      contents: write # Permiso necesario para hacer commit de los archivos actualizados
+      contents: write 
 
     steps:
       - name: Checkout del repositorio
@@ -34,6 +33,9 @@ jobs:
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action Bot"
-          git add cba_historico_detalle.csv cba_historico_totales.csv cba_tabla_nutricional.csv cba_errores_log.txt
+          
+          # Agrega de forma segura los archivos permitiendo que continúe si alguno no existiera
+          git add cba_historico_detalle.csv cba_historico_totales.csv cba_tabla_nutricional.csv cba_errores_log.txt 2>/dev/null || true
+          
           git commit -m "bot: Actualización diaria de precios, tabla nutricional y log de errores [$(date +'%Y-%m-%d')]" || echo "Sin cambios para commitear"
           git push
