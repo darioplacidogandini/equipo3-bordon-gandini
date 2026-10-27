@@ -61,3 +61,4 @@
 2026-10-27 14:18:53 [WARNING] diaonline.supermercadosdia.com.ar devolvió status code 206 buscando 'yerba mate'
 2026-10-27 14:18:54 [WARNING] carrefour.com.ar devolvió status code 206 buscando 'yerba con palo'
 2026-10-27 14:18:55 [INFO] --- Fin de ejecución: Cobertura 96.15% (50/52) ---
+2026-10-27 16:05:42 [INFO] --- Inicio de ejecución del scraper ---
