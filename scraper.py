@@ -174,25 +174,44 @@ def consultar_api_vtex(scraper, keyword, dominio):
 def main():
     logging.info("--- Inicio de ejecución del scraper ---")
     
-    # Garantizar la creación de los CSVs si no existen para evitar errores 128 en Git
-    if not os.path.exists('cba_historico_detalle.csv'):
-        pd.DataFrame(columns=[
-            'fecha', 'timestamp', 'producto_cba', 'descripcion', 
-            'precio_publicado', 'factor_unidad', 'precio_normalizado', 'sitio'
-        ]).to_csv('cba_historico_detalle.csv', index=False, encoding='utf-8-sig')
+    archivo_detalle = "cba_historico_detalle.csv"
+    archivo_totales = "cba_historico_totales.csv"
+    archivo_nutricional = "cba_tabla_nutricional.csv"
+
+    # Columnas oficiales esperadas (19 columnas)
+    columnas_detalle = [
+        'rubro', 'producto', 'cantidad_ae', 'kcal_100g', 'prot_100g', 
+        'carb_100g', 'grasas_100g', 'fecha', 'timestamp', 
+        'precio_unitario_estimado', 'coincidencias', 'dispersion_std', 
+        'metodo_calculo', 'kcal_diarias_ae', 'prot_diarias_g', 
+        'carb_diarios_g', 'grasas_diarias_g', 'costo_mensual_ae', 'costo_hogar_tipo'
+    ]
+
+    # Validación inteligente de cabecera para detalle
+    detalle_valido = False
+    if os.path.exists(archivo_detalle):
+        try:
+            df_prueba = pd.read_csv(archivo_detalle, nrows=0)
+            if list(df_prueba.columns) == columnas_detalle:
+                detalle_valido = True
+        except Exception:
+            detalle_valido = False
+
+    if not detalle_valido:
+        pd.DataFrame(columns=columnas_detalle).to_csv(archivo_detalle, index=False, encoding='utf-8-sig')
         
-    if not os.path.exists('cba_historico_totales.csv'):
+    if not os.path.exists(archivo_totales):
         pd.DataFrame(columns=[
             'fecha', 'timestamp', 'prod_real', 'prod_total', 
             'cobertura_scraper_pct', 'costo_total_cba_ae', 'costo_total_cba_hogar', 
             'costo_total_cbt_ae', 'costo_total_cbt_hogar'
-        ]).to_csv('cba_historico_totales.csv', index=False, encoding='utf-8-sig')
+        ]).to_csv(archivo_totales, index=False, encoding='utf-8-sig')
         
-    if not os.path.exists('cba_tabla_nutricional.csv'):
+    if not os.path.exists(archivo_nutricional):
         pd.DataFrame(columns=[
             'fecha', 'timestamp', 'rubro', 'producto', 
             'cantidad_ae', 'kcal_diarias_ae', 'prot_diarias_g', 'carb_diarios_g', 'grasas_diarias_g'
-        ]).to_csv('cba_tabla_nutricional.csv', index=False, encoding='utf-8-sig')
+        ]).to_csv(archivo_nutricional, index=False, encoding='utf-8-sig')
 
     scraper = cloudscraper.create_scraper()
     ahora = datetime.now()
@@ -261,18 +280,13 @@ def main():
     cobertura_scraper_pct = (prod_con_coincidencias / total_productos * 100.0) if total_productos > 0 else 0.0
 
     costo_cbt_ae = costo_total_ae * INVERSO_COEFICIENTE_ENGEL
-    costo_cbt_hogar = costo_total_hogar * INVERSO_COEFICIENTE_ENGEL  # Corrección aplicada
+    costo_cbt_hogar = costo_total_hogar * INVERSO_COEFICIENTE_ENGEL
 
-    archivo_detalle = "cba_historico_detalle.csv"
-    archivo_totales = "cba_historico_totales.csv"
-    archivo_nutricional = "cba_tabla_nutricional.csv"
-
-    # 1. Guardado de Detalle
+    # 1. Guardado de Detalle asegurando orden y formato estricto
     df_detalle_out = df_resumen.drop(columns=['keywords'], errors='ignore')
-    if not os.path.exists(archivo_detalle):
-        df_detalle_out.to_csv(archivo_detalle, index=False, encoding="utf-8-sig")
-    else:
-        df_detalle_out.to_csv(archivo_detalle, mode='a', header=False, index=False, encoding="utf-8-sig")
+    df_detalle_out = df_detalle_out[columnas_detalle]
+    
+    df_detalle_out.to_csv(archivo_detalle, mode='a', header=False, index=False, encoding="utf-8-sig")
 
     # 2. Guardado de Totales
     df_totales = pd.DataFrame([{
