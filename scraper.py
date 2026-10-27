@@ -109,4 +109,179 @@ def extraer_factor_unidad(nombre_producto):
     match_gml = re.search(r'(\d+(?:[\.,]\d+)?)\s*(g|gr|grs|gramos|ml|cc)\b', texto)
     if match_gml:
         val = float(match_gml.group(1).replace(',', '.'))
-        return (val / 1000.0) if val > 0 else 1.
+        return (val / 1000.0) if val > 0 else 1.0
+
+    if 'vino' in texto:
+        return 0.75  
+    if 'dulce de leche' in texto or 'dulce leche' in texto:
+        return 0.4   
+
+    if 'x12' in texto or 'docena' in texto:
+        return 0.6
+
+    return 1.0
+
+def consultar_api_vtex(scraper, keyword, dominio):
+    observaciones = []
+    
+    if dominio.startswith("www."):
+        base_url = f"https://{dominio}"
+    else:
+        base_url = f"https://www.{dominio}"
+    
+    url_api = f"{base_url}/api/catalog_system/pub/products/search?ft={keyword}&_from=0&_to=11"
+    
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36",
+        "Accept": "application/json, text/plain, */*",
+        "Accept-Language": "es-ES,es;q=0.9",
+        "Referer": f"{base_url}/"
+    }
+
+    try:
+        scraper.get(base_url, headers=headers, timeout=10)
+        time.sleep(0.2)
+
+        response = scraper.get(url_api, headers=headers, timeout=10)
+        
+        if response.status_code in [200, 206]:
+            try:
+                productos = response.json()
+            except Exception:
+                productos = []
+
+            if isinstance(productos, list):
+                for prod in productos:
+                    nombre = prod.get('productName', '')
+                    items = prod.get('items', [])
+                    for item in items:
+                        sellers = item.get('sellers', [])
+                        for seller in sellers:
+                            offer = seller.get('commertialOffer', {})
+                            precio = offer.get('Price', 0.0)
+                            if precio > 0:
+                                factor = extraer_factor_unidad(nombre)
+                                precio_norm = precio / factor
+                                if 1 < precio_norm < 10000000:
+                                    observaciones.append({
+                                        'descripcion': nombre,
+                                        'precio_publicado': precio,
+                                        'factor_unidad': factor,
+                                        'precio': precio_norm,
+                                        'sitio': dominio
+                                    })
+        else:
+            logging.warning(f"{dominio} devolvió status code {response.status_code} buscando '{keyword}'")
+        time.sleep(0.2)
+    except Exception as e:
+        logging.error(f"Error conectando con {dominio} buscando '{keyword}': {str(e)}")
+    return observaciones
+
+def main():
+    logging.info("--- Inicio de ejecución del scraper ---")
+    
+    archivo_detalle = "cba_historico_detalle.csv"
+    archivo_totales = "cba_historico_totales.csv"
+    archivo_nutricional = "cba_tabla_nutricional.csv"
+
+    columnas_detalle = [
+        'rubro', 'producto', 'cantidad_ae', 'kcal_100g', 'prot_100g', 
+        'carb_100g', 'grasas_100g', 'fecha', 'timestamp', 
+        'precio_unitario_estimado', 'coincidencias', 'dispersion_std', 
+        'metodo_calculo', 'kcal_diarias_ae', 'prot_diarias_g', 
+        'carb_diarios_g', 'grasas_diarias_g', 'costo_mensual_ae', 'costo_hogar_tipo'
+    ]
+
+    # Validar y crear archivos si no existen
+    if not os.path.exists(archivo_detalle):
+        pd.DataFrame(columns=columnas_detalle).to_csv(archivo_detalle, index=False, encoding='utf-8-sig')
+        
+    if not os.path.exists(archivo_totales):
+        pd.DataFrame(columns=['fecha', 'timestamp', 'costo_cba_mensual_ae', 'costo_cba_hogar_tipo']).to_csv(archivo_totales, index=False, encoding='utf-8-sig')
+
+    if not os.path.exists(archivo_nutricional):
+        df_nutri = pd.DataFrame(CBA_INDEC)[['rubro', 'producto', 'cantidad_ae', 'kcal_100g', 'prot_100g', 'carb_100g', 'grasas_100g']]
+        df_nutri.to_csv(archivo_nutricional, index=False, encoding='utf-8-sig')
+
+    scraper = cloudscraper.create_scraper()
+    
+    now = datetime.now()
+    fecha_str = now.strftime("%Y-%m-%d")
+    timestamp_str = now.strftime("%H:%M:%S")
+
+    registros_detalle = []
+    Costo_total_mensual_ae = 0.0
+    Costo_total_hogar_tipo = 0.0
+    productos_encontrados = 0
+
+    for item in CBA_INDEC:
+        todas_observaciones = []
+        for kw in item["keywords"]:
+            for dominio in SUPERMERCADOS:
+                obs = consultar_api_vtex(scraper, kw, dominio)
+                todas_observaciones.extend(obs)
+            if len(todas_observaciones) >= 3:
+                break
+        
+        if todas_observaciones:
+            productos_encontrados += 1
+            precios = [o['precio'] for o in todas_observaciones]
+            precio_estimado = float(np.median(precios))
+            dispersion = float(np.std(precios)) if len(precios) > 1 else 0.0
+            
+            costo_mensual_ae = precio_estimado * item['cantidad_ae']
+            costo_hogar = costo_mensual_ae * COEFICIENTE_HOGAR_TIPO
+
+            Costo_total_mensual_ae += costo_mensual_ae
+            Costo_total_hogar_tipo += costo_hogar
+
+            g_dia = (item['cantidad_ae'] * 1000) / 30.0
+            kcal_diarias = g_dia * (item['kcal_100g'] / 100.0)
+            prot_diarias = g_dia * (item['prot_100g'] / 100.0)
+            carb_diarios = g_dia * (item['carb_100g'] / 100.0)
+            grasas_diarias = g_dia * (item['grasas_100g'] / 100.0)
+
+            registros_detalle.append({
+                'rubro': item['rubro'],
+                'producto': item['producto'],
+                'cantidad_ae': item['cantidad_ae'],
+                'kcal_100g': item['kcal_100g'],
+                'prot_100g': item['prot_100g'],
+                'carb_100g': item['carb_100g'],
+                'grasas_100g': item['grasas_100g'],
+                'fecha': fecha_str,
+                'timestamp': timestamp_str,
+                'precio_unitario_estimado': precio_estimado,
+                'coincidencias': len(todas_observaciones),
+                'dispersion_std': dispersion,
+                'metodo_calculo': 'Mediana Web API',
+                'kcal_diarias_ae': kcal_diarias,
+                'prot_diarias_g': prot_diarias,
+                'carb_diarios_g': carb_diarios,
+                'grasas_diarias_g': grasas_diarias,
+                'costo_mensual_ae': costo_mensual_ae,
+                'costo_hogar_tipo': costo_hogar
+            })
+            logging.info(f"Producto encontrado: {item['producto']} ({len(todas_observaciones)} coincidencias)")
+        else:
+            logging.info(f"Producto NO encontrado: {item['producto']}")
+
+    # GUARDAR HISTÓRICO DE DETALLE
+    if registros_detalle:
+        df_nuevo_detalle = pd.DataFrame(registros_detalle)
+        df_nuevo_detalle.to_csv(archivo_detalle, mode='a', header=not os.path.exists(archivo_detalle) or os.path.getsize(archivo_detalle) == 0, index=False, encoding='utf-8-sig')
+
+    # GUARDAR HISTÓRICO DE TOTALES
+    df_nuevo_total = pd.DataFrame([{
+        'fecha': fecha_str,
+        'timestamp': timestamp_str,
+        'costo_cba_mensual_ae': Costo_total_mensual_ae,
+        'costo_cba_hogar_tipo': Costo_total_hogar_tipo
+    }])
+    df_nuevo_total.to_csv(archivo_totales, mode='a', header=not os.path.exists(archivo_totales) or os.path.getsize(archivo_totales) == 0, index=False, encoding='utf-8-sig')
+
+    cobertura = (productos_encontrados / len(CBA_INDEC)) * 100
+    logging.info(f"--- Fin de ejecución: Cobertura {cobertura:.2f}% ({productos_encontrados}/{len(CBA_INDEC)}) ---")
+
+if __name__ == "__main__":
+    main()
