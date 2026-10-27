@@ -79,25 +79,21 @@ def extraer_factor_unidad(nombre_producto):
     """
     nombre = nombre_producto.lower()
     
-    # Búsqueda de gramos (g o gr)
     match_g = re.search(r'(\d+)\s*(g|gr|gramos)', nombre)
     if match_g:
         gramos = float(match_g.group(1))
         return gramos / 1000.0 if gramos > 0 else 1.0
 
-    # Búsqueda de kilogramos (kg)
     match_kg = re.search(r'(\d+(?:[\.,]\d+)?)\s*(kg|kilo|kilos)', nombre)
     if match_kg:
         kg = float(match_kg.group(1).replace(',', '.'))
         return kg if kg > 0 else 1.0
 
-    # Búsqueda de mililitros (ml o cc)
     match_ml = re.search(r'(\d+)\s*(ml|cc)', nombre)
     if match_ml:
         ml = float(match_ml.group(1))
         return ml / 1000.0 if ml > 0 else 1.0
 
-    # Búsqueda de litros (l o lt)
     match_l = re.search(r'(\d+(?:[\.,]\d+)?)\s*(l|lt|litro|litros)', nombre)
     if match_l:
         litros = float(match_l.group(1).replace(',', '.'))
@@ -111,7 +107,6 @@ def consultar_api_vtex(scraper, keyword, dominio):
     """
     observaciones = []
     
-    # Manejo dinámico del dominio: evitar anteponer 'www.' para diaonline
     if "diaonline" in dominio or dominio.startswith("www."):
         base_url = f"https://{dominio}"
     else:
@@ -127,7 +122,6 @@ def consultar_api_vtex(scraper, keyword, dominio):
     }
 
     try:
-        # Petición con precalentamiento simple
         scraper.get(base_url, headers=headers, timeout=10)
         time.sleep(0.3)
 
@@ -170,8 +164,11 @@ def main():
     scraper = cloudscraper.create_scraper()
     
     fecha_hoy = datetime.now().strftime('%Y-%m-%d')
+    timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    
     registros_detalle = []
     registros_totales = []
+    registros_nutricional = []
     
     productos_encontrados = 0
     total_productos_cba = len(PRODUCTOS_CBA)
@@ -184,19 +181,18 @@ def main():
                 resultados = consultar_api_vtex(scraper, kw, dominio)
                 hallazgos_producto.extend(resultados)
             
-            # Si se encontraron resultados con una palabra clave, pasamos al siguiente producto CBA
             if hallazgos_producto:
                 break
 
         if hallazgos_producto:
             productos_encontrados += 1
-            # Seleccionar el precio mínimo para la mediana/promedio representativo
             precios = [h['precio'] for h in hallazgos_producto]
             precio_promedio = sum(precios) / len(precios)
             
             for item in hallazgos_producto:
                 registros_detalle.append({
                     'fecha': fecha_hoy,
+                    'timestamp': timestamp,
                     'producto_cba': producto_cba,
                     'descripcion': item['descripcion'],
                     'precio_publicado': item['precio_publicado'],
@@ -207,27 +203,55 @@ def main():
                 
             registros_totales.append({
                 'fecha': fecha_hoy,
+                'timestamp': timestamp,
                 'producto_cba': producto_cba,
                 'precio_promedio': round(precio_promedio, 2),
                 'total_ofertas': len(hallazgos_producto)
             })
+
+            registros_nutricional.append({
+                'fecha': fecha_hoy,
+                'timestamp': timestamp,
+                'producto_cba': producto_cba,
+                'precio_promedio': round(precio_promedio, 2)
+            })
         else:
             logging.info(f"Producto NO encontrado: {producto_cba}")
 
-    # Guardar o actualizar archivos CSV históricos
+    # Definición de nombres de archivos CSV
+    archivo_detalle = 'cba_historico_detalle.csv'
+    archivo_totales = 'cba_historico_totales.csv'
+    archivo_nutricional = 'cba_tabla_nutricional.csv'
+
+    # 1. Guardado seguro para Detalle
     if registros_detalle:
         df_det_nuevo = pd.DataFrame(registros_detalle)
-        if os.path.exists('cba_historico_detalle.csv'):
-            df_det_nuevo.to_csv('cba_historico_detalle.csv', mode='a', header=False, index=False)
+        if not os.path.exists(archivo_detalle):
+            df_det_nuevo.to_csv(archivo_detalle, index=False, encoding='utf-8-sig')
         else:
-            df_det_nuevo.to_csv('cba_historico_detalle.csv', index=False)
+            df_det_nuevo.to_csv(archivo_detalle, mode='a', header=False, index=False, encoding='utf-8-sig')
+    elif not os.path.exists(archivo_detalle):
+        pd.DataFrame(columns=['fecha', 'timestamp', 'producto_cba', 'descripcion', 'precio_publicado', 'factor_unidad', 'precio_normalizado', 'sitio']).to_csv(archivo_detalle, index=False, encoding='utf-8-sig')
 
+    # 2. Guardado seguro para Totales
     if registros_totales:
         df_tot_nuevo = pd.DataFrame(registros_totales)
-        if os.path.exists('cba_historico_totales.csv'):
-            df_tot_nuevo.to_csv('cba_historico_totales.csv', mode='a', header=False, index=False)
+        if not os.path.exists(archivo_totales):
+            df_tot_nuevo.to_csv(archivo_totales, index=False, encoding='utf-8-sig')
         else:
-            df_tot_nuevo.to_csv('cba_historico_totales.csv', index=False)
+            df_tot_nuevo.to_csv(archivo_totales, mode='a', header=False, index=False, encoding='utf-8-sig')
+    elif not os.path.exists(archivo_totales):
+        pd.DataFrame(columns=['fecha', 'timestamp', 'producto_cba', 'precio_promedio', 'total_ofertas']).to_csv(archivo_totales, index=False, encoding='utf-8-sig')
+
+    # 3. Guardado seguro para Tabla Nutricional
+    if registros_nutricional:
+        df_nut_nuevo = pd.DataFrame(registros_nutricional)
+        if not os.path.exists(archivo_nutricional):
+            df_nut_nuevo.to_csv(archivo_nutricional, index=False, encoding='utf-8-sig')
+        else:
+            df_nut_nuevo.to_csv(archivo_nutricional, mode='a', header=False, index=False, encoding='utf-8-sig')
+    elif not os.path.exists(archivo_nutricional):
+        pd.DataFrame(columns=['fecha', 'timestamp', 'producto_cba', 'precio_promedio']).to_csv(archivo_nutricional, index=False, encoding='utf-8-sig')
 
     cobertura = (productos_encontrados / total_productos_cba) * 100
     logging.info(f"--- Fin de ejecución: Cobertura {cobertura:.2f}% ({productos_encontrados}/{total_productos_cba}) ---")
