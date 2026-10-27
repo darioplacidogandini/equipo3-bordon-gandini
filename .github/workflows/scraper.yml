@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
 
     permissions:
-      contents: write # Permiso necesario para hacer commit de los CSVs actualizados
+      contents: write # Permiso necesario para hacer commit de los archivos actualizados
 
     steps:
       - name: Checkout del repositorio
@@ -34,6 +34,6 @@ jobs:
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action Bot"
-          git add cba_historico_detalle.csv cba_historico_totales.csv cba_tabla_nutricional.csv
-          git commit -m "bot: Actualización diaria de precios y tabla nutricional [$(date +'%Y-%m-%d')]" || echo "Sin cambios para commitear"
+          git add cba_historico_detalle.csv cba_historico_totales.csv cba_tabla_nutricional.csv cba_errores_log.txt
+          git commit -m "bot: Actualización diaria de precios, tabla nutricional y log de errores [$(date +'%Y-%m-%d')]" || echo "Sin cambios para commitear"
           git push
