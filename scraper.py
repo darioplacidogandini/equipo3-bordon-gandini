@@ -101,23 +101,20 @@ SUPERMERCADOS = [
 def extraer_factor_unidad(nombre_producto):
     texto = nombre_producto.lower()
     
-    # Búsqueda explícita de peso/volumen (kg, litro)
     match_kgl = re.search(r'(\d+(?:[\.,]\d+)?)\s*(kg|kilo|kilos|l|lt|litro|litros)\b', texto)
     if match_kgl:
         val = float(match_kgl.group(1).replace(',', '.'))
         return val if val > 0 else 1.0
 
-    # Búsqueda explícita de gramos o mililitros (g, ml, cc)
     match_gml = re.search(r'(\d+(?:[\.,]\d+)?)\s*(g|gr|grs|gramos|ml|cc)\b', texto)
     if match_gml:
         val = float(match_gml.group(1).replace(',', '.'))
         return (val / 1000.0) if val > 0 else 1.0
 
-    # RESPALDOS / FALLBACKS POR DEFECTO PARA PRODUCTOS CLAVE
     if 'vino' in texto:
-        return 0.75  # Botella estándar de 750ml (0.75 L)
+        return 0.75  
     if 'dulce de leche' in texto:
-        return 0.4   # Pote estándar de 400g (0.4 kg)
+        return 0.4   
 
     if 'x12' in texto or 'docena' in texto:
         return 0.6
@@ -176,6 +173,27 @@ def consultar_api_vtex(scraper, keyword, dominio):
 
 def main():
     logging.info("--- Inicio de ejecución del scraper ---")
+    
+    # Garantizar la creación de los CSVs si no existen para evitar errores 128 en Git
+    if not os.path.exists('cba_historico_detalle.csv'):
+        pd.DataFrame(columns=[
+            'fecha', 'timestamp', 'producto_cba', 'descripcion', 
+            'precio_publicado', 'factor_unidad', 'precio_normalizado', 'sitio'
+        ]).to_csv('cba_historico_detalle.csv', index=False, encoding='utf-8-sig')
+        
+    if not os.path.exists('cba_historico_totales.csv'):
+        pd.DataFrame(columns=[
+            'fecha', 'timestamp', 'prod_real', 'prod_total', 
+            'cobertura_scraper_pct', 'costo_total_cba_ae', 'costo_total_cba_hogar', 
+            'costo_total_cbt_ae', 'costo_total_cbt_hogar'
+        ]).to_csv('cba_historico_totales.csv', index=False, encoding='utf-8-sig')
+        
+    if not os.path.exists('cba_tabla_nutricional.csv'):
+        pd.DataFrame(columns=[
+            'fecha', 'timestamp', 'rubro', 'producto', 
+            'cantidad_ae', 'kcal_diarias_ae', 'prot_diarias_g', 'carb_diarios_g', 'grasas_diarias_g'
+        ]).to_csv('cba_tabla_nutricional.csv', index=False, encoding='utf-8-sig')
+
     scraper = cloudscraper.create_scraper()
     ahora = datetime.now()
     fecha_hoy = ahora.strftime("%Y-%m-%d")
@@ -243,8 +261,44 @@ def main():
     cobertura_scraper_pct = (prod_con_coincidencias / total_productos * 100.0) if total_productos > 0 else 0.0
 
     costo_cbt_ae = costo_total_ae * INVERSO_COEFICIENTE_ENGEL
-    costo_cbt_hogar = costo_total_hogar * INVERSO_COEFICIENTE_ENGEL
+    costo_cbt_hogar = costo_total_hogar * INVERSO_COEFICIENTE_ENGEL  # Corrección aplicada
 
     archivo_detalle = "cba_historico_detalle.csv"
     archivo_totales = "cba_historico_totales.csv"
     archivo_nutricional = "cba_tabla_nutricional.csv"
+
+    # 1. Guardado de Detalle
+    df_detalle_out = df_resumen.drop(columns=['keywords'], errors='ignore')
+    if not os.path.exists(archivo_detalle):
+        df_detalle_out.to_csv(archivo_detalle, index=False, encoding="utf-8-sig")
+    else:
+        df_detalle_out.to_csv(archivo_detalle, mode='a', header=False, index=False, encoding="utf-8-sig")
+
+    # 2. Guardado de Totales
+    df_totales = pd.DataFrame([{
+        'fecha': fecha_hoy,
+        'timestamp': timestamp,
+        'prod_real': prod_con_coincidencias,
+        'prod_total': total_productos,
+        'cobertura_scraper_pct': cobertura_scraper_pct,
+        'costo_total_cba_ae': costo_total_ae,
+        'costo_total_cba_hogar': costo_total_hogar,
+        'costo_total_cbt_ae': costo_cbt_ae,
+        'costo_total_cbt_hogar': costo_cbt_hogar
+    }])
+    if not os.path.exists(archivo_totales):
+        df_totales.to_csv(archivo_totales, index=False, encoding="utf-8-sig")
+    else:
+        df_totales.to_csv(archivo_totales, mode='a', header=False, index=False, encoding="utf-8-sig")
+
+    # 3. Guardado de Información Nutricional
+    df_nutricional = df_resumen[['fecha', 'timestamp', 'rubro', 'producto', 'cantidad_ae', 'kcal_diarias_ae', 'prot_diarias_g', 'carb_diarios_g', 'grasas_diarias_g']]
+    if not os.path.exists(archivo_nutricional):
+        df_nutricional.to_csv(archivo_nutricional, index=False, encoding="utf-8-sig")
+    else:
+        df_nutricional.to_csv(archivo_nutricional, mode='a', header=False, index=False, encoding="utf-8-sig")
+
+    logging.info(f"--- Fin de ejecución: Cobertura {cobertura_scraper_pct:.2f}% ({prod_con_coincidencias}/{total_productos}) ---")
+
+if __name__ == "__main__":
+    main()
