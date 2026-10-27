@@ -1,10 +1,24 @@
 import os
 import re
 import time
+import logging
 from datetime import datetime
 import pandas as pd
 import cloudscraper
 import numpy as np
+
+# ------------------------------------------------------------------------------
+# CONFIGURACIÓN DEL REGISTRO DE ERRORES (.txt)
+# ------------------------------------------------------------------------------
+ARCHIVO_LOG_ERRORES = "cba_errores_log.txt"
+
+logging.basicConfig(
+    filename=ARCHIVO_LOG_ERRORES,
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s] %(message)s",
+    datefmt="%Y-%m-%d %H:%M:%S",
+    encoding="utf-8"
+)
 
 # ------------------------------------------------------------------------------
 # CONSTANTES DE CONFIGURACIÓN Y PONDERACIÓN
@@ -109,11 +123,10 @@ def consultar_api_vtex(scraper, keyword, dominio):
     }
 
     try:
-        # 1. Precalentamiento: visitar la home para obtener cookies válidas de Cloudflare
+        # Precalentamiento de cookies
         scraper.get(base_url, headers=headers, timeout=10)
         time.sleep(0.3)
 
-        # 2. Consulta a la API de búsqueda
         response = scraper.get(url_api, headers=headers, timeout=10)
         
         if response.status_code == 200:
@@ -140,15 +153,18 @@ def consultar_api_vtex(scraper, keyword, dominio):
                                         'sitio': dominio
                                     })
         else:
-            print(f"[Aviso] {dominio} respondió con estado {response.status_code} para keyword '{keyword}'")
+            msg = f"{dominio} devolvió status code {response.status_code} buscando '{keyword}'"
+            logging.warning(msg)
             
         time.sleep(0.2)
     except Exception as e:
-        print(f"[Error] Conexión fallida en {dominio} con '{keyword}': {e}")
+        msg = f"Error conectando con {dominio} buscando '{keyword}': {str(e)}"
+        logging.error(msg)
         
     return observaciones
 
 def main():
+    logging.info("--- Inicio de ejecución del scraper ---")
     scraper = cloudscraper.create_scraper()
     ahora = datetime.now()
     fecha_hoy = ahora.strftime("%Y-%m-%d")
@@ -161,13 +177,11 @@ def main():
         sitio_usado = "ninguno"
         
         for kw in item['keywords']:
-            # Probar en Carrefour
             obs = consultar_api_vtex(scraper, kw, "carrefour.com.ar")
             if obs:
                 sitio_usado = "carrefour"
                 break
             
-            # Si no hay resultados, probar en Día
             obs = consultar_api_vtex(scraper, kw, "diaonline.supermercadosdia.com.ar")
             if obs:
                 sitio_usado = "dia"
@@ -186,6 +200,7 @@ def main():
             metodo_calculo = "No encontrado"
             dispersion_std = 0.0
             coincidencias = 0
+            logging.info(f"Producto NO encontrado: {item['producto']}")
 
         cantidad_ae = item.get('cantidad_ae', 0.0)
         kcal_diarias = (cantidad_ae * 1000.0 / 30.0) * (item.get('kcal_100g', 0) / 100.0)
@@ -242,6 +257,8 @@ def main():
 
     df_nutricional = df_resumen[['fecha', 'timestamp', 'rubro', 'producto', 'cantidad_ae', 'kcal_diarias_ae', 'prot_diarias_g', 'carb_diarios_g', 'grasas_diarias_g']]
     df_nutricional.to_csv(archivo_nutricional, mode='a', header=not os.path.exists(archivo_nutricional), index=False, encoding="utf-8-sig")
+
+    logging.info(f"--- Fin de ejecución: Cobertura {cobertura_scraper_pct:.2f}% ({prod_con_coincidencias}/{total_productos}) ---")
 
 if __name__ == "__main__":
     main()
