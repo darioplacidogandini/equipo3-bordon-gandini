@@ -192,16 +192,37 @@ def main():
         'carb_diarios_g', 'grasas_diarias_g', 'costo_mensual_ae', 'costo_hogar_tipo'
     ]
 
-    # Validar y crear archivos si no existen
+    columnas_totales = [
+        'fecha', 'timestamp', 'prod_real', 'prod_total', 
+        'cobertura_scraper_pct', 'costo_total_cba_ae', 
+        'costo_total_cba_hogar', 'costo_total_cbt_hogar'
+    ]
+
+    # Validar y crear archivos si no existen con las columnas exactas que espera index.py
     if not os.path.exists(archivo_detalle):
         pd.DataFrame(columns=columnas_detalle).to_csv(archivo_detalle, index=False, encoding='utf-8-sig')
         
     if not os.path.exists(archivo_totales):
-        pd.DataFrame(columns=['fecha', 'timestamp', 'costo_cba_mensual_ae', 'costo_cba_hogar_tipo']).to_csv(archivo_totales, index=False, encoding='utf-8-sig')
+        pd.DataFrame(columns=columnas_totales).to_csv(archivo_totales, index=False, encoding='utf-8-sig')
 
     if not os.path.exists(archivo_nutricional):
-        df_nutri = pd.DataFrame(CBA_INDEC)[['rubro', 'producto', 'cantidad_ae', 'kcal_100g', 'prot_100g', 'carb_100g', 'grasas_100g']]
-        df_nutri.to_csv(archivo_nutricional, index=False, encoding='utf-8-sig')
+        filas_nutri = []
+        for item in CBA_INDEC:
+            g_dia = (item['cantidad_ae'] * 1000) / 30.0
+            filas_nutri.append({
+                'rubro': item['rubro'],
+                'producto': item['producto'],
+                'cantidad_ae': item['cantidad_ae'],
+                'kcal_100g': item['kcal_100g'],
+                'prot_100g': item['prot_100g'],
+                'carb_100g': item['carb_100g'],
+                'grasas_100g': item['grasas_100g'],
+                'kcal_diarias_ae': g_dia * (item['kcal_100g'] / 100.0),
+                'prot_diarias_g': g_dia * (item['prot_100g'] / 100.0),
+                'carb_diarios_g': g_dia * (item['carb_100g'] / 100.0),
+                'grasas_diarias_g': g_dia * (item['grasas_100g'] / 100.0)
+            })
+        pd.DataFrame(filas_nutri).to_csv(archivo_nutricional, index=False, encoding='utf-8-sig')
 
     scraper = cloudscraper.create_scraper()
     
@@ -271,16 +292,22 @@ def main():
         df_nuevo_detalle = pd.DataFrame(registros_detalle)
         df_nuevo_detalle.to_csv(archivo_detalle, mode='a', header=not os.path.exists(archivo_detalle) or os.path.getsize(archivo_detalle) == 0, index=False, encoding='utf-8-sig')
 
-    # GUARDAR HISTÓRICO DE TOTALES
+    # GUARDAR HISTÓRICO DE TOTALES CON LOS NOMBRES QUE ESPERA EL DASHBOARD
+    cobertura = (productos_encontrados / len(CBA_INDEC)) * 100
+    costo_cbt_hogar = Costo_total_hogar_tipo * INVERSO_COEFICIENTE_ENGEL
+
     df_nuevo_total = pd.DataFrame([{
         'fecha': fecha_str,
         'timestamp': timestamp_str,
-        'costo_cba_mensual_ae': Costo_total_mensual_ae,
-        'costo_cba_hogar_tipo': Costo_total_hogar_tipo
+        'prod_real': productos_encontrados,
+        'prod_total': len(CBA_INDEC),
+        'cobertura_scraper_pct': cobertura,
+        'costo_total_cba_ae': Costo_total_mensual_ae,
+        'costo_total_cba_hogar': Costo_total_hogar_tipo,
+        'costo_total_cbt_hogar': costo_cbt_hogar
     }])
     df_nuevo_total.to_csv(archivo_totales, mode='a', header=not os.path.exists(archivo_totales) or os.path.getsize(archivo_totales) == 0, index=False, encoding='utf-8-sig')
 
-    cobertura = (productos_encontrados / len(CBA_INDEC)) * 100
     logging.info(f"--- Fin de ejecución: Cobertura {cobertura:.2f}% ({productos_encontrados}/{len(CBA_INDEC)}) ---")
 
 if __name__ == "__main__":
