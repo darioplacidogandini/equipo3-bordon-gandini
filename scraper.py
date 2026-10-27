@@ -94,6 +94,7 @@ CBA_INDEC = [
 ]
 
 SUPERMERCADOS = [
+    "depotexpress.com.ar"
     "carrefour.com.ar",
     "diaonline.supermercadosdia.com.ar"
 ]
