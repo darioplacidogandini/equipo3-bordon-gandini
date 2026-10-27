@@ -363,4 +363,158 @@ def render_dashboard():
               labels: labels.length ? labels : ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun'],
               datasets: [
                 { label: 'CBA Hogar', data: cbaHogar.length ? cbaHogar : [120000, 125000, 132000, 140000, 148000, 155000], borderColor: '#334155', backgroundColor: 'rgba(51,65,85,0.05)', fill: true, tension: 0.2 },
-                { label: 'CBT Hogar', data: cbtHogar.length ?
+                { label: 'CBT Hogar', data: cbtHogar.length ? cbtHogar : [250000, 260000, 275000, 290000, 305000, 320000], borderColor: '#64748b', backgroundColor: 'rgba(100,116,139,0.05)', fill: true, tension: 0.2 }
+              ]
+            },
+            options: { responsive: true, maintainAspectRatio: false }
+          });
+        }
+
+        function renderGraficoRubros() {
+          const ctx = document.getElementById('rubroChart');
+          if (!ctx) return;
+          const ultimoFecha = datosDetalle.length > 0 ? datosDetalle[datosDetalle.length - 1].fecha : null;
+          const itemsUltimo = datosDetalle.filter(d => !ultimoFecha || d.fecha === ultimoFecha);
+          
+          const rubrosMap = {};
+          itemsUltimo.forEach(d => {
+            const r = d.rubro || 'Otros';
+            const costo = Number(d.costo_mensual_ae || 0);
+            rubrosMap[r] = (rubrosMap[r] || 0) + costo;
+          });
+
+          const labels = Object.keys(rubrosMap);
+          const data = Object.values(rubrosMap);
+
+          new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+              labels: labels.length ? labels : ['Carnes', 'Almacén', 'Lácteos', 'Verduras'],
+              datasets: [{ data: data.length ? data : [40, 30, 20, 10], backgroundColor: ['#1e293b', '#334155', '#475569', '#64748b', '#94a3b8', '#cbd5e1'] }]
+            },
+            options: { responsive: true, maintainAspectRatio: false }
+          });
+        }
+
+        function renderGraficoCobertura() {
+          const ctx = document.getElementById('coberturaChart');
+          if (!ctx) return;
+          const labels = datosTotales.map(d => d.fecha);
+          const cobertura = datosTotales.map(d => Number(d.cobertura_scraper_pct || 0));
+
+          new Chart(ctx, {
+            type: 'bar',
+            data: {
+              labels: labels.length ? labels : ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun'],
+              datasets: [{ label: 'Cobertura Scraper (%)', data: cobertura.length ? cobertura : [85, 88, 90, 92, 95, 96], backgroundColor: '#334155' }]
+            },
+            options: { responsive: true, maintainAspectRatio: false, scales: { y: { max: 100 } } }
+          });
+        }
+
+        function renderGraficoNutricional() {
+          const ctx = document.getElementById('nutricionalChart');
+          if (!ctx) return;
+          const ultimoFecha = datosNutricional.length > 0 ? datosNutricional[datosNutricional.length - 1].fecha : null;
+          const items = datosNutricional.filter(d => !ultimoFecha || d.fecha === ultimoFecha).slice(0, 10);
+
+          const labels = items.map(d => d.producto);
+          const kcal = items.map(d => Number(d.kcal_diarias_ae || 0));
+
+          new Chart(ctx, {
+            type: 'bar',
+            data: {
+              labels: labels.length ? labels : ['Pan', 'Arroz', 'Leche', 'Carne'],
+              datasets: [{ label: 'Kcal Diarias AE', data: kcal.length ? kcal : [200, 150, 180, 220], backgroundColor: '#475569' }]
+            },
+            options: { responsive: true, maintainAspectRatio: false }
+          });
+        }
+
+        function renderTablaTotales() {
+          const container = document.getElementById('tabla-totales-container');
+          if (!datosTotales.length) {
+            container.innerHTML = '<p style="padding: 16px; color: var(--sub);">No hay datos de totales disponibles.</p>';
+            return;
+          }
+          let html = '<table><thead><tr><th>Fecha</th><th>Prod. Reales</th><th>Prod. Total</th><th>Cobertura (%)</th><th>CBA AE</th><th>CBA Hogar</th><th>CBT Hogar</th></tr></thead><tbody>';
+          datosTotales.forEach(row => {
+            html += `<tr>
+              <td>${row.fecha}</td>
+              <td>${row.prod_real}</td>
+              <td>${row.prod_total}</td>
+              <td>${Number(row.cobertura_scraper_pct || 0).toFixed(1)}%</td>
+              <td>${formatearMoneda(Number(row.costo_total_cba_ae || 0))}</td>
+              <td>${formatearMoneda(Number(row.costo_total_cba_hogar || 0))}</td>
+              <td>${formatearMoneda(Number(row.costo_total_cbt_hogar || 0))}</td>
+            </tr>`;
+          });
+          html += '</tbody></table>';
+          container.innerHTML = html;
+        }
+
+        function poblarFiltroRubros() {
+          const select = document.getElementById('filtro-rubro-nutricional');
+          const rubros = [...new Set(datosNutricional.map(d => d.rubro))].filter(Boolean);
+          rubros.forEach(r => {
+            const opt = document.createElement('option');
+            opt.value = r;
+            opt.innerText = r;
+            select.appendChild(opt);
+          });
+        }
+
+        function filtrarNutricional() {
+          const val = document.getElementById('filtro-rubro-nutricional').value;
+          const filtrados = val === 'todos' ? datosNutricional : datosNutricional.filter(d => d.rubro === val);
+          renderTablaNutricional(filtrados);
+        }
+
+        function renderTablaNutricional(items) {
+          const container = document.getElementById('tabla-nutricional-container');
+          if (!items.length) {
+            container.innerHTML = '<p style="padding: 16px; color: var(--sub);">No hay información nutricional disponible.</p>';
+            return;
+          }
+          let html = '<table><thead><tr><th>Rubro</th><th>Producto</th><th>Cantidad AE</th><th>Kcal Diarias</th><th>Proteínas (g)</th><th>Carbohidratos (g)</th><th>Grasas (g)</th></tr></thead><tbody>';
+          items.forEach(row => {
+            html += `<tr>
+              <td>${row.rubro || ''}</td>
+              <td>${row.producto || ''}</td>
+              <td>${Number(row.cantidad_ae || 0).toFixed(3)}</td>
+              <td>${Number(row.kcal_diarias_ae || 0).toFixed(1)}</td>
+              <td>${Number(row.prot_diarias_g || 0).toFixed(1)}</td>
+              <td>${Number(row.carb_diarios_g || 0).toFixed(1)}</td>
+              <td>${Number(row.grasas_diarias_g || 0).toFixed(1)}</td>
+            </tr>`;
+          });
+          html += '</tbody></table>';
+          container.innerHTML = html;
+        }
+
+        function renderTablaHistorico() {
+          const container = document.getElementById('tabla-historico-container');
+          if (!datosDetalle.length) {
+            container.innerHTML = '<p style="padding: 16px; color: var(--sub);">No hay histórico detallado disponible.</p>';
+            return;
+          }
+          let html = '<table><thead><tr><th>Fecha</th><th>Rubro</th><th>Producto</th><th>Precio Estimado</th><th>Método</th><th>Costo Hogar</th></tr></thead><tbody>';
+          datosDetalle.forEach(row => {
+            html += `<tr>
+              <td>${row.fecha}</td>
+              <td>${row.rubro}</td>
+              <td>${row.producto}</td>
+              <td>${formatearMoneda(Number(row.precio_unitario_estimado || 0))}</td>
+              <td>${row.metodo_calculo}</td>
+              <td>${formatearMoneda(Number(row.costo_hogar_tipo || 0))}</td>
+            </tr>`;
+          });
+          html += '</tbody></table>';
+          container.innerHTML = html;
+        }
+
+        window.addEventListener('DOMContentLoaded', cargarDatos);
+      </script>
+    </body>
+    </html>
+    """
