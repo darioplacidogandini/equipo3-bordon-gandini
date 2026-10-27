@@ -234,7 +234,7 @@ def main():
     cobertura_scraper_pct = (prod_con_coincidencias / total_productos * 100.0) if total_productos > 0 else 0.0
 
     costo_cbt_ae = costo_total_ae * INVERSO_COEFICIENTE_ENGEL
-    costo_cbt_hogar = costo_total_hogar * COEFICIENTE_HOGAR_TIPO * INVERSO_COEFICIENTE_ENGEL
+    costo_cbt_hogar = costo_total_hogar * INVERSO_COEFICIENTE_ENGEL  # <-- CORREGIDO AQUÍ
 
     archivo_detalle = "cba_historico_detalle.csv"
     archivo_totales = "cba_historico_totales.csv"
