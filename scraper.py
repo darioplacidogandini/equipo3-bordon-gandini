@@ -124,12 +124,13 @@ def extraer_factor_unidad(nombre_producto):
 
 def consultar_api_vtex(scraper, keyword, dominio):
     observaciones = []
-    if "diaonline" in dominio or dominio.startswith("www."):
+    
+    # CORRECCIÓN DE LA LÍNEA 130: Manejo limpio de URL sin sintaxis f-string inválida
+    if dominio.startswith("www."):
         base_url = f"https://{dominio}"
     else:
-        base_url = f"https://{www.{dominio}}" if not dominio.startswith("www.") else f"https://{dominio}"
-        base_url = f"https://{dominio}"
-        
+        base_url = f"https://www.{dominio}"
+    
     url_api = f"{base_url}/api/catalog_system/pub/products/search?ft={keyword}&_from=0&_to=24"
     
     headers = {
@@ -209,4 +210,7 @@ def main():
         pd.DataFrame(columns=columnas_detalle).to_csv(archivo_detalle, index=False, encoding='utf-8-sig')
         
     if not os.path.exists(archivo_totales):
-        pd.DataFrame(
+        pd.DataFrame(columns=['fecha', 'timestamp', 'costo_cba_mensual_ae', 'costo_cba_hogar_tipo']).to_csv(archivo_totales, index=False, encoding='utf-8-sig')
+
+if __name__ == "__main__":
+    main()
