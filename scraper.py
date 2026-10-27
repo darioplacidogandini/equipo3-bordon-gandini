@@ -84,7 +84,7 @@ CBA_INDEC = [
     {"rubro": "Bebidas", "producto": "Jugo", "keywords": ["jugo en polvo", "tang", "clight"], "cantidad_ae": 1.150, "kcal_100g": 35, "prot_100g": 0.0, "carb_100g": 9.0, "grasas_100g": 0.0},
     {"rubro": "Bebidas", "producto": "Soda", "keywords": ["soda sifon", "soda"], "cantidad_ae": 1.150, "kcal_100g": 0, "prot_100g": 0.0, "carb_100g": 0.0, "grasas_100g": 0.0},
     {"rubro": "Bebidas", "producto": "Cerveza", "keywords": ["cerveza rubia", "cerveza lata"], "cantidad_ae": 0.540, "kcal_100g": 43, "prot_100g": 0.5, "carb_100g": 3.5, "grasas_100g": 0.0},
-    {"rubro": "Bebidas", "producto": "Vino", "keywords": ["vino tinto", "vino carton"], "cantidad_ae": 0.540, "kcal_100g": 85, "prot_100g": 0.1, "carb_100g": 2.5, "grasas_100g": 0.0},
+    {"rubro": "Bebidas", "producto": "Vino", "keywords": ["vino", "vino tinto", "vino carton"], "cantidad_ae": 0.540, "kcal_100g": 85, "prot_100g": 0.1, "carb_100g": 2.5, "grasas_100g": 0.0},
     {"rubro": "Almacén", "producto": "Sal fina", "keywords": ["sal fina", "sal"], "cantidad_ae": 0.120, "kcal_100g": 0, "prot_100g": 0.0, "carb_100g": 0.0, "grasas_100g": 0.0},
     {"rubro": "Almacén", "producto": "Mayonesa", "keywords": ["mayonesa clasica", "mayonesa"], "cantidad_ae": 0.060, "kcal_100g": 680, "prot_100g": 1.0, "carb_100g": 3.0, "grasas_100g": 75.0},
     {"rubro": "Almacén", "producto": "Caldo en cubo / Polvo", "keywords": ["caldo en cubo", "caldo"], "cantidad_ae": 0.060, "kcal_100g": 250, "prot_100g": 10.0, "carb_100g": 25.0, "grasas_100g": 10.0},
