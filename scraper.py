@@ -288,12 +288,25 @@ def main():
         else:
             logging.info(f"Producto NO encontrado: {item['producto']}")
 
-    # GUARDAR HISTÓRICO DE DETALLE
+    # ------------------------------------------------------------------------------
+    # GUARDAR HISTÓRICO DE DETALLE (Un registro por producto por día)
+    # ------------------------------------------------------------------------------
     if registros_detalle:
         df_nuevo_detalle = pd.DataFrame(registros_detalle)
-        df_nuevo_detalle.to_csv(archivo_detalle, mode='a', header=not os.path.exists(archivo_detalle) or os.path.getsize(archivo_detalle) == 0, index=False, encoding='utf-8-sig')
+        
+        if os.path.exists(archivo_detalle) and os.path.getsize(archivo_detalle) > 0:
+            df_existente_detalle = pd.read_csv(archivo_detalle, encoding='utf-8-sig')
+            # Eliminar registros previos de la misma fecha para evitar duplicados
+            df_existente_detalle = df_existente_detalle[df_existente_detalle['fecha'] != fecha_str]
+            df_final_detalle = pd.concat([df_existente_detalle, df_nuevo_detalle], ignore_index=True)
+        else:
+            df_final_detalle = df_nuevo_detalle
+            
+        df_final_detalle.to_csv(archivo_detalle, index=False, encoding='utf-8-sig')
 
-    # GUARDAR HISTÓRICO DE TOTALES CON LOS NOMBRES QUE ESPERA EL DASHBOARD
+    # ------------------------------------------------------------------------------
+    # GUARDAR HISTÓRICO DE TOTALES (Un único registro resumen por día)
+    # ------------------------------------------------------------------------------
     cobertura = (productos_encontrados / len(CBA_INDEC)) * 100
     costo_cbt_hogar = Costo_total_hogar_tipo * INVERSO_COEFICIENTE_ENGEL
 
@@ -307,7 +320,16 @@ def main():
         'costo_total_cba_hogar': Costo_total_hogar_tipo,
         'costo_total_cbt_hogar': costo_cbt_hogar
     }])
-    df_nuevo_total.to_csv(archivo_totales, mode='a', header=not os.path.exists(archivo_totales) or os.path.getsize(archivo_totales) == 0, index=False, encoding='utf-8-sig')
+
+    if os.path.exists(archivo_totales) and os.path.getsize(archivo_totales) > 0:
+        df_existente_totales = pd.read_csv(archivo_totales, encoding='utf-8-sig')
+        # Eliminar el registro previo de la misma fecha para conservar solo la última ejecución del día
+        df_existente_totales = df_existente_totales[df_existente_totales['fecha'] != fecha_str]
+        df_final_totales = pd.concat([df_existente_totales, df_nuevo_total], ignore_index=True)
+    else:
+        df_final_totales = df_nuevo_total
+
+    df_final_totales.to_csv(archivo_totales, index=False, encoding='utf-8-sig')
 
     logging.info(f"--- Fin de ejecución: Cobertura {cobertura:.2f}% ({productos_encontrados}/{len(CBA_INDEC)}) ---")
 
