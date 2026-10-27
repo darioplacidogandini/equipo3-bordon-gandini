@@ -111,7 +111,6 @@ def extraer_factor_unidad(nombre_producto):
         val = float(match_gml.group(1).replace(',', '.'))
         return (val / 1000.0) if val > 0 else 1.0
 
-    # Respaldo automático para vino (750 ml) y dulce de leche (400 g)
     if 'vino' in texto:
         return 0.75  
     if 'dulce de leche' in texto or 'dulce leche' in texto:
@@ -130,7 +129,6 @@ def consultar_api_vtex(scraper, keyword, dominio):
     else:
         base_url = f"https://www.{dominio}"
     
-    # Se limita a 12 items por llamada para agilizar y evitar HTTP 206 truncados
     url_api = f"{base_url}/api/catalog_system/pub/products/search?ft={keyword}&_from=0&_to=11"
     
     headers = {
@@ -146,7 +144,6 @@ def consultar_api_vtex(scraper, keyword, dominio):
 
         response = scraper.get(url_api, headers=headers, timeout=10)
         
-        # Aceptar status 200 y 206 (Partial Content común en APIs de VTEX)
         if response.status_code in [200, 206]:
             try:
                 productos = response.json()
@@ -165,7 +162,6 @@ def consultar_api_vtex(scraper, keyword, dominio):
                             if precio > 0:
                                 factor = extraer_factor_unidad(nombre)
                                 precio_norm = precio / factor
-                                # Se redujo el piso inferior de precio de 10 a 1 para capturar promos
                                 if 1 < precio_norm < 10000000:
                                     observaciones.append({
                                         'descripcion': nombre,
@@ -187,7 +183,6 @@ def main():
     archivo_detalle = "cba_historico_detalle.csv"
     archivo_totales = "cba_historico_totales.csv"
 
-    # Columnas oficiales esperadas
     columnas_detalle = [
         'rubro', 'producto', 'cantidad_ae', 'kcal_100g', 'prot_100g', 
         'carb_100g', 'grasas_100g', 'fecha', 'timestamp', 
@@ -196,16 +191,8 @@ def main():
         'carb_diarios_g', 'grasas_diarias_g', 'costo_mensual_ae', 'costo_hogar_tipo'
     ]
 
-    detalle_valido = False
-    if os.path.exists(archivo_detalle):
-        try:
-            df_prueba = pd.read_csv(archivo_detalle, nrows=0)
-            if list(df_prueba.columns) == columnas_detalle:
-                detalle_valido = True
-        except Exception:
-            detalle_valido = False
-
-    if not detalle_valido:
+    # Validar y crear archivos si no existen
+    if not os.path.exists(archivo_detalle):
         pd.DataFrame(columns=columnas_detalle).to_csv(archivo_detalle, index=False, encoding='utf-8-sig')
         
     if not os.path.exists(archivo_totales):
@@ -213,7 +200,13 @@ def main():
 
     scraper = cloudscraper.create_scraper()
     
-    coincidencias_totales = 0
+    now = datetime.now()
+    fecha_str = now.strftime("%Y-%m-%d")
+    timestamp_str = now.strftime("%H:%M:%S")
+
+    registros_detalle = []
+    Costo_total_mensual_ae = 0.0
+    Costo_total_hogar_tipo = 0.0
     productos_encontrados = 0
 
     for item in CBA_INDEC:
@@ -227,10 +220,60 @@ def main():
         
         if todas_observaciones:
             productos_encontrados += 1
-            coincidencias_totales += len(todas_observaciones)
+            precios = [o['precio'] for o in todas_observaciones]
+            precio_estimado = float(np.median(precios))
+            dispersion = float(np.std(precios)) if len(precios) > 1 else 0.0
+            
+            costo_mensual_ae = precio_estimado * item['cantidad_ae']
+            costo_hogar = costo_mensual_ae * COEFICIENTE_HOGAR_TIPO
+
+            Costo_total_mensual_ae += costo_mensual_ae
+            Costo_total_hogar_tipo += costo_hogar
+
+            g_dia = (item['cantidad_ae'] * 1000) / 30.0
+            kcal_diarias = g_dia * (item['kcal_100g'] / 100.0)
+            prot_diarias = g_dia * (item['prot_100g'] / 100.0)
+            carb_diarios = g_dia * (item['carb_100g'] / 100.0)
+            grasas_diarias = g_dia * (item['grasas_100g'] / 100.0)
+
+            registros_detalle.append({
+                'rubro': item['rubro'],
+                'producto': item['producto'],
+                'cantidad_ae': item['cantidad_ae'],
+                'kcal_100g': item['kcal_100g'],
+                'prot_100g': item['prot_100g'],
+                'carb_100g': item['carb_100g'],
+                'grasas_100g': item['grasas_100g'],
+                'fecha': fecha_str,
+                'timestamp': timestamp_str,
+                'precio_unitario_estimado': precio_estimado,
+                'coincidencias': len(todas_observaciones),
+                'dispersion_std': dispersion,
+                'metodo_calculo': 'Mediana Web API',
+                'kcal_diarias_ae': kcal_diarias,
+                'prot_diarias_g': prot_diarias,
+                'carb_diarios_g': carb_diarios,
+                'grasas_diarias_g': grasas_diarias,
+                'costo_mensual_ae': costo_mensual_ae,
+                'costo_hogar_tipo': costo_hogar
+            })
             logging.info(f"Producto encontrado: {item['producto']} ({len(todas_observaciones)} coincidencias)")
         else:
             logging.info(f"Producto NO encontrado: {item['producto']}")
+
+    # GUARDAR HISTÓRICO DE DETALLE
+    if registros_detalle:
+        df_nuevo_detalle = pd.DataFrame(registros_detalle)
+        df_nuevo_detalle.to_csv(archivo_detalle, mode='a', header=not os.path.exists(archivo_detalle) or os.path.getsize(archivo_detalle) == 0, index=False, encoding='utf-8-sig')
+
+    # GUARDAR HISTÓRICO DE TOTALES
+    df_nuevo_total = pd.DataFrame([{
+        'fecha': fecha_str,
+        'timestamp': timestamp_str,
+        'costo_cba_mensual_ae': Costo_total_mensual_ae,
+        'costo_cba_hogar_tipo': Costo_total_hogar_tipo
+    }])
+    df_nuevo_total.to_csv(archivo_totales, mode='a', header=not os.path.exists(archivo_totales) or os.path.getsize(archivo_totales) == 0, index=False, encoding='utf-8-sig')
 
     cobertura = (productos_encontrados / len(CBA_INDEC)) * 100
     logging.info(f"--- Fin de ejecución: Cobertura {cobertura:.2f}% ({productos_encontrados}/{len(CBA_INDEC)}) ---")
