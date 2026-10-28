@@ -162,7 +162,7 @@ def render_dashboard():
         .download-card { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 20px; display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
         .download-card h4 { margin: 0 0 8px 0; color: #1e293b; font-size: 1.05rem; }
         .download-card p { margin: 0 0 16px 0; color: var(--sub); font-size: 0.875rem; }
-        .btn-download { display: inline-block; padding: 10px 16px; background: #1e293b; color: white; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 0.875rem; text-align: center; transition: background 0.2s; }
+        .btn-download { display: inline-block; padding: 10px 16px; background: #1e293b; color: white; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 0.875rem; text-align: center; transition: background 0.2s; cursor: pointer; border: none; }
         .btn-download:hover { background: #334155; }
       </style>
     </head>
@@ -267,28 +267,28 @@ def render_dashboard():
                   <h4>Histórico de Totales</h4>
                   <p>Contiene el resumen diario de costos para CBA (Adulto Equivalente y Hogar Tipo) y CBT junto con la cobertura del scraper.</p>
                 </div>
-                <a href="https://raw.githubusercontent.com/darioplacidogandini/equipo3-bordon-gandini/main/cba_historico_totales.csv" download="cba_historico_totales.csv" class="btn-download">Descargar Totales (CSV)</a>
+                <button onclick="descargarArchivo('https://raw.githubusercontent.com/darioplacidogandini/equipo3-bordon-gandini/main/cba_historico_totales.csv', 'cba_historico_totales.csv')" class="btn-download">Descargar Totales (CSV)</button>
               </div>
               <div class="download-card">
                 <div>
                   <h4>Histórico Detallado</h4>
                   <p>Detalle de precios unitarios estimados, dispersión y costos desglosados por producto y supermercado en cada ejecución.</p>
                 </div>
-                <a href="https://raw.githubusercontent.com/darioplacidogandini/equipo3-bordon-gandini/main/cba_historico_detalle.csv" download="cba_historico_detalle.csv" class="btn-download">Descargar Detalle (CSV)</a>
+                <button onclick="descargarArchivo('https://raw.githubusercontent.com/darioplacidogandini/equipo3-bordon-gandini/main/cba_historico_detalle.csv', 'cba_historico_detalle.csv')" class="btn-download">Descargar Detalle (CSV)</button>
               </div>
               <div class="download-card">
                 <div>
                   <h4>Tabla Nutricional</h4>
                   <p>Información oficial INDEC desglosada por producto con coeficientes de calorías, proteínas, carbohidratos y grasas.</p>
                 </div>
-                <a href="https://raw.githubusercontent.com/darioplacidogandini/equipo3-bordon-gandini/main/cba_tabla_nutricional.csv" download="cba_tabla_nutricional.csv" class="btn-download">Descargar Nutricional (CSV)</a>
+                <button onclick="descargarArchivo('https://raw.githubusercontent.com/darioplacidogandini/equipo3-bordon-gandini/main/cba_tabla_nutricional.csv', 'cba_tabla_nutricional.csv')" class="btn-download">Descargar Nutricional (CSV)</button>
               </div>
               <div class="download-card">
                 <div>
                   <h4>Registro de Errores (Log)</h4>
                   <p>Historial detallado de eventos, advertencias y avisos de ejecución del scraper diario.</p>
                 </div>
-                <a href="https://raw.githubusercontent.com/darioplacidogandini/equipo3-bordon-gandini/main/cba_errores_log.txt" download="cba_errores_log.txt" class="btn-download">Ver Log de Errores (TXT)</a>
+                <button onclick="descargarArchivo('https://raw.githubusercontent.com/darioplacidogandini/equipo3-bordon-gandini/main/cba_errores_log.txt', 'cba_errores_log.txt')" class="btn-download">Ver Log de Errores (TXT)</button>
               </div>
             </div>
           </div>
@@ -302,6 +302,26 @@ def render_dashboard():
           document.getElementById(tabId).classList.add('active');
           evt.currentTarget.classList.add('active');
           window.dispatchEvent(new Event('resize'));
+        }
+
+        async function descargarArchivo(url, nombreArchivo) {
+          try {
+            const response = await fetch(url);
+            if (!response.ok) throw new Error('No se pudo descargar el archivo');
+            const blob = await response.blob();
+            const blobUrl = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = blobUrl;
+            a.download = nombreArchivo;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(blobUrl);
+          } catch (error) {
+            console.error('Error en la descarga:', error);
+            // Fallback: abrir en nueva pestaña si falla el blob por políticas extremas
+            window.open(url, '_blank');
+          }
         }
 
         let datosDetalle = [];
