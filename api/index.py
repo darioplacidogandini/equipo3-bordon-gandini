@@ -267,28 +267,28 @@ def render_dashboard():
                   <h4>Histórico de Totales</h4>
                   <p>Contiene el resumen diario de costos para CBA (Adulto Equivalente y Hogar Tipo) y CBT junto con la cobertura del scraper.</p>
                 </div>
-                <a href="https://raw.githubusercontent.com/darioplacidogandini/equipo3-bordon-gandini/main/cba_historico_totales.csv" target="_blank" class="btn-download">Descargar Totales (CSV)</a>
+                <a href="https://raw.githubusercontent.com/darioplacidogandini/equipo3-bordon-gandini/main/cba_historico_totales.csv" download="cba_historico_totales.csv" class="btn-download">Descargar Totales (CSV)</a>
               </div>
               <div class="download-card">
                 <div>
                   <h4>Histórico Detallado</h4>
                   <p>Detalle de precios unitarios estimados, dispersión y costos desglosados por producto y supermercado en cada ejecución.</p>
                 </div>
-                <a href="https://raw.githubusercontent.com/darioplacidogandini/equipo3-bordon-gandini/main/cba_historico_detalle.csv" target="_blank" class="btn-download">Descargar Detalle (CSV)</a>
+                <a href="https://raw.githubusercontent.com/darioplacidogandini/equipo3-bordon-gandini/main/cba_historico_detalle.csv" download="cba_historico_detalle.csv" class="btn-download">Descargar Detalle (CSV)</a>
               </div>
               <div class="download-card">
                 <div>
                   <h4>Tabla Nutricional</h4>
                   <p>Información oficial INDEC desglosada por producto con coeficientes de calorías, proteínas, carbohidratos y grasas.</p>
                 </div>
-                <a href="https://raw.githubusercontent.com/darioplacidogandini/equipo3-bordon-gandini/main/cba_tabla_nutricional.csv" target="_blank" class="btn-download">Descargar Nutricional (CSV)</a>
+                <a href="https://raw.githubusercontent.com/darioplacidogandini/equipo3-bordon-gandini/main/cba_tabla_nutricional.csv" download="cba_tabla_nutricional.csv" class="btn-download">Descargar Nutricional (CSV)</a>
               </div>
               <div class="download-card">
                 <div>
                   <h4>Registro de Errores (Log)</h4>
                   <p>Historial detallado de eventos, advertencias y avisos de ejecución del scraper diario.</p>
                 </div>
-                <a href="https://raw.githubusercontent.com/darioplacidogandini/equipo3-bordon-gandini/main/cba_errores_log.txt" target="_blank" class="btn-download">Ver Log de Errores (TXT)</a>
+                <a href="https://raw.githubusercontent.com/darioplacidogandini/equipo3-bordon-gandini/main/cba_errores_log.txt" download="cba_errores_log.txt" class="btn-download">Ver Log de Errores (TXT)</a>
               </div>
             </div>
           </div>
