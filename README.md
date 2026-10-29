@@ -1,27 +1,27 @@
-# 🛒 Estimación de la Canasta Básica Alimentaria (CBA) vía Web Scraping
+# Estimación de la Canasta Básica Alimentaria (CBA) vía Web Scraping
 
 [![Python Version](https://img.shields.io/badge/python-3.10%2B-blue.svg)](https://www.python.org/)
 [![Framework](https://img.shields.io/badge/FastAPI-0.100%2B-009688.svg)](https://fastapi.tiangolo.com/)
 [![CI/CD](https://img.shields.io/badge/GitHub%20Actions-Automated-black.svg)](https://github.com/features/actions)
 
-Sistema automatizado de captura, procesamiento y seguimiento continuo de precios minoristas para la estimación en tiempo real del costo de la **Canasta Básica Alimentaria (CBA)** y la **Canasta Básica Total (CBT)** en Argentina, mapeado según los estándares nutricionales del **INDEC** por Adulto Equivalente (AE).
+Sistema automatizado de captura, procesamiento y seguimiento continuo de precios minoristas para la estimación en tiempo real del costo de la Canasta Básica Alimentaria (CBA) y la Canasta Básica Total (CBT) en Argentina, mapeado según los estándares nutricionales del INDEC por Adulto Equivalente (AE).
 
 ---
 
-## 📌 Tabla de Contenidos
+## Tabla de Contenidos
 
-- [Visión General](#-visión-general)
-- [Arquitectura del Sistema](#-arquitectura-del-sistema)
-- [Metodología de Cálculo y Nutrición](#-metodología-de-cálculo-y-nutrición)
-- [Estructura del Proyecto](#-estructura-del-proyecto)
-- [Instalación y Configuración Local](#-instalación-y-configuración-local)
-- [Uso y API REST](#-uso-y-api-rest)
-- [Automatización CI/CD](#-automatización-cicd)
-- [Equipo de Desarrollo](#-equipo-de-desarrollo)
+- [Visión General](#visión-general)
+- [Arquitectura del Sistema](#arquitectura-del-sistema)
+- [Metodología de Cálculo y Nutrición](#metodología-de-cálculo-y-nutrición)
+- [Estructura del Proyecto](#estructura-del-proyecto)
+- [Instalación y Configuración Local](#instalación-y-configuración-local)
+- [Uso y API REST](#uso-y-api-rest)
+- [Automatización CI/CD](#automatización-cicd)
+- [Equipo de Desarrollo](#equipo-de-desarrollo)
 
 ---
 
-## 👁️ Visión General
+## Visión General
 
 El cálculo oficial de la Canasta Básica Alimentaria suele presentar desfases temporales respecto a la dinámica inflacionaria. Este proyecto resuelve dicha brecha recolectando automáticamente precios desde las APIs de e-commerce de cadenas de supermercados en Argentina.
 
@@ -35,7 +35,7 @@ El cálculo oficial de la Canasta Básica Alimentaria suele presentar desfases t
 
 ---
 
-## 🏗️ Arquitectura del Sistema
+## Arquitectura del Sistema
 
 ```
 +------------------+      +-------------------+      +----------------------+
@@ -57,17 +57,21 @@ El cálculo oficial de la Canasta Básica Alimentaria suele presentar desfases t
 
 ---
 
-## 📊 Metodología de Cálculo y Nutrición
+## Metodología de Cálculo y Nutrición
 
 El cálculo del costo mensual de la CBA se alinea con la metodología oficial del **INDEC**:
 
-$$\text{Precio Estándar (\$/Unidad)} = \frac{\text{Precio Relevado}}{\text{Factor de Unidad (kg/L)}}$$
+- **Precio Estándar por Unidad:**
+  $$\text{Precio Estándar} = \frac{\text{Precio Relevado}}{\text{Factor de Unidad (kg/L)}}$$
 
-$$\text{CBA Total Adulto Eq. (\$/Mes)} = \sum_{i=1}^{n} \left( \text{Precio Estándar}_i \times \text{Cantidad Mensual AE}_i \right)$$
+- **CBA Total Adulto Equivalente (Mensual):**
+  $$\text{CBA Adulto Eq.} = \sum_{i=1}^{n} \left( \text{Precio Estándar}_i \times \text{Cantidad Mensual AE}_i \right)$$
 
-$$\text{CBA Hogar Tipo (\$/Mes)} = \text{CBA Adulto Eq.} \times 3.09$$
+- **CBA Hogar Tipo (Mensual):**
+  $$\text{CBA Hogar Tipo} = \text{CBA Adulto Eq.} \times 3.09$$
 
-$$\text{CBT Hogar Tipo (\$/Mes)} = \text{CBA Hogar Tipo} \times 2.25$$
+- **CBT Hogar Tipo (Mensual):**
+  $$\text{CBT Hogar Tipo} = \text{CBA Hogar Tipo} \times 2.25$$
 
 *Donde:*
 - **Coeficiente Hogar Tipo:** Coeficiente $3.09$ (Hogar 2 según INDEC: varón de 35 años, mujer de 31 años, hijo de 6 años e hija de 8 años).
@@ -75,7 +79,7 @@ $$\text{CBT Hogar Tipo (\$/Mes)} = \text{CBA Hogar Tipo} \times 2.25$$
 
 ---
 
-## 📁 Estructura del Proyecto
+## Estructura del Proyecto
 
 ```bash
 equipo3-bordon-gandini/
@@ -96,7 +100,7 @@ equipo3-bordon-gandini/
 
 ---
 
-## ⚙️ Instalación y Configuración Local
+## Instalación y Configuración Local
 
 ### Prerrequisitos
 
@@ -140,7 +144,7 @@ equipo3-bordon-gandini/
 
 ---
 
-## 🚀 Uso y API REST
+## Uso y API REST
 
 El microservicio expone los siguientes endpoints HTTP:
 
@@ -154,7 +158,7 @@ El microservicio expone los siguientes endpoints HTTP:
 
 ---
 
-## 🤖 Automatización CI/CD
+## Automatización CI/CD
 
 El proyecto cuenta con una rutina de ejecución automatizada configurada mediante **GitHub Actions** (`.github/workflows/scraper.yml`):
 
@@ -163,7 +167,7 @@ El proyecto cuenta con una rutina de ejecución automatizada configurada mediant
 
 ---
 
-## 👥 Equipo de Desarrollo
+## Equipo de Desarrollo
 
 - **Equipo 3:** Bordón - Gandini
 - **Repositorio Oficial:** [equipo3-bordon-gandini](https://github.com/darioplacidogandini/equipo3-bordon-gandini)
